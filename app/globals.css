@@ -106,3 +106,33 @@ a.chip{text-decoration:none}
 .ord .cmp{display:grid;gap:8px;margin-top:8px}.ord .cmp textarea{border-radius:12px;padding:10px;font:inherit;border:1px solid #0003}
 .ord .acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ord .acts .btn{width:100%}
 .ord .btn.rej{background:#c62828}.ord .btn.ok{background:var(--green)}
+
+/* shop v2 (matches new mockup) */
+.logo{display:flex;align-items:center;gap:6px;text-decoration:none}.logo img{width:58px;height:58px;object-fit:contain}
+.logo span{font-family:"Rubik Mono One",Impact,sans-serif;font-size:1.05rem;line-height:1;color:var(--cream)}
+.hrow .icon{border:0}
+.brand{justify-content:space-between;margin:8px -16px 0 0;gap:0;position:relative}
+.brand>div{position:relative;z-index:1;flex:none}
+.brand h2{font-size:clamp(2.6rem,13vw,4rem)}
+.brand>img{width:58%;aspect-ratio:1;object-fit:cover;border-radius:50% 0 0 50%;margin-left:-14%;-webkit-mask-image:radial-gradient(circle at 60% 50%,#000 55%,transparent 72%);mask-image:radial-gradient(circle at 60% 50%,#000 55%,transparent 72%)}
+.slogan{white-space:normal;line-height:1.05;border-bottom:3px solid var(--gold);padding-bottom:4px;display:inline-block}
+.chip{display:flex;gap:6px;align-items:center;padding:10px 16px}
+.pack{background:var(--gold);color:var(--ink);font-family:"Archivo Black",sans-serif;text-transform:uppercase;font-size:13px;border-radius:4px;transform:rotate(-8deg);padding:5px 10px;left:10px;top:14px}
+.pbody{position:relative}
+.pbody .eyebrow{color:var(--navy)}
+.oz{position:absolute;right:12px;top:14px;background:var(--navy);color:var(--cream);font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px}
+.pairs span{font-size:12px;padding:4px 10px}
+.stars{color:#f5a623;font-size:15px;letter-spacing:1px;white-space:nowrap}.stars b{color:var(--ink);letter-spacing:0}.stars small{color:#6a6f82;letter-spacing:0}
+.rlink{text-decoration:none}
+.price{font-size:1.5rem;font-weight:800}
+.save{font-family:"Archivo Black",sans-serif;background:var(--gold);color:#c62828;font-size:12px;line-height:1.05;padding:5px 8px;transform:rotate(-8deg);text-align:center;border-radius:3px}
+.buy{display:flex;gap:6px;align-items:center}
+.pc .step,.buy .step{background:var(--navy);padding:3px}.buy .step button{width:30px;height:30px;background:transparent;font-size:20px}.buy .step b{min-width:18px}
+.buy .addbtn{flex:1;background:var(--tomato);padding:12px 8px;font-size:13px;letter-spacing:.02em;white-space:nowrap}
+.buy .addbtn:disabled{background:#999}
+.hero .hrow,.hero .brand{width:100%}
+.pack{left:16px;top:18px}
+.buy .step button{width:26px}.buy .step b{min-width:14px}
+.buy .addbtn{padding:12px 6px;font-size:12px;min-width:0}
+.pc{grid-template-columns:44% 1fr}
+.buy .addbtn{font-size:11.5px;letter-spacing:0;overflow:hidden;text-overflow:clip}

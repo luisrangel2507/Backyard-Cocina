@@ -5,12 +5,18 @@ import type { Product } from "@prisma/client";
 import { useCart } from "@/lib/cart";
 
 const money = (c: number) => `$${(c / 100).toFixed(2)}`;
-const CATS = ["All", "Verde", "Creamy", "Roja", "Packs"];
+const CATS: [string, string][] = [["All", ""], ["Verde", "🌿"], ["Creamy", "🧄"], ["Roja", "🌶️"], ["Packs", "🎁"]];
+export type Rating = { avg: number; count: number };
+const Stars = ({ r }: { r: Rating }) => (
+  <span className="stars" aria-label={`${r.avg.toFixed(1)} out of 5`}>{"★★★★★"} <b>{r.avg.toFixed(1)}</b> <small>({r.count})</small></span>
+);
 
-export default function Store({ products }: { products: Product[] }) {
+export default function Store({ products, ratings = {} }: { products: Product[]; ratings?: Record<string, Rating> }) {
   const { cart, add, count } = useCart();
   const [cat, setCat] = useState("All");
   const [menu, setMenu] = useState(false);
+  const [qty, setQty] = useState<Record<string, number>>({});
+  const single = Math.min(...products.filter((p) => p.jars === 1).map((p) => p.priceCents));
   const subtotal = Object.entries(cart).reduce((a, [id, q]) => a + (products.find((p) => p.id === id)?.priceCents ?? 0) * q, 0);
   const last = Object.keys(cart).slice(-1)[0];
 
@@ -21,57 +27,56 @@ export default function Store({ products }: { products: Product[] }) {
           <button className="icon" aria-label="Menu" aria-expanded={menu} onClick={() => setMenu(!menu)}>
             <svg viewBox="0 0 24 24" width="22" height="22"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
           </button>
-          <span className="hr">
-            <Link className="storypill" href="/story">Press to see our story</Link>
-            <Link className="icon" href="/cart" aria-label="Open cart">
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 4h2l2.4 11h10.2L20 7H6.2" /><circle cx="9" cy="19.5" r="1.4" /><circle cx="17" cy="19.5" r="1.4" /></svg>
-              {count > 0 && <span className="badge">{count}</span>}
-            </Link>
-          </span>
+          <Link href="/shop" className="logo"><img src="/logo.png" alt="" /><span>BACKYARD<br />COCINA</span></Link>
+          <Link className="icon" href="/cart" aria-label="Open cart">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 4h2l2.4 11h10.2L20 7H6.2" /><circle cx="9" cy="19.5" r="1.4" /><circle cx="17" cy="19.5" r="1.4" /></svg>
+            {count > 0 && <span className="badge">{count}</span>}
+          </Link>
         </div>
         {menu && (
           <nav className="menu">
             <Link href="/shop" onClick={() => setMenu(false)}>Order salsas</Link>
             <Link href="/story">Our story</Link>
+            {/* story moved into the menu */}
             <Link href="/merch">Merch · soon</Link>
             <Link href="/cart">View cart</Link>
           </nav>
         )}
         <div className="brand">
-          <img src="/logo.png" alt="Backyard Cocina" />
-          <div><h2>OUR<br />SALSAS</h2><p className="slogan">Small batches. Big flavor.</p></div>
+          <div><h2>OUR<br />SALSAS</h2><p className="slogan">Small batches.<br />Big flavor.</p></div>
+          <img src="/trio.jpg" alt="" />
         </div>
       </header>
 
       <div className="chips">
-        {CATS.map((c) => <button key={c} className="chip" aria-pressed={c === cat} onClick={() => setCat(c)}>{c}</button>)}
+        {CATS.map(([c, e]) => <button key={c} className="chip" aria-pressed={c === cat} onClick={() => setCat(c)}>{e && <span aria-hidden="true">{e}</span>}{c}</button>)}
       </div>
-      <div className="brush" aria-hidden="true" />
 
       <div className="list">
         {products.filter((p) => cat === "All" || p.category === cat).map((p) => {
-          const q = cart[p.id] || 0;
+          const q = qty[p.id] || 1, r = ratings[p.id];
+          const save = p.jars > 1 && isFinite(single) ? p.jars * single - p.priceCents : 0;
           return (
             <article className="pc" key={p.id} style={{ ["--c" as any]: p.color }}>
               <Link className="pimg" href={`/shop/${p.id}`}><img src={`/${p.id}.jpg`} alt={p.name} />{p.jars > 1 && <span className="pack">{p.jars} jars</span>}</Link>
               <div className="pbody">
                 <span className="eyebrow">{p.jars > 1 ? "Pack" : "Salsa"}</span>
+                {p.jars === 1 && <span className="oz">12 oz</span>}
                 <h3>{p.name.replace(/^Salsa\s+|\s+Salsa$/i, "")}</h3>
-                <span className="heat" aria-label={`Heat ${p.heat} of 5`}>{[1, 2, 3, 4, 5].map((n) => <i key={n} className={n <= p.heat ? "on" : ""} />)}</span>
                 <p>{p.description}</p>
-                <div className="pairs">{p.pairs.map((x) => <span key={x}>{x}</span>)}</div>
-                <Link className="rev" href={`/shop/${p.id}`}>Reviews & tips</Link>
+                {p.jars > 1 && <div className="pairs">{p.pairs.map((x) => <span key={x}>{x}</span>)}</div>}
+                {r && <Link href={`/shop/${p.id}`} className="rlink"><Stars r={r} /></Link>}
                 <div className="prow">
                   <span className="price">{money(p.priceCents)} <small>12 oz</small></span>
-                  {q ? (
-                    <span className="step">
-                      <button onClick={() => add(p.id, -1)} aria-label={`Remove one ${p.name}`}>−</button>
-                      <b>{q}</b>
-                      <button onClick={() => add(p.id, 1)} aria-label={`Add one ${p.name}`}>+</button>
-                    </span>
-                  ) : (
-                    <button className="addbtn" onClick={() => add(p.id)} disabled={p.stock < 1}>{p.stock < 1 ? "Sold out" : "Add +"}</button>
-                  )}
+                  {save > 0 && <span className="save">SAVE<br />{money(save)}</span>}
+                </div>
+                <div className="buy">
+                  <span className="step">
+                    <button onClick={() => setQty({ ...qty, [p.id]: Math.max(1, q - 1) })} aria-label={`Fewer ${p.name}`}>−</button>
+                    <b>{q}</b>
+                    <button onClick={() => setQty({ ...qty, [p.id]: Math.min(24, q + 1) })} aria-label={`More ${p.name}`}>+</button>
+                  </span>
+                  <button className="addbtn" onClick={() => { add(p.id, q); setQty({ ...qty, [p.id]: 1 }); }} disabled={p.stock < 1}>{p.stock < 1 ? "SOLD OUT" : "ADD TO CART"}</button>
                 </div>
               </div>
             </article>
