@@ -1,7 +1,7 @@
 {
   "name": "Backyard Cocina",
   "short_name": "Backyard",
-  "start_url": "/shop",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#0d1a6b",
   "theme_color": "#0d1a6b",
