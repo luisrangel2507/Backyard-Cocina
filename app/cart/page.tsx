@@ -14,13 +14,16 @@ export default function CartPage() {
   const [pickupSlot, setPickupSlot] = useState("");
   const [slots, setSlots] = useState<{ label: string; left: number }[]>([]);
   useEffect(() => { fetch("/api/slots").then((r) => r.json()).then((s) => { setSlots(s); setPickupSlot(s.find((x: any) => x.left > 0)?.label ?? ""); }); }, []);
+  const [me, setMe] = useState<{ name: string; freeSalsas: number } | null>(null);
+  const [useFree, setUseFree] = useState(false);
+  useEffect(() => { fetch("/api/me").then((r) => r.json()).then(setMe).catch(() => {}); }, []);
   const items = Object.entries(cart);
 
   async function checkout() {
     setLoading(true); setError("");
     const res = await fetch("/api/checkout", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ items: items.map(([id, quantity]) => ({ id, quantity })), fulfillment, address, zip, pickupSlot }),
+      body: JSON.stringify({ items: items.map(([id, quantity]) => ({ id, quantity })), fulfillment, address, zip, pickupSlot, useFree }),
     });
     const data = await res.json();
     if (data.url) window.location.href = data.url; // Stripe-hosted checkout (card, Apple Pay, Google Pay)
@@ -72,6 +75,12 @@ export default function CartPage() {
           )}
         </div>
       )}
+      {items.length > 0 && (me?.freeSalsas ?? 0) > 0 && (
+        <label style={{ display: "block", marginTop: 16 }}>
+          <input type="checkbox" checked={useFree} onChange={(e) => setUseFree(e.target.checked)} /> 🎁 Use my free salsa ({me!.freeSalsas} available)
+        </label>
+      )}
+      {items.length > 0 && !me && <p style={{ marginTop: 16 }}><small><a href="/login" style={{ color: "var(--cream)" }}>Log in</a> to earn stamps and use free salsas.</small></p>}
       {items.length > 0 && (
         <button className="btn" style={{ marginTop: 20, width: "100%", padding: 14 }} onClick={checkout} disabled={loading || (fulfillment === "delivery" && !zone)}>
           {loading ? "Opening secure checkout…" : "Checkout"}

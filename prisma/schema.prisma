@@ -89,3 +89,15 @@ model Settings {
   slots String[] @default(["10 am–12 pm", "4–6 pm"])
   cap   Int      @default(40)                    // max jars per day
 }
+
+// One-time email login codes (stored hashed, expire in 10 minutes).
+model LoginCode {
+  id        String   @id @default(cuid())
+  email     String
+  codeHash  String
+  attempts  Int      @default(0)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}

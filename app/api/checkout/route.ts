@@ -2,12 +2,14 @@ import { NextResponse } from "next/server";
 import { db, stripe } from "@/lib/db";
 import { zoneFor } from "@/lib/zones";
 import { openSlots } from "@/lib/schedule";
+import { getCustomer } from "@/lib/auth";
+import { freeSalsasAvailable } from "@/lib/loyalty";
 
 
 // Prices are always read from the database, never trusted from the client.
 export async function POST(req: Request) {
-  const { items, fulfillment = "pickup", address = "", zip = "", pickupSlot = "" } = (await req.json()) as {
-    items: { id: string; quantity: number }[]; fulfillment?: "pickup" | "delivery"; address?: string; zip?: string; pickupSlot?: string;
+  const { items, fulfillment = "pickup", address = "", zip = "", pickupSlot = "", useFree = false } = (await req.json()) as {
+    items: { id: string; quantity: number }[]; fulfillment?: "pickup" | "delivery"; address?: string; zip?: string; pickupSlot?: string; useFree?: boolean;
   };
   const zone = fulfillment === "delivery" ? zoneFor(zip) : undefined;
   if (fulfillment === "delivery" && !zone)
@@ -29,6 +31,16 @@ export async function POST(req: Request) {
 
   const site = process.env.NEXT_PUBLIC_SITE_URL!;
 
+  // Free salsa: members with a reward get the cheapest single-jar salsa in the cart taken off via a one-time coupon.
+  let freeCoupon: string | undefined;
+  if (useFree) {
+    const member = await getCustomer();
+    const eligible = lines.filter((l) => l.p!.jars === 1).sort((a, b) => a.p!.priceCents - b.p!.priceCents)[0];
+    if (!member || freeSalsasAvailable(member) < 1 || !eligible)
+      return NextResponse.json({ error: "No free salsa available for this cart" }, { status: 400 });
+    freeCoupon = (await stripe.coupons.create({ amount_off: eligible.p!.priceCents, currency: "usd", duration: "once", name: "Backyard Club free salsa" })).id;
+  }
+
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
     line_items: [
@@ -43,6 +55,7 @@ export async function POST(req: Request) {
     phone_number_collection: { enabled: true },
     automatic_tax: { enabled: process.env.STRIPE_AUTOMATIC_TAX === "true" },
     customer_creation: "always",
+    ...(freeCoupon ? { discounts: [{ coupon: freeCoupon }] } : {}),
     // Stripe generates a PDF invoice and emails it to the customer after payment
     invoice_creation: { enabled: true, invoice_data: { footer: "Thanks for supporting Backyard Cocina!" } },
     metadata: {
@@ -52,6 +65,7 @@ export async function POST(req: Request) {
       pickupSlot: slot.label,
       slotDay: slot.day,
       jarCount: String(jarCount),
+      ...(freeCoupon ? { freeSalsa: "1" } : {}),
     },
     success_url: `${site}/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${site}/cart`,
