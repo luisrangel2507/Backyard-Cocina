@@ -26,6 +26,7 @@ export default function Login() {
   return (
     <div style={{ display: "grid", gap: 10, maxWidth: 420 }}>
       <h2>Backyard Club</h2>
+      <p><small>Codes are sent by email.</small></p>
       <p>Log in or sign up with your email. We&apos;ll send a 6-digit code. Earn a stamp for every jar; 10 jars = 1 free salsa.</p>
       {step === "email" ? (
         <>

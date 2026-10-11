@@ -25,9 +25,12 @@ export async function getCustomer() {
   return db.customer.findUnique({ where: { id } });
 }
 
+/** Club login needs an email provider; without one, guests can still buy and claim stamps later. */
+export const clubOpen = () => !!process.env.RESEND_API_KEY;
+
 export async function sendCode(email: string, code: string) {
   const key = process.env.RESEND_API_KEY;
-  if (!key) { console.log(`[login] code for ${email}: ${code}`); return; }
+  if (!key) return;
   await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },

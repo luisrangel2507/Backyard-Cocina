@@ -15,8 +15,9 @@ export default function CartPage() {
   const [slots, setSlots] = useState<{ label: string; left: number }[]>([]);
   useEffect(() => { fetch("/api/slots").then((r) => r.json()).then((s) => { setSlots(s); setPickupSlot(s.find((x: any) => x.left > 0)?.label ?? ""); }); }, []);
   const [me, setMe] = useState<{ name: string; freeSalsas: number } | null>(null);
+  const [clubOpen, setClubOpen] = useState(false);
   const [useFree, setUseFree] = useState(false);
-  useEffect(() => { fetch("/api/me").then((r) => r.json()).then(setMe).catch(() => {}); }, []);
+  useEffect(() => { fetch("/api/me").then((r) => r.json()).then((d) => { setMe(d.member); setClubOpen(d.clubOpen); }).catch(() => {}); }, []);
   const items = Object.entries(cart);
 
   async function checkout() {
@@ -80,7 +81,7 @@ export default function CartPage() {
           <input type="checkbox" checked={useFree} onChange={(e) => setUseFree(e.target.checked)} /> 🎁 Use my free salsa ({me!.freeSalsas} available)
         </label>
       )}
-      {items.length > 0 && !me && <p style={{ marginTop: 16 }}><small><a href="/login" style={{ color: "var(--cream)" }}>Log in</a> to earn stamps and use free salsas.</small></p>}
+      {items.length > 0 && clubOpen && !me && <p style={{ marginTop: 16 }}><small><a href="/login" style={{ color: "var(--cream)" }}>Log in</a> to earn stamps and use free salsas.</small></p>}
       {items.length > 0 && (
         <button className="btn" style={{ marginTop: 20, width: "100%", padding: 14 }} onClick={checkout} disabled={loading || (fulfillment === "delivery" && !zone)}>
           {loading ? "Opening secure checkout…" : "Checkout"}

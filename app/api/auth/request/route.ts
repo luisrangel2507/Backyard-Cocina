@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { randomInt } from "crypto";
 import { db } from "@/lib/db";
-import { hashCode, sendCode } from "@/lib/auth";
+import { clubOpen, hashCode, sendCode } from "@/lib/auth";
 
 export async function POST(req: Request) {
+  if (!clubOpen()) return NextResponse.json({ error: "Backyard Club sign-up opens soon. You can still order as a guest." }, { status: 503 });
   const { email: raw } = await req.json();
   const email = String(raw || "").trim().toLowerCase();
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return NextResponse.json({ error: "Enter a valid email" }, { status: 400 });
