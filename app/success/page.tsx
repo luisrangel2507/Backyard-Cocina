@@ -1,7 +1,8 @@
 import { stripe, money } from "@/lib/db";
 import ClearCart from "./clear";
 
-export default async function Success({ searchParams }: { searchParams: { session_id?: string } }) {
+export default async function Success(props: { searchParams: Promise<{ session_id?: string }> }) {
+  const searchParams = await props.searchParams;
   const s = searchParams.session_id ? await stripe.checkout.sessions.retrieve(searchParams.session_id, { expand: ["invoice"] }) : null;
   if (!s || s.payment_status !== "paid") return <p>We couldn't confirm that payment. If you were charged, email us and we'll sort it out.</p>;
   return (

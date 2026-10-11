@@ -31,7 +31,7 @@ export async function POST(req: Request) {
   if (slot.left < jarCount) return NextResponse.json({ error: `Only ${Math.max(0, slot.left)} jars left for that day. Pick another day.` }, { status: 400 });
 
   const site = process.env.NEXT_PUBLIC_SITE_URL!;
-  const refCode = cookies().get("bc_ref")?.value?.toUpperCase();
+  const refCode = (await cookies()).get("bc_ref")?.value?.toUpperCase();
   const partner = refCode ? await db.partner.findFirst({ where: { code: refCode, active: true } }) : null;
 
   // Free salsa: members with a reward get the cheapest single-jar salsa in the cart taken off via a one-time coupon.

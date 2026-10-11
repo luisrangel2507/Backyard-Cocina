@@ -5,7 +5,8 @@ export const dynamic = "force-dynamic";
 const LABEL: Record<string, string> = { new: "New", ready: "Ready", out: "Out for delivery", done: "Completed" };
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-export default async function Admin({ searchParams }: { searchParams: { tab?: string; s?: string } }) {
+export default async function Admin(props: { searchParams: Promise<{ tab?: string; s?: string }> }) {
+  const searchParams = await props.searchParams;
   const tab = searchParams.tab || "orders", filter = searchParams.s || "new";
   const Tab = ({ id, children }: { id: string; children: React.ReactNode }) => (
     <a href={`/admin?tab=${id}`} aria-current={tab === id} className="atab">{children}</a>

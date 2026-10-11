@@ -4,7 +4,8 @@ import { db, money } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-export default async function Salsa({ params }: { params: { id: string } }) {
+export default async function Salsa(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const p = await db.product.findUnique({ where: { id: params.id }, include: { reviews: { orderBy: { createdAt: "desc" }, take: 30 } } });
   if (!p || !p.active) notFound();
   const avg = p.reviews.length ? (p.reviews.reduce((a, r) => a + r.stars, 0) / p.reviews.length).toFixed(1) : null;

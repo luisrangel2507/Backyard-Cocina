@@ -17,7 +17,7 @@ export const clearCookie = { name: COOKIE, value: "", path: "/", maxAge: 0 };
 
 /** Logged-in Backyard Club member, or null. */
 export async function getCustomer() {
-  const raw = cookies().get(COOKIE)?.value;
+  const raw = (await cookies()).get(COOKIE)?.value;
   if (!raw) return null;
   const [id, exp, sig] = raw.split(".");
   const expected = sign(`${id}.${exp}`);
