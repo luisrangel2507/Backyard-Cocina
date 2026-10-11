@@ -39,6 +39,8 @@ model Order {
   slotDay         String?    // "2026-10-16", for the daily cap
   jarCount        Int        @default(0)
   phone           String?
+  partnerCode     String?     // reseller / partner that referred the sale (e.g. BLADE)
+  commissionCents Int         @default(0)
   createdAt       DateTime    @default(now())
   items           OrderItem[]
 }
@@ -100,4 +102,13 @@ model LoginCode {
   createdAt DateTime @default(now())
 
   @@index([email])
+}
+
+// Resellers (e.g. Blade & Barber). Customers arriving via /r/CODE (QR) are attributed to the partner for 30 days.
+model Partner {
+  id              String  @id @default(cuid())
+  code            String  @unique // uppercase, e.g. BLADE
+  name            String
+  commissionCents Int     @default(100) // paid per jar sold
+  active          Boolean @default(true)
 }

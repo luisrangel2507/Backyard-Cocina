@@ -22,6 +22,7 @@ export async function POST(req: Request) {
       const member = email ? await db.customer.findUnique({ where: { email } }) : null;
       const usedFree = s.metadata?.freeSalsa === "1";
       const paidJars = Number(s.metadata?.jarCount || 0) - (usedFree ? 1 : 0);
+      const partner = s.metadata?.partner ? await db.partner.findUnique({ where: { code: s.metadata.partner } }) : null;
       await db.$transaction([
         db.order.create({
           data: {
@@ -37,6 +38,8 @@ export async function POST(req: Request) {
             slotDay: s.metadata?.slotDay || null,
             jarCount: Number(s.metadata?.jarCount || 0),
             phone: s.customer_details?.phone,
+            partnerCode: partner?.code,
+            commissionCents: partner ? Math.max(0, paidJars) * partner.commissionCents : 0,
             items: { create: items.map(([productId, quantity, priceCents]) => ({ productId, quantity, priceCents })) },
           },
         }),

@@ -13,3 +13,8 @@
 ## Still to build (not in this code)
 - Posting reviews; merch purchasing / redeeming the 20-jar merch reward; birthday free-salsa grant.
 - Confirm with client: prices, delivery zones/fees, time windows, jar cap, real photos, California Cottage Food permit (LA County).
+
+## Partners (Blade & Barber)
+1. `/admin?tab=partners` → add partner: name "Blade & Barber", code `BLADE`, commission per jar (default $1.00).
+2. Its QR (print it) points to `NEXT_PUBLIC_SITE_URL/r/BLADE`; also downloadable at `/api/qr?code=BLADE`.
+3. Scanning sets a 30-day cookie; orders from that browser are tagged with the partner and the commission (paid jars × rate) is stored on the order. The partners tab shows jars sold and commission owed. Pay the partner manually.

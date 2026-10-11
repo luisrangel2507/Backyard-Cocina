@@ -1,5 +1,5 @@
 import { db, money } from "@/lib/db";
-import { setStatus, saveProduct, saveSchedule, confirmOrder, rejectOrder, textCustomer } from "./actions";
+import { setStatus, saveProduct, saveSchedule, confirmOrder, rejectOrder, textCustomer, savePartner } from "./actions";
 
 export const dynamic = "force-dynamic";
 const LABEL: Record<string, string> = { new: "New", ready: "Ready", out: "Out for delivery", done: "Completed" };
@@ -14,11 +14,12 @@ export default async function Admin({ searchParams }: { searchParams: { tab?: st
     <div className="adm">
       <span className="eyebrowl">Backyard Cocina</span>
       <h2>Kitchen admin</h2>
-      <nav className="atabs"><Tab id="orders">Orders</Tab><Tab id="products">Products</Tab><Tab id="sales">Sales</Tab><Tab id="schedule">Schedule</Tab></nav>
+      <nav className="atabs"><Tab id="orders">Orders</Tab><Tab id="products">Products</Tab><Tab id="sales">Sales</Tab><Tab id="schedule">Schedule</Tab><Tab id="partners">Partners</Tab></nav>
       {tab === "orders" && <Orders filter={filter} />}
       {tab === "products" && <Products />}
       {tab === "sales" && <Sales />}
       {tab === "schedule" && <Schedule />}
+      {tab === "partners" && <Partners />}
     </div>
   );
 }
@@ -114,5 +115,38 @@ async function Schedule() {
       <label>Time windows (comma separated) <input name="slots" defaultValue={s.slots.join(", ")} /></label>
       <button className="btn">Save schedule</button>
     </form>
+  );
+}
+
+async function Partners() {
+  const partners = await db.partner.findMany({ orderBy: { name: "asc" } });
+  const orders = await db.order.findMany({ where: { partnerCode: { not: null }, status: { not: "cancelled" } } });
+  const site = process.env.NEXT_PUBLIC_SITE_URL || "";
+  return (
+    <div style={{ display: "grid", gap: 16 }}>
+      {partners.map((p) => {
+        const mine = orders.filter((o) => o.partnerCode === p.code);
+        const jars = mine.reduce((a, o) => a + o.jarCount, 0);
+        const owed = mine.reduce((a, o) => a + o.commissionCents, 0);
+        return (
+          <div className="card" key={p.id} style={{ padding: 14, display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
+            <img src={`/api/qr?code=${p.code}`} alt={`QR ${p.code}`} width={140} height={140} style={{ background: "#fff", borderRadius: 8 }} />
+            <div>
+              <b>{p.name}</b> · code {p.code}<br />
+              <small>{site}/r/{p.code}</small><br />
+              {mine.length} orders · {jars} jars · commission {money(p.commissionCents)}/jar<br />
+              <b>Owed: {money(owed)}</b>
+            </div>
+          </div>
+        );
+      })}
+      <form action={savePartner} style={{ display: "grid", gap: 8, maxWidth: 360 }}>
+        <b>Add / update partner</b>
+        <input name="name" placeholder="Name (Blade & Barber)" required style={{ padding: 10, borderRadius: 10, border: 0 }} />
+        <input name="code" placeholder="Code (BLADE)" required style={{ padding: 10, borderRadius: 10, border: 0 }} />
+        <input name="commission" type="number" step="0.01" defaultValue="1.00" placeholder="Commission per jar ($)" style={{ padding: 10, borderRadius: 10, border: 0 }} />
+        <button className="btn">Save partner</button>
+      </form>
+    </div>
   );
 }

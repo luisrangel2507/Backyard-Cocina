@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db, stripe } from "@/lib/db";
 import { zoneFor } from "@/lib/zones";
 import { openSlots } from "@/lib/schedule";
+import { cookies } from "next/headers";
 import { getCustomer } from "@/lib/auth";
 import { freeSalsasAvailable } from "@/lib/loyalty";
 
@@ -30,6 +31,8 @@ export async function POST(req: Request) {
   if (slot.left < jarCount) return NextResponse.json({ error: `Only ${Math.max(0, slot.left)} jars left for that day. Pick another day.` }, { status: 400 });
 
   const site = process.env.NEXT_PUBLIC_SITE_URL!;
+  const refCode = cookies().get("bc_ref")?.value?.toUpperCase();
+  const partner = refCode ? await db.partner.findFirst({ where: { code: refCode, active: true } }) : null;
 
   // Free salsa: members with a reward get the cheapest single-jar salsa in the cart taken off via a one-time coupon.
   let freeCoupon: string | undefined;
@@ -65,6 +68,7 @@ export async function POST(req: Request) {
       pickupSlot: slot.label,
       slotDay: slot.day,
       jarCount: String(jarCount),
+      ...(partner ? { partner: partner.code } : {}),
       ...(freeCoupon ? { freeSalsa: "1" } : {}),
     },
     success_url: `${site}/success?session_id={CHECKOUT_SESSION_ID}`,

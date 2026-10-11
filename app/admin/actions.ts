@@ -47,3 +47,12 @@ export async function textCustomer(id: string, form: FormData) {
   if (o?.phone && msg) await sendSms(o.phone, msg);
   revalidatePath("/admin");
 }
+
+export async function savePartner(form: FormData) {
+  const code = String(form.get("code")).trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+  const name = String(form.get("name")).trim();
+  const commissionCents = Math.round(Number(form.get("commission")) * 100);
+  if (!code || !name || !(commissionCents >= 0)) return;
+  await db.partner.upsert({ where: { code }, update: { name, commissionCents }, create: { code, name, commissionCents } });
+  revalidatePath("/admin");
+}
