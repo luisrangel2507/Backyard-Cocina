@@ -9,11 +9,6 @@ export default function Welcome() {
   const [box, setBox] = useState<React.CSSProperties>({});
   const [img, setImg] = useState<React.CSSProperties>({ inset: 0, width: "100%", height: "100%", objectFit: "cover" });
   useEffect(() => {
-    // Splash only on the first visit; returning visitors go straight to the shop.
-    try {
-      if (localStorage.getItem("bc_seen")) { location.replace("/shop"); return; }
-      localStorage.setItem("bc_seen", "1");
-    } catch {}
     const place = () => {
       const W = innerWidth, H = innerHeight, w = W / H >= 0.75;
       const k = w ? Math.min(W / IW, H / IH) : Math.max(W / IW, H / IH);
