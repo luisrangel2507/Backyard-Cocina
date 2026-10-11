@@ -1,0 +1,86 @@
+generator client { provider = "prisma-client-js" }
+datasource db { provider = "postgresql"; url = env("DATABASE_URL") }
+
+model Product {
+  id          String  @id
+  name        String
+  description String
+  category    String
+  heat        Int
+  priceCents  Int
+  color       String
+  active      Boolean @default(true)
+  stock       Int     @default(100)
+  jars        Int     @default(1)   // stamps earned per unit (Trio = 3)
+  pairs       String[]
+  tip         String  @default("")
+  reviews     Review[]
+  items       OrderItem[]
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  stripeSessionId String      @unique
+  email           String?
+  customer        Customer?   @relation(fields: [customerId], references: [id])
+  customerId      String?
+  freeSalsaUsed   Boolean     @default(false)
+  confirmed       Boolean     @default(false)
+  status          String      @default("new") // new | ready | out | done | cancelled
+  totalCents      Int         @default(0)
+  fulfillment     String      @default("pickup") // pickup | delivery
+  deliveryAddress String?
+  pickupSlot      String?    // "Fri, Oct 16 · 4–6 pm"
+  slotDay         String?    // "2026-10-16", for the daily cap
+  jarCount        Int        @default(0)
+  phone           String?
+  createdAt       DateTime    @default(now())
+  items           OrderItem[]
+}
+
+model OrderItem {
+  id         String  @id @default(cuid())
+  order      Order   @relation(fields: [orderId], references: [id])
+  orderId    String
+  product    Product @relation(fields: [productId], references: [id])
+  productId  String
+  quantity   Int
+  priceCents Int
+}
+
+// Backyard Club profile. Guests can check out without one; signing up later claims past orders by email.
+model Customer {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  name       String
+  phone      String?
+  offers     Boolean  @default(true)  // opted in to offers / new drops
+  jars       Int      @default(0)     // lifetime paid jars
+  freeUsed   Int      @default(0)     // free salsas redeemed (1 per 10 jars)
+  merchUsed  Int      @default(0)     // merch rewards redeemed (1 per 20 jars)
+  bonusFree  Int      @default(0)     // extra free salsas (birthday)
+  birthMonth Int?                     // 0-11
+  bdayYear   Int?                     // last year the birthday reward was given
+  referralCode String  @unique @default(cuid())
+  referredBy String?
+  createdAt  DateTime @default(now())
+  orders     Order[]
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  product    Product  @relation(fields: [productId], references: [id])
+  productId  String
+  customerId String
+  name       String
+  stars      Int
+  text       String
+  createdAt  DateTime @default(now())
+}
+
+model Settings {
+  id    Int      @id @default(1)
+  days  Int[]    @default([4, 5, 6, 0])          // 0=Sun … 6=Sat
+  slots String[] @default(["10 am–12 pm", "4–6 pm"])
+  cap   Int      @default(40)                    // max jars per day
+}
