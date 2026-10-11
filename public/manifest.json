@@ -1,0 +1,12 @@
+{
+  "name": "Backyard Cocina",
+  "short_name": "Backyard",
+  "start_url": "/shop",
+  "display": "standalone",
+  "background_color": "#0d1a6b",
+  "theme_color": "#0d1a6b",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
