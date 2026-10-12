@@ -204,3 +204,26 @@ a.chip{text-decoration:none}
 .ahead{display:flex;justify-content:space-between;align-items:center}
 .abrand{display:grid;justify-items:center;gap:6px}
 .kadm::after{display:none}
+
+/* cart lines */
+.cline{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:center;background:var(--cream);color:var(--ink);border-radius:16px;padding:10px;margin-bottom:10px}
+.cline img{width:64px;height:64px;border-radius:12px;object-fit:cover}
+.cinfo{display:grid;gap:4px;justify-items:start}.cinfo small{color:#6a6f82}
+.cinfo .step{background:var(--navy);padding:2px}.cinfo .step button{width:28px;height:28px;font-size:18px}
+.ctot{font-size:1.05rem}
+.csub{display:flex;justify-content:space-between;font-size:1.15rem;padding:8px 4px}
+/* heat */
+.chili{display:flex;align-items:center;gap:1px;font-size:14px}.chili i{font-style:normal;filter:grayscale(1);opacity:.25}.chili i.on{filter:none;opacity:1}
+.chili small{margin-left:6px;font-size:12px;font-weight:700;color:#c62828;text-transform:uppercase;letter-spacing:.04em}
+/* how it works + faq */
+.how,.faq{margin-top:28px;text-align:center}
+.how h2,.faq h2{font-family:"Archivo Black",sans-serif;margin:0 0 14px}
+.how ol{list-style:none;padding:0;margin:0;display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.how li{background:var(--deep);border-radius:18px;padding:16px;display:grid;justify-items:center;gap:4px}
+.how li span{width:36px;height:36px;border-radius:50%;background:var(--tomato);display:grid;place-items:center;font-weight:800}
+.how li small{color:var(--muted)}
+.faq details{background:var(--deep);border-radius:14px;margin:0 auto 8px;max-width:720px;text-align:left}
+.faq summary{padding:14px 16px;font-weight:700;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:10px}
+.faq summary::after{content:"+";color:var(--gold);font-size:1.3rem;line-height:1}.faq details[open] summary::after{content:"−"}
+.faq summary::-webkit-details-marker{display:none}
+.faq p{margin:0;padding:0 16px 14px;color:#dfe3ef;line-height:1.5}

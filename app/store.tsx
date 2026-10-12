@@ -64,6 +64,7 @@ export default function Store({ products, ratings = {} }: { products: Product[];
                 <span className="eyebrow">{p.jars > 1 ? "Pack" : "Salsa"}</span>
                 {p.jars === 1 && <span className="oz">12 oz</span>}
                 <h3>{p.name.replace(/^Salsa\s+|\s+Salsa$/i, "")}</h3>
+                <span className="chili" aria-label={`Heat ${p.heat} of 5`} title={`Heat ${p.heat} of 5`}>{[1, 2, 3, 4, 5].map((n) => <i key={n} className={n <= p.heat ? "on" : ""}>🌶</i>)}<small>{["", "Mild", "Mild", "Medium", "Hot", "Extra hot"][p.heat] ?? ""}</small></span>
                 <p>{p.description}</p>
                 {p.jars > 1 && <div className="pairs">{p.pairs.map((x) => <span key={x}>{x}</span>)}</div>}
                 {r && <Link href={`/shop/${p.id}`} className="rlink"><Stars r={r} /></Link>}
@@ -84,6 +85,27 @@ export default function Store({ products, ratings = {} }: { products: Product[];
           );
         })}
       </div>
+
+      <section className="how">
+        <h2>How it works</h2>
+        <ol>
+          <li><span>1</span><b>Order online</b><small>Pick your salsas, a day and a time.</small></li>
+          <li><span>2</span><b>Made fresh</b><small>Brant makes your batch by hand in small runs.</small></li>
+          <li><span>3</span><b>Pick up or delivery</b><small>Free pickup in Torrance or local delivery.</small></li>
+        </ol>
+      </section>
+
+      <section className="faq">
+        <h2>FAQ</h2>
+        {[
+          ["How long does the salsa last?", "Keep it in the fridge. It's best within 7–10 days of opening, and up to 2 weeks sealed."],
+          ["Does it need refrigeration?", "Yes. It's fresh salsa with no preservatives, so keep it cold and close the lid after each use."],
+          ["Where do you deliver?", "We deliver to nearby ZIP codes around Torrance. Enter your ZIP in the cart to see if we reach you and the fee."],
+          ["Where is pickup?", "1636 Greenwood Ave, Torrance, CA. Choose your day and time window at checkout."],
+          ["How spicy is it?", "Each salsa shows its heat with chiles 🌶 from 1 (mild) to 5 (extra hot)."],
+          ["Can I change or cancel my order?", "Text us as soon as possible. If we haven't started your batch, we'll fix it or refund you."],
+        ].map(([q, a]) => <details key={q}><summary>{q}</summary><p>{a}</p></details>)}
+      </section>
 
       <section className="drop">
         <span className="soon">Limited drop · Coming soon</span>

@@ -18,7 +18,12 @@ export default function CartPage() {
   const [clubOpen, setClubOpen] = useState(false);
   const [useFree, setUseFree] = useState(false);
   useEffect(() => { fetch("/api/me").then((r) => r.json()).then((d) => { setMe(d.member); setClubOpen(d.clubOpen); }).catch(() => {}); }, []);
+  const [catalog, setCatalog] = useState<{ id: string; name: string; priceCents: number; jars: number }[]>([]);
+  useEffect(() => { fetch("/api/products").then((r) => r.json()).then(setCatalog).catch(() => {}); }, []);
   const items = Object.entries(cart);
+  const info = (id: string) => catalog.find((p) => p.id === id);
+  const subtotal = items.reduce((a, [id, q]) => a + (info(id)?.priceCents ?? 0) * q, 0);
+  const $ = (c: number) => `$${(c / 100).toFixed(2)}`;
 
   async function checkout() {
     setLoading(true); setError("");
@@ -35,15 +40,25 @@ export default function CartPage() {
     <>
       <h2>Your cart</h2>
       {!items.length && <p>Nothing here yet. <a href="/shop" style={{ color: "var(--cream)" }}>Browse salsas</a></p>}
-      {items.map(([id, q]) => (
-        <div className="line" key={id}>
-          <span>{id}</span>
-          <span>
-            <button className="btn" onClick={() => add(id, -1)}>−</button> {q}{" "}
-            <button className="btn" onClick={() => add(id, 1)}>+</button>
-          </span>
-        </div>
-      ))}
+      {items.map(([id, q]) => {
+        const p = info(id);
+        return (
+          <div className="cline" key={id}>
+            <img src={`/${id}.jpg`} alt="" />
+            <div className="cinfo">
+              <b>{p?.name ?? id}</b>
+              <small>{p ? `${$(p.priceCents)} each` : ""}{p && p.jars > 1 ? ` · ${p.jars} jars` : ""}</small>
+              <span className="step">
+                <button onClick={() => add(id, -1)} aria-label={`Remove one ${p?.name ?? id}`}>−</button>
+                <b>{q}</b>
+                <button onClick={() => add(id, 1)} aria-label={`Add one ${p?.name ?? id}`}>+</button>
+              </span>
+            </div>
+            <b className="ctot">{p ? $(p.priceCents * q) : ""}</b>
+          </div>
+        );
+      })}
+      {items.length > 0 && <div className="csub"><span>Subtotal</span><b>{$(subtotal)}</b></div>}
       {items.length > 0 && (
         <div style={{ marginTop: 20, display: "grid", gap: 10 }}>
           <b>How do you want it?</b>
