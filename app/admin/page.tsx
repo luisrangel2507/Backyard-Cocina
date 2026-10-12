@@ -7,18 +7,31 @@ import { setStatus, saveProduct, saveSchedule, confirmOrder, rejectOrder, textCu
 export const dynamic = "force-dynamic";
 const LABEL: Record<string, string> = { new: "New", ready: "Ready", out: "Out for delivery", done: "Completed" };
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const DOT: Record<string, string> = { new: "#e8402a", ready: "#e9a82b", out: "#4cc38a", done: "#9aa3b8" };
+const I = (d: React.ReactNode) => <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">{d}</svg>;
+const ICONS: Record<string, React.ReactNode> = {
+  orders: I(<><rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4h6v3H9zM9 11h6M9 15h4" /></>),
+  products: I(<><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z" /><path d="M4 7.5l8 4.5 8-4.5M12 12v9" /></>),
+  money: I(<><rect x="3" y="6" width="18" height="12" rx="2" /><circle cx="12" cy="12" r="2.5" /><path d="M6 9v.01M18 15v.01" /></>),
+  sales: I(<><rect x="4" y="12" width="3.5" height="8" rx="1" /><rect x="10.25" y="5" width="3.5" height="15" rx="1" /><rect x="16.5" y="9" width="3.5" height="11" rx="1" /></>),
+  schedule: I(<><rect x="4" y="5" width="16" height="16" rx="2" /><path d="M4 10h16M9 3v4M15 3v4M9 14h.01M13 14h.01M11 17h.01" /></>),
+  partners: I(<><circle cx="9" cy="8" r="3.2" /><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5" /><circle cx="17" cy="7" r="2.6" /><path d="M16 13.2c3 .2 5 2.2 5 5" /></>),
+};
+const TABS: [string, string][] = [["orders", "Orders"], ["products", "Products"], ["money", "Money"], ["sales", "Sales"], ["schedule", "Schedule"], ["partners", "Partners"]];
 
 export default async function Admin(props: { searchParams: Promise<{ tab?: string; s?: string; p?: string }> }) {
   const searchParams = await props.searchParams;
   const tab = searchParams.tab || "orders", filter = searchParams.s || "new";
   const Tab = ({ id, children }: { id: string; children: React.ReactNode }) => (
-    <a href={`/admin?tab=${id}`} aria-current={tab === id} className="atab">{children}</a>
+    <a href={`/admin?tab=${id}`} aria-current={tab === id} className="atab">{ICONS[id]}{children}</a>
   );
   return (
     <div className="adm">
-      <span className="eyebrowl">Backyard Cocina</span>
-      <h2 style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>Kitchen admin <LogoutAdmin /></h2>
-      <nav className="atabs"><Tab id="orders">Orders</Tab><Tab id="products">Products</Tab><Tab id="money">Money</Tab><Tab id="sales">Sales</Tab><Tab id="schedule">Schedule</Tab><Tab id="partners">Partners</Tab></nav>
+      <header className="ahead">
+        <span className="abrand"><img src="/logo.png" alt="Backyard Cocina" /><span className="kadm">KITCHEN ADMIN</span></span>
+        <LogoutAdmin />
+      </header>
+      <nav className="atabs">{TABS.map(([id, label]) => <Tab key={id} id={id}>{label}</Tab>)}</nav>
       {tab === "orders" && <Orders filter={filter} />}
       {tab === "products" && <Products />}
       {tab === "sales" && <Sales />}
@@ -39,9 +52,15 @@ async function Orders({ filter }: { filter: string }) {
   return (
     <>
       <div className="chips">{["new", "ready", "out", "done", "all"].map((k) => (
-        <a key={k} className="chip" aria-pressed={k === filter} href={`/admin?tab=orders&s=${k}`}>{k === "all" ? "All" : `${LABEL[k]} · ${count(k)}`}</a>
+        <a key={k} className="chip" aria-pressed={k === filter} href={`/admin?tab=orders&s=${k}`}>{k === "all" ? "All" : <>{LABEL[k]} <i className="dot" style={{ background: DOT[k] }} /> <b>{count(k)}</b></>}</a>
       ))}</div>
-      {!orders.length && <p className="muted">No orders here.</p>}
+      {!orders.length && (
+        <div className="empty">
+          <img src="/logo.png" alt="" />
+          <h3>No orders here yet</h3>
+          <p>New orders will appear here when customers place them.</p>
+        </div>
+      )}
       {orders.map((o) => {
         const next = o.status === "new" ? "ready" : o.status === "ready" ? (o.fulfillment === "delivery" ? "out" : "done") : o.status === "out" ? "done" : null;
         const btn = next === "ready" ? "Mark ready · text customer" : next === "out" ? "Out for delivery · text" : next === "done" ? (o.fulfillment === "pickup" ? "Picked up" : "Delivered") : "";
