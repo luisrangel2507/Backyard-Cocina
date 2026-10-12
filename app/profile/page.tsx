@@ -24,11 +24,11 @@ export default async function Profile() {
   const free = Math.max(0, freeSalsasAvailable(c));
   const site = process.env.NEXT_PUBLIC_SITE_URL || "";
   return (
-    <div style={{ display: "grid", gap: 14, maxWidth: 480 }}>
+    <div className="profilebox" style={{ display: "grid", gap: 14, maxWidth: 480 }}>
       <h2>Hi, {c.name}</h2>
       <div className="card" style={{ padding: 16 }}>
         <b>Stamp card</b>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, margin: "10px 0" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, margin: "10px 0", justifyContent: "center" }}>
           {Array.from({ length: FREE_SALSA_EVERY }, (_, i) => (
             <span key={i} style={{ width: 28, height: 28, borderRadius: "50%", border: "2px solid var(--cream)", background: i < stamps ? "var(--tomato)" : "transparent" }} />
           ))}

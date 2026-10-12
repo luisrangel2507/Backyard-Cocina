@@ -14,12 +14,12 @@ export default async function Success(props: { searchParams: Promise<{ session_i
     : [["new", "Order received"], ["ready", "Ready for pickup"], ["done", "Picked up"]];
   const at = Math.max(0, steps.findIndex(([k]) => k === (o?.status ?? "new")));
   return (
-    <>
+    <div className="success" style={{ display: "grid", gap: 8, maxWidth: 520 }}>
       <meta httpEquiv="refresh" content="60" />
       <ClearCart />
       <h2>{o?.status === "ready" ? (o.fulfillment === "pickup" ? "Your order is ready! 🌶" : "Your order is packed 🌶") : o?.status === "cancelled" ? "Order cancelled" : "Order confirmed"}</h2>
       {o && o.status !== "cancelled" && (
-        <ol className="track">{steps.map(([k, label], i) => <li key={k} className={i <= at ? "on" : ""}><i>{i <= at ? "✓" : i + 1}</i>{label}</li>)}</ol>
+        <ol className="track" style={{ padding: 0, justifySelf: "center", textAlign: "left" }}>{steps.map(([k, label], i) => <li key={k} className={i <= at ? "on" : ""}><i>{i <= at ? "✓" : i + 1}</i>{label}</li>)}</ol>
       )}
       {o?.pickupSlot && <p>🗓 {o.fulfillment === "pickup" ? "Pickup" : "Delivery"}: <b>{o.pickupSlot}</b>{o.fulfillment === "pickup" && <><br />📍 {PICKUP_ADDRESS}</>}</p>}
       <p className="muted">Save or bookmark this page to check your order status. It updates on its own.</p>
@@ -28,6 +28,6 @@ export default async function Success(props: { searchParams: Promise<{ session_i
         <p><a className="btn" href={s.invoice.invoice_pdf} target="_blank">Download invoice (PDF)</a></p>
       )}
       <a className="btn" href="/shop">Back to the shop</a>
-    </>
+    </div>
   );
 }

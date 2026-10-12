@@ -157,3 +157,10 @@ a.chip{text-decoration:none}
 .ms-side{width:50%}
 .ms-btn{display:flex;width:fit-content;margin:10px auto 0;padding:14px 40px}
 .ms-btn{position:relative;z-index:1;white-space:nowrap}
+/* centered layout, like the Story page */
+.drop,.merch,.foot{text-align:center;justify-items:center}
+.drop .soon,.mh{justify-content:center}
+.foot div{justify-content:center}
+.success,.loginbox,.profilebox{text-align:center;justify-items:center;margin-inline:auto}
+.success .btn,.loginbox .btn,.profilebox .btn{display:inline-flex;justify-content:center;min-width:220px;padding:14px 28px;border-radius:999px;background:var(--tomato)}
+.loginbox input,.profilebox select{width:100%}
