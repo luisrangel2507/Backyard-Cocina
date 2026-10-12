@@ -1,6 +1,7 @@
 import { db, money } from "@/lib/db";
 import { partnerToken } from "@/lib/auth";
 import { slotsFor } from "@/lib/schedule";
+import LogoutAdmin from "./logout";
 import { setStatus, saveProduct, saveSchedule, confirmOrder, rejectOrder, textCustomer, savePartner, addExpense, deleteExpense } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +17,7 @@ export default async function Admin(props: { searchParams: Promise<{ tab?: strin
   return (
     <div className="adm">
       <span className="eyebrowl">Backyard Cocina</span>
-      <h2>Kitchen admin</h2>
+      <h2 style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>Kitchen admin <LogoutAdmin /></h2>
       <nav className="atabs"><Tab id="orders">Orders</Tab><Tab id="products">Products</Tab><Tab id="money">Money</Tab><Tab id="sales">Sales</Tab><Tab id="schedule">Schedule</Tab><Tab id="partners">Partners</Tab></nav>
       {tab === "orders" && <Orders filter={filter} />}
       {tab === "products" && <Products />}

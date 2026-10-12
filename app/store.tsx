@@ -40,6 +40,7 @@ export default function Store({ products, ratings = {} }: { products: Product[];
             {/* story moved into the menu */}
             <Link href="/merch">Merch · soon</Link>
             <Link href="/cart">View cart</Link>
+            <Link href="/admin">Kitchen login 🔒</Link>
           </nav>
         )}
         <div className="brand">
@@ -101,6 +102,7 @@ export default function Store({ products, ratings = {} }: { products: Product[];
           <a href="https://www.instagram.com/backyardcocina" target="_blank" rel="noopener">Instagram @backyardcocina</a>
         </div>
         <span>Made in Torrance, CA · Pickup &amp; local delivery</span>
+        <Link href="/admin" style={{ opacity: .6 }}>Kitchen login</Link>
       </footer>
 
       {count > 0 && (
