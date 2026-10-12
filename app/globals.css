@@ -164,3 +164,16 @@ a.chip{text-decoration:none}
 .success,.loginbox,.profilebox{text-align:center;justify-items:center;margin-inline:auto}
 .success .btn,.loginbox .btn,.profilebox .btn{display:inline-flex;justify-content:center;min-width:220px;padding:14px 28px;border-radius:999px;background:var(--tomato)}
 .loginbox input,.profilebox select{width:100%}
+/* kitchen admin login */
+.alog{margin:-20px -16px -120px;min-height:calc(100svh - 14px);background:#081a38;display:flex;flex-direction:column;align-items:center}
+.alog-top,.alog-bottom{width:100%;max-width:560px;display:block}
+.alog-bottom{margin-top:auto}
+.alog-card{width:calc(100% - 64px);max-width:480px;display:grid;gap:16px;padding:22px 20px;border:1px solid #ffffff1f;border-radius:18px;background:#ffffff08;margin:18px 0 28px}
+.alog-f{display:flex;align-items:center;gap:14px;border:1.5px solid #ffffff3a;border-radius:14px;padding:0 16px;color:#c9d1e6;background:#0b1f42}
+.alog-f input{flex:1;min-width:0;background:transparent;border:0;color:var(--cream);font:inherit;font-size:17px;padding:16px 0;outline:none}
+.alog-f input::placeholder{color:#8f9bb8}
+.alog-f:focus-within{border-color:var(--cream)}
+.alog-eye{background:none;border:0;color:inherit;cursor:pointer;padding:4px;display:grid}
+.alog-btn{background:var(--tomato);color:#fff;border:0;border-radius:999px;padding:16px;font:inherit;font-weight:700;font-size:18px;cursor:pointer;display:flex;gap:12px;justify-content:center}
+.alog-err{color:#ff8a75;text-align:center;margin:0}
+.alog{background:#011c37}.alog-card{grid-template-columns:minmax(0,1fr);box-sizing:border-box}.alog-f,.alog-btn{min-width:0}
