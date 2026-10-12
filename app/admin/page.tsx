@@ -1,4 +1,5 @@
 import { db, money } from "@/lib/db";
+import { partnerToken } from "@/lib/auth";
 import { setStatus, saveProduct, saveSchedule, confirmOrder, rejectOrder, textCustomer, savePartner } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -136,7 +137,8 @@ async function Partners() {
               <b>{p.name}</b> · code {p.code}<br />
               <small>{site}/r/{p.code}</small><br />
               {mine.length} orders · {jars} jars · commission {money(p.commissionCents)}/jar<br />
-              <b>Owed: {money(owed)}</b>
+              <b>Owed: {money(owed)}</b><br />
+              <small>Partner view (send to them): <a href={`/partner/${p.code}?k=${partnerToken(p.code)}`}>{site}/partner/{p.code}?k={partnerToken(p.code)}</a></small>
             </div>
           </div>
         );

@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Rubik+Mono+One&family=Rethink+Sans:wght@400;600;700&family=Caveat:wght@700&family=Archivo+Black&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Rubik+Mono+One&family=Rethink+Sans:wght@400;600;700&family=Caveat:wght@700&family=Archivo+Black&family=DM+Serif+Display&display=swap");
 :root{--navy:#13285f;--deep:#0c1a42;--cream:#fbf6e3;--green:#139a74;--tomato:#e8402a;--ink:#0d0f17;--muted:#b9c2dc}
 *{box-sizing:border-box}
 body{margin:0;background:var(--navy);color:var(--cream);font-family:"Rethink Sans",system-ui,sans-serif}
@@ -136,3 +136,18 @@ a.chip{text-decoration:none}
 .buy .addbtn{padding:12px 6px;font-size:12px;min-width:0}
 .pc{grid-template-columns:44% 1fr}
 .buy .addbtn{font-size:11.5px;letter-spacing:0;overflow:hidden;text-overflow:clip}
+/* story */
+.mystory{position:relative;margin:-20px -16px -120px;background:#01203c;overflow:hidden;min-height:100svh;display:flex;flex-direction:column}
+.ms-side{position:absolute;right:0;top:0;width:49%;max-width:420px;pointer-events:none}
+.ms-text{position:relative;z-index:1;padding:34px 16px 20px 28px;width:62%;max-width:520px}
+.ms-eyebrow{color:var(--green);font-weight:700;letter-spacing:.2em;font-size:13px;margin:0 0 10px;display:flex;align-items:center;gap:12px}
+.ms-eyebrow::after{content:"";width:60px;height:2px;background:var(--green)}
+.mystory h1{font-family:"DM Serif Display",Georgia,serif;font-size:clamp(2.1rem,10vw,3.6rem);line-height:1;margin:0 0 22px;padding-bottom:12px;background:linear-gradient(var(--green),var(--green)) left bottom/90% 4px no-repeat}
+.ms-text p{font-size:clamp(15px,4vw,18px);line-height:1.55;margin:0 0 16px;color:#f1ecd9}
+.ms-text b{color:var(--tomato)}
+.ms-btn{display:inline-flex;gap:14px;align-items:center;margin-top:6px;background:var(--tomato);color:#fff;text-decoration:none;font-weight:700;letter-spacing:.08em;padding:14px 28px;border-radius:8px}
+.ms-table{width:100%;display:block;margin-top:auto;-webkit-mask-image:linear-gradient(transparent,#000 18%);mask-image:linear-gradient(transparent,#000 18%)}
+@media(min-width:760px){.ms-text{width:55%}}
+.ms-text .ms-eyebrow{color:var(--green);font-size:13px}
+.ms-side{width:42%;-webkit-mask-image:linear-gradient(#000 80%,transparent);mask-image:linear-gradient(#000 80%,transparent)}
+.ms-side{width:48%}

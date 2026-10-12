@@ -6,6 +6,9 @@ const COOKIE = "bc_session";
 const secret = () => process.env.AUTH_SECRET || process.env.ADMIN_PASSWORD || "dev-secret";
 const sign = (v: string) => createHmac("sha256", secret()).update(v).digest("hex");
 
+/** Private link token for a partner's read-only dashboard (/partner/CODE?k=TOKEN). */
+export const partnerToken = (code: string) => sign(`partner:${code}`).slice(0, 24);
+
 export const hashCode = (email: string, code: string) => createHash("sha256").update(`${email}:${code}:${secret()}`).digest("hex");
 
 export function sessionCookie(customerId: string) {
