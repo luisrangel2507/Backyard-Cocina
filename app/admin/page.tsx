@@ -1,12 +1,12 @@
 import { db, money } from "@/lib/db";
 import { partnerToken } from "@/lib/auth";
-import { setStatus, saveProduct, saveSchedule, confirmOrder, rejectOrder, textCustomer, savePartner } from "./actions";
+import { setStatus, saveProduct, saveSchedule, confirmOrder, rejectOrder, textCustomer, savePartner, addExpense, deleteExpense } from "./actions";
 
 export const dynamic = "force-dynamic";
 const LABEL: Record<string, string> = { new: "New", ready: "Ready", out: "Out for delivery", done: "Completed" };
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-export default async function Admin(props: { searchParams: Promise<{ tab?: string; s?: string }> }) {
+export default async function Admin(props: { searchParams: Promise<{ tab?: string; s?: string; p?: string }> }) {
   const searchParams = await props.searchParams;
   const tab = searchParams.tab || "orders", filter = searchParams.s || "new";
   const Tab = ({ id, children }: { id: string; children: React.ReactNode }) => (
@@ -16,10 +16,11 @@ export default async function Admin(props: { searchParams: Promise<{ tab?: strin
     <div className="adm">
       <span className="eyebrowl">Backyard Cocina</span>
       <h2>Kitchen admin</h2>
-      <nav className="atabs"><Tab id="orders">Orders</Tab><Tab id="products">Products</Tab><Tab id="sales">Sales</Tab><Tab id="schedule">Schedule</Tab><Tab id="partners">Partners</Tab></nav>
+      <nav className="atabs"><Tab id="orders">Orders</Tab><Tab id="products">Products</Tab><Tab id="money">Money</Tab><Tab id="sales">Sales</Tab><Tab id="schedule">Schedule</Tab><Tab id="partners">Partners</Tab></nav>
       {tab === "orders" && <Orders filter={filter} />}
       {tab === "products" && <Products />}
       {tab === "sales" && <Sales />}
+      {tab === "money" && <Money period={searchParams.p || "month"} />}
       {tab === "schedule" && <Schedule />}
       {tab === "partners" && <Partners />}
     </div>
@@ -150,6 +151,69 @@ async function Partners() {
         <input name="commission" type="number" step="0.01" defaultValue="1.00" placeholder="Commission per jar ($)" style={{ padding: 10, borderRadius: 10, border: 0 }} />
         <button className="btn">Save partner</button>
       </form>
+    </div>
+  );
+}
+
+const CATEGORIES = ["Ingredients", "Jars & labels", "Packaging", "Delivery", "Commissions", "Fees", "Other"];
+
+async function Money({ period }: { period: string }) {
+  const now = new Date();
+  const from = period === "week" ? new Date(Date.now() - 7 * 864e5)
+    : period === "year" ? new Date(now.getFullYear(), 0, 1)
+    : period === "all" ? new Date(0)
+    : new Date(now.getFullYear(), now.getMonth(), 1);
+  const [orders, expenses] = await Promise.all([
+    db.order.findMany({ where: { createdAt: { gte: from }, status: { not: "cancelled" } }, orderBy: { createdAt: "desc" } }),
+    db.expense.findMany({ where: { date: { gte: from } }, orderBy: { date: "desc" } }),
+  ]);
+  const income = orders.reduce((a, o) => a + o.totalCents, 0);
+  const commissions = orders.reduce((a, o) => a + o.commissionCents, 0);
+  const spent = expenses.reduce((a, e) => a + e.amountCents, 0);
+  const profit = income - spent - commissions;
+  const byCat = CATEGORIES.map((c) => [c, expenses.filter((e) => e.category === c).reduce((a, e) => a + e.amountCents, 0)] as const).filter(([, v]) => v > 0);
+  const P = ({ id, children }: { id: string; children: React.ReactNode }) => (
+    <a className="chip" aria-pressed={period === id} href={`/admin?tab=money&p=${id}`}>{children}</a>
+  );
+  const today = now.toISOString().slice(0, 10);
+  type Row = { id: string; date: Date; label: string; cents: number; expense?: boolean };
+  const rows: Row[] = [
+    ...orders.map((o) => ({ id: o.id, date: o.createdAt, label: `Order #${o.id.slice(-6).toUpperCase()} · ${o.jarCount} jars${o.partnerCode ? ` · ${o.partnerCode}` : ""}`, cents: o.totalCents })),
+    ...expenses.map((e) => ({ id: e.id, date: e.date, label: `${e.description} · ${e.category}`, cents: -e.amountCents, expense: true })),
+  ].sort((a, b) => +b.date - +a.date);
+  return (
+    <div style={{ display: "grid", gap: 14 }}>
+      <div className="chips" style={{ margin: 0 }}><P id="week">7 days</P><P id="month">This month</P><P id="year">This year</P><P id="all">All</P></div>
+      <div className="kpis">
+        <div><span>Money in (sales)</span><b style={{ color: "#5fd39a" }}>{money(income)}</b></div>
+        <div><span>Money out (expenses)</span><b style={{ color: "#ff8a75" }}>{money(spent)}</b></div>
+        <div><span>Partner commissions</span><b>{money(commissions)}</b></div>
+        <div><span>Profit</span><b style={{ color: profit >= 0 ? "#5fd39a" : "#ff8a75" }}>{money(profit)}</b></div>
+      </div>
+      <p className="muted" style={{ margin: 0 }}>Sales include tax and delivery fees collected. Stripe fees are not subtracted automatically; add them as an expense (category Fees) from your Stripe payouts.</p>
+      {byCat.length > 0 && <div className="pairs">{byCat.map(([c, v]) => <span key={c} style={{ background: "var(--deep)", color: "var(--cream)" }}>{c}: {money(v)}</span>)}</div>}
+      <form action={addExpense} className="sched" style={{ background: "var(--deep)", padding: 12, borderRadius: 14 }}>
+        <b>Add expense</b>
+        <input name="description" placeholder="What was it? (tomatillos, jars…)" required />
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+          <input name="amount" type="number" step="0.01" min="0.01" placeholder="Amount $" required />
+          <input name="date" type="date" defaultValue={today} />
+        </div>
+        <select name="category" defaultValue="Ingredients" style={{ padding: 10, borderRadius: 10, border: 0 }}>{CATEGORIES.map((c) => <option key={c}>{c}</option>)}</select>
+        <button className="btn">Save expense</button>
+      </form>
+      <div>
+        {!rows.length && <p className="muted">Nothing in this period yet.</p>}
+        {rows.map((r) => (
+          <div className="line" key={r.id} style={{ alignItems: "center", gap: 8 }}>
+            <span><small className="muted">{r.date.toLocaleDateString("en-US", { month: "short", day: "numeric" })}</small> {r.label}</span>
+            <span style={{ display: "flex", gap: 8, alignItems: "center", whiteSpace: "nowrap" }}>
+              <b style={{ color: r.cents >= 0 ? "#5fd39a" : "#ff8a75" }}>{r.cents >= 0 ? "+" : "−"}{money(Math.abs(r.cents))}</b>
+              {r.expense && <form action={deleteExpense.bind(null, r.id)}><button aria-label="Delete expense" style={{ background: "none", border: 0, color: "var(--muted)", cursor: "pointer" }}>✕</button></form>}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

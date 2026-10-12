@@ -112,3 +112,13 @@ model Partner {
   commissionCents Int     @default(100) // paid per jar sold
   active          Boolean @default(true)
 }
+
+// Money out (ingredients, jars, labels, commissions paid...). Money in comes from paid orders.
+model Expense {
+  id          String   @id @default(cuid())
+  date        DateTime @default(now())
+  description String
+  category    String   @default("Other")
+  amountCents Int
+  createdAt   DateTime @default(now())
+}

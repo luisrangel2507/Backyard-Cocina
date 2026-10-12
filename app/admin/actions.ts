@@ -56,3 +56,17 @@ export async function savePartner(form: FormData) {
   await db.partner.upsert({ where: { code }, update: { name, commissionCents }, create: { code, name, commissionCents } });
   revalidatePath("/admin");
 }
+
+export async function addExpense(form: FormData) {
+  const amountCents = Math.round(Number(form.get("amount")) * 100);
+  const description = String(form.get("description") || "").trim();
+  if (!description || !(amountCents > 0)) return;
+  const d = String(form.get("date") || "");
+  await db.expense.create({ data: { description, amountCents, category: String(form.get("category") || "Other"), date: d ? new Date(d + "T12:00:00") : new Date() } });
+  revalidatePath("/admin");
+}
+
+export async function deleteExpense(id: string) {
+  await db.expense.delete({ where: { id } });
+  revalidatePath("/admin");
+}
