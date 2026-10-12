@@ -90,6 +90,7 @@ model Settings {
   days  Int[]    @default([4, 5, 6, 0])          // 0=Sun … 6=Sat
   slots String[] @default(["10 am–12 pm", "4–6 pm"])
   cap   Int      @default(40)                    // max jars per day
+  daySlots Json  @default("{}")                  // per weekday time windows, e.g. {"5":["4–7 pm"]}; falls back to slots
 }
 
 // One-time email login codes (stored hashed, expire in 10 minutes).

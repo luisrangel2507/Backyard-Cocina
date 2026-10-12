@@ -20,9 +20,11 @@ export async function saveProduct(form: FormData) {
 
 export async function saveSchedule(form: FormData) {
   const days = form.getAll("days").map(Number);
-  const slots = String(form.get("slots")).split(",").map((s) => s.trim()).filter(Boolean);
+  const split = (v: FormDataEntryValue | null) => String(v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
+  const daySlots = Object.fromEntries(days.map((d) => [String(d), split(form.get(`slots-${d}`))]));
+  const slots = Object.values(daySlots).find((v) => v.length) ?? ["10 am–12 pm"];
   const cap = Math.max(1, Number(form.get("cap")) || 40);
-  await db.settings.upsert({ where: { id: 1 }, update: { days, slots, cap }, create: { id: 1, days, slots, cap } });
+  await db.settings.upsert({ where: { id: 1 }, update: { days, slots, cap, daySlots }, create: { id: 1, days, slots, cap, daySlots } });
   revalidatePath("/admin");
 }
 

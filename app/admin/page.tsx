@@ -1,5 +1,6 @@
 import { db, money } from "@/lib/db";
 import { partnerToken } from "@/lib/auth";
+import { slotsFor } from "@/lib/schedule";
 import { setStatus, saveProduct, saveSchedule, confirmOrder, rejectOrder, textCustomer, savePartner, addExpense, deleteExpense } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -72,6 +73,9 @@ async function Orders({ filter }: { filter: string }) {
                 <form action={confirmOrder.bind(null, o.id)}><button className="btn ok">Confirm order</button></form>
               </div>
             )}
+            {o.status === "ready" && o.phone && (
+              <a className="btn ghost" href={`sms:${o.phone}?&body=${encodeURIComponent(`Hi! Your Backyard Cocina order #${o.id.slice(-6).toUpperCase()} is ready${o.fulfillment === "pickup" ? ` for pickup (${o.pickupSlot ?? ""}) at 1636 Greenwood Ave, Torrance` : ""}. 🌶`)}`}>💬 Text &quot;ready&quot; from my phone</a>
+            )}
             {next && (o.status !== "new" || o.confirmed) && <form action={setStatus.bind(null, o.id, next)}><button className="btn">{btn}</button></form>}
           </div>
         );
@@ -109,13 +113,18 @@ async function Sales() {
 }
 
 async function Schedule() {
-  const s = (await db.settings.findUnique({ where: { id: 1 } })) ?? { days: [4, 5, 6, 0], slots: ["10 am–12 pm", "4–6 pm"], cap: 40 };
+  const s = (await db.settings.findUnique({ where: { id: 1 } })) ?? { days: [4, 5, 6, 0], slots: ["10 am–12 pm", "4–6 pm"], cap: 40, daySlots: {} };
   return (
     <form action={saveSchedule} className="sched">
-      <b>Fresh batch days</b>
-      <div className="days">{DAYS.map((d, i) => <label key={d}><input type="checkbox" name="days" value={i} defaultChecked={s.days.includes(i)} /> {d}</label>)}</div>
+      <b>Pickup days &amp; hours</b>
+      <p className="muted" style={{ margin: 0 }}>Check the days you&apos;re open and write that day&apos;s pickup times, separated by commas (e.g. 10 am–12 pm, 4–7 pm).</p>
+      {[1, 2, 3, 4, 5, 6, 0].map((i) => (
+        <div key={i} className="dayrow">
+          <label><input type="checkbox" name="days" value={i} defaultChecked={s.days.includes(i)} /> <b>{DAYS[i]}</b></label>
+          <input name={`slots-${i}`} defaultValue={slotsFor(s, i).join(", ")} placeholder="10 am–12 pm, 4–7 pm" />
+        </div>
+      ))}
       <label>Max jars per day <input name="cap" type="number" min={1} defaultValue={s.cap} /></label>
-      <label>Time windows (comma separated) <input name="slots" defaultValue={s.slots.join(", ")} /></label>
       <button className="btn">Save schedule</button>
     </form>
   );

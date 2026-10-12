@@ -152,3 +152,5 @@ a.chip{text-decoration:none}
 .ms-side{width:42%;-webkit-mask-image:linear-gradient(#000 80%,transparent);mask-image:linear-gradient(#000 80%,transparent)}
 .ms-side{width:48%}
 .atab{flex:none;padding:10px 12px}
+.dayrow{display:grid;grid-template-columns:76px 1fr;gap:8px;align-items:center}.dayrow input:not([type=checkbox]){margin:0}
+.track{display:grid;gap:10px;margin:16px 0}.track li{list-style:none;display:flex;gap:10px;align-items:center;opacity:.45}.track li.on{opacity:1}.track li i{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--deep);font-style:normal}.track li.on i{background:var(--green)}

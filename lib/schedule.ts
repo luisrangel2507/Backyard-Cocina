@@ -1,6 +1,10 @@
 import { db } from "./db";
 
 const DAY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+export const slotsFor = (s: { slots: string[]; daySlots?: unknown }, day: number): string[] => {
+  const m = (s.daySlots ?? {}) as Record<string, string[]>;
+  return m[day]?.length ? m[day] : s.slots;
+};
 const iso = (d: Date) => d.toISOString().slice(0, 10);
 
 /** Next open pickup/delivery windows (Pacific time) with jars left for each day. */
@@ -15,7 +19,7 @@ export async function openSlots(count = 8) {
     const used = await db.order.aggregate({ _sum: { jarCount: true }, where: { slotDay: day, status: { not: "cancelled" } } });
     const left = s.cap - (used._sum.jarCount ?? 0);
     const name = i === 0 ? "Today" : i === 1 ? "Tomorrow" : `${DAY[d.getDay()]}, ${d.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`;
-    for (const slot of s.slots) out.push({ label: `${name} · ${slot}`, day, left });
+    for (const slot of slotsFor(s, d.getDay())) out.push({ label: `${name} · ${slot}`, day, left });
   }
   return out;
 }
