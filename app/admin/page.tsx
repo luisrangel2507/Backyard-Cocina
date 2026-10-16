@@ -1,6 +1,7 @@
 import { db, money } from "@/lib/db";
 import { partnerToken } from "@/lib/auth";
 import { slotsFor } from "@/lib/schedule";
+import { decrypt } from "@/lib/crypto";
 import LogoutAdmin from "./logout";
 import { setStatus, saveProduct, saveSchedule, confirmOrder, rejectOrder, textCustomer, savePartner, addExpense, deleteExpense } from "./actions";
 
@@ -45,10 +46,10 @@ export default async function Admin(props: { searchParams: Promise<{ tab?: strin
 async function Orders({ filter }: { filter: string }) {
   const all = await db.order.findMany({ where: { status: { not: "cancelled" } }, select: { status: true } });
   const count = (k: string) => all.filter((o) => o.status === k).length;
-  const orders = await db.order.findMany({
+  const orders = (await db.order.findMany({
     where: filter === "all" ? { status: { not: "cancelled" } } : { status: filter },
     include: { items: { include: { product: true } }, customer: true }, orderBy: { createdAt: "desc" }, take: 100,
-  });
+  })).map((o) => ({ ...o, phone: decrypt(o.phone), deliveryAddress: decrypt(o.deliveryAddress) }));
   return (
     <>
       <div className="chips">{["new", "ready", "out", "done", "all"].map((k) => (

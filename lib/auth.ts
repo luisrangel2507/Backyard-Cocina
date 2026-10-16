@@ -3,7 +3,11 @@ import { createHash, createHmac, timingSafeEqual } from "crypto";
 import { db } from "@/lib/db";
 
 const COOKIE = "bc_session";
-const secret = () => process.env.AUTH_SECRET || process.env.ADMIN_PASSWORD || "dev-secret";
+const secret = () => {
+  const s = process.env.AUTH_SECRET;
+  if (!s && process.env.NODE_ENV === "production") throw new Error("AUTH_SECRET must be set");
+  return s || "dev-secret";
+};
 const sign = (v: string) => createHmac("sha256", secret()).update(v).digest("hex");
 
 /** Private link token for a partner's read-only dashboard (/partner/CODE?k=TOKEN). */

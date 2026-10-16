@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { db, stripe } from "@/lib/db";
+import { encrypt } from "@/lib/crypto";
 
 // Orders are only marked paid here, after Stripe confirms the payment.
 export async function POST(req: Request) {
@@ -33,11 +34,11 @@ export async function POST(req: Request) {
             status: "new",
             totalCents: s.amount_total ?? 0,
             fulfillment: s.metadata?.fulfillment || "pickup",
-            deliveryAddress: s.metadata?.address || null,
+            deliveryAddress: encrypt(s.metadata?.address),
             pickupSlot: s.metadata?.pickupSlot || null,
             slotDay: s.metadata?.slotDay || null,
             jarCount: Number(s.metadata?.jarCount || 0),
-            phone: s.customer_details?.phone,
+            phone: encrypt(s.customer_details?.phone),
             partnerCode: partner?.code,
             commissionCents: partner ? Math.max(0, paidJars) * partner.commissionCents : 0,
             items: { create: items.map(([productId, quantity, priceCents]) => ({ productId, quantity, priceCents })) },

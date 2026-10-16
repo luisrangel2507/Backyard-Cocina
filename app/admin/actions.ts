@@ -1,13 +1,15 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
+import { decrypt } from "@/lib/crypto";
 import { sendSms, orderText } from "@/lib/sms";
 
 export async function setStatus(id: string, status: string) {
   const o = await db.order.update({ where: { id }, data: { status }, include: { customer: true } });
   const first = o.customer?.name.split(" ")[0];
   const text = orderText(o, first);
-  if (o.phone && text) await sendSms(o.phone, text);
+  const phone = decrypt(o.phone);
+  if (phone && text) await sendSms(phone, text);
   revalidatePath("/admin");
 }
 
@@ -31,7 +33,7 @@ export async function saveSchedule(form: FormData) {
 export async function confirmOrder(id: string) {
   const o = await db.order.update({ where: { id }, data: { confirmed: true }, include: { customer: true } });
   const first = o.customer?.name.split(" ")[0] ?? "there";
-  if (o.phone) await sendSms(o.phone, `Hi ${first}! Backyard Cocina confirmed your order #${o.id.slice(-6).toUpperCase()}. We're on it. 🌶`);
+  if (o.phone) await sendSms(decrypt(o.phone)!, `Hi ${first}! Backyard Cocina confirmed your order #${o.id.slice(-6).toUpperCase()}. We're on it. 🌶`);
   revalidatePath("/admin");
 }
 
@@ -39,14 +41,14 @@ export async function confirmOrder(id: string) {
 export async function rejectOrder(id: string) {
   const o = await db.order.update({ where: { id }, data: { status: "cancelled" }, include: { customer: true } });
   const first = o.customer?.name.split(" ")[0] ?? "there";
-  if (o.phone) await sendSms(o.phone, `Hi ${first}, sorry, we can't fulfil order #${o.id.slice(-6).toUpperCase()}. We'll refund you in full.`);
+  if (o.phone) await sendSms(decrypt(o.phone)!, `Hi ${first}, sorry, we can't fulfil order #${o.id.slice(-6).toUpperCase()}. We'll refund you in full.`);
   revalidatePath("/admin");
 }
 
 export async function textCustomer(id: string, form: FormData) {
   const msg = String(form.get("msg") || "").trim();
   const o = await db.order.findUnique({ where: { id } });
-  if (o?.phone && msg) await sendSms(o.phone, msg);
+  if (o?.phone && msg) await sendSms(decrypt(o.phone)!, msg);
   revalidatePath("/admin");
 }
 

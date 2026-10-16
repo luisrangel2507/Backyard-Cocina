@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /admin
+Disallow: /admin-login
+Disallow: /partner
+Disallow: /api
+Disallow: /profile
+Disallow: /success

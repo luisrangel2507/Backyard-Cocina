@@ -18,3 +18,10 @@
 1. `/admin?tab=partners` → add partner: name "Blade & Barber", code `BLADE`, commission per jar (default $1.00).
 2. Its QR (print it) points to `NEXT_PUBLIC_SITE_URL/r/BLADE`; also downloadable at `/api/qr?code=BLADE`.
 3. Scanning sets a 30-day cookie; orders from that browser are tagged with the partner and the commission (paid jars × rate) is stored on the order. The partners tab shows jars sold and commission owed. Pay the partner manually.
+
+## Security
+- Card and bank data never touch this app: payments and payouts live in Stripe (PCI Level 1).
+- Customer phone numbers and delivery addresses are encrypted in the database with AES-256-GCM (`lib/crypto.ts`), key = `DATA_ENCRYPTION_KEY` (falls back to `AUTH_SECRET`). Never change or lose this key, or old data can't be read.
+- `AUTH_SECRET` is required in production. `ADMIN_PASSWORD` must be 12+ characters.
+- Admin login: 5 wrong tries per IP locks it for 15 minutes; session ends after 2 hours idle.
+- Security headers (HSTS, CSP, no framing) in `next.config.ts`.

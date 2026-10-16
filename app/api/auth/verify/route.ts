@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { encrypt } from "@/lib/crypto";
 import { hashCode, sessionCookie } from "@/lib/auth";
 
 export async function POST(req: Request) {
@@ -23,7 +24,7 @@ export async function POST(req: Request) {
     const past = await db.order.findMany({ where: { email, customerId: null, status: { not: "cancelled" } } });
     const jars = past.reduce((a, o) => a + o.jarCount - (o.freeSalsaUsed ? 1 : 0), 0);
     customer = await db.customer.create({
-      data: { email, name, phone: b.phone ? String(b.phone) : null, offers: b.offers !== false, jars, referredBy: ref?.id },
+      data: { email, name, phone: encrypt(b.phone ? String(b.phone) : null), offers: b.offers !== false, jars, referredBy: ref?.id },
     });
     if (past.length) await db.order.updateMany({ where: { id: { in: past.map((o) => o.id) } }, data: { customerId: customer.id } });
   }
