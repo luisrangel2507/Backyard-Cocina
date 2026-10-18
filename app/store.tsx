@@ -21,13 +21,18 @@ export default function Store({ products, ratings = {} }: { products: Product[];
   const last = Object.keys(cart).slice(-1)[0];
 
   return (
-    <>
+    <div className="shop">
       <header className="hero">
         <div className="hrow">
           <button className="icon" aria-label="Menu" aria-expanded={menu} onClick={() => setMenu(!menu)}>
             <svg viewBox="0 0 24 24" width="22" height="22"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
           </button>
-          <Link href="/shop" className="logo"><img src="/logo.png" alt="" /><span>BACKYARD<br />COCINA</span></Link>
+          <Link href="/shop" className="logo"><img src="/logo.png" alt="" /><span>BACKYARD<br />COCINA<small>MEXICAN ROOTS. BACKYARD SOUL.</small></span></Link>
+          <nav className="dnav" aria-label="Main">
+            <Link href="/story">OUR STORY</Link>
+            <Link href="/merch">MERCH</Link>
+            <Link href="/admin">KITCHEN LOGIN</Link>
+          </nav>
           <Link className="icon" href="/cart" aria-label="Open cart">
             <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 4h2l2.4 11h10.2L20 7H6.2" /><circle cx="9" cy="19.5" r="1.4" /><circle cx="17" cy="19.5" r="1.4" /></svg>
             {count > 0 && <span className="badge">{count}</span>}
@@ -43,12 +48,26 @@ export default function Store({ products, ratings = {} }: { products: Product[];
             <Link href="/admin">Kitchen login 🔒</Link>
           </nav>
         )}
+        <div className="dhero">
+          <div className="dtext">
+            <h1>BOLD<br /><em>MEXICAN</em><br />SALSAS</h1>
+            <p className="dscript">for Backyard Moments</p>
+            <p className="dlead">Authentic Mexican flavors. Made for BBQs, tailgates and everyday adventures.</p>
+            <ul className="dbadges">
+              <li><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M7 17c0-6 4-9 10-10-1 6-4 10-10 10zM7 17l5-5" /></svg><span>NATURAL<br />INGREDIENTS</span></li>
+              <li><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 5c1 3 4 4 4 8a4 4 0 0 1-8 0c0-2 1-3 2-4 0 2 1 2 2 1 0-2-1-3 0-5z" /></svg><span>AUTHENTIC<br />RECIPES</span></li>
+              <li><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M6 11h12M7 11a5 5 0 0 0 10 0M9 8c0-1 1-1 1-2M13 8c0-1 1-1 1-2" /></svg><span>PERFECT FOR<br />BBQs &amp; TAILGATES</span></li>
+            </ul>
+          </div>
+          <img className="dpic" src="/trio.jpg" alt="Verde, Roja and Creamy salsas" />
+        </div>
         <div className="brand">
           <div><h2>OUR<br />SALSAS</h2><p className="slogan">Small batches.<br />Big flavor.</p></div>
           <img src="/trio.jpg" alt="" />
         </div>
       </header>
 
+      <h2 className="dh2">OUR SALSAS</h2>
       <div className="chips">
         {CATS.map(([c, e]) => <button key={c} className="chip" aria-pressed={c === cat} onClick={() => setCat(c)}>{e && <span aria-hidden="true">{e}</span>}{c}</button>)}
       </div>
@@ -134,6 +153,6 @@ export default function Store({ products, ratings = {} }: { products: Product[];
           <Link className="btn" href="/cart">View cart →</Link>
         </div>
       )}
-    </>
+    </div>
   );
 }
