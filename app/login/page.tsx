@@ -1,51 +1,55 @@
 "use client";
 import { useState } from "react";
+import { PageBar, useT } from "@/lib/i18n-client";
+import type { Key } from "@/lib/i18n";
 
-const field = { padding: 12, borderRadius: 10, border: 0 } as const;
+const field = { padding: 14, borderRadius: 10, border: 0, fontSize: 16, width: "100%" } as const;
 
 export default function Login() {
-  const [step, setStep] = useState<"email" | "code">("email");
-  const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
-  const [name, setName] = useState("");
-  const [referral, setReferral] = useState("");
-  const [isNew, setIsNew] = useState(false);
+  const { t } = useT();
+  const [mode, setMode] = useState<"signup" | "login">("signup");
+  const [f, setF] = useState({ name: "", email: "", password: "", phone: "", birthMonth: "", referral: "", offers: true });
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const months = t("months").split(",");
+  const set = (k: keyof typeof f, v: string | boolean) => setF({ ...f, [k]: v });
 
-  async function post(url: string, body: object) {
-    setBusy(true); setError("");
-    const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-    const d = await r.json(); setBusy(false);
-    if (!r.ok) { setError(d.error || "Something went wrong"); return null; }
-    return d;
+  async function submit(e: React.FormEvent) {
+    e.preventDefault(); setBusy(true); setError("");
+    const r = await fetch(`/api/auth/${mode}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(f) });
+    if (r.ok) { window.location.href = "/profile"; return; }
+    const code = (await r.json().catch(() => ({}))).error as string;
+    setError(t(({ fields: "errFields", exists: "errExists", bad: "errBad", many: "errMany" }[code] || "errBad") as Key));
+    setBusy(false);
   }
-  async function request() { const d = await post("/api/auth/request", { email }); if (d) { setIsNew(d.isNew); setStep("code"); } }
-  async function verify() { const d = await post("/api/auth/verify", { email, code, name, referral }); if (d) window.location.href = "/profile"; }
 
   return (
-    <div className="loginbox" style={{ display: "grid", gap: 10, maxWidth: 420 }}>
-      <h2>Backyard Club</h2>
-      <p><small>Codes are sent by email.</small></p>
-      <p>Log in or sign up with your email. We&apos;ll send a 6-digit code. Earn a stamp for every jar; 10 jars = 1 free salsa.</p>
-      {step === "email" ? (
-        <>
-          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} style={field} />
-          <button className="btn" onClick={request} disabled={busy}>Send code</button>
-        </>
-      ) : (
-        <>
-          <input placeholder="6-digit code" inputMode="numeric" maxLength={6} value={code} onChange={(e) => setCode(e.target.value)} style={field} />
-          {isNew && (
-            <>
-              <input placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} style={field} />
-              <input placeholder="Referral code (optional)" value={referral} onChange={(e) => setReferral(e.target.value)} style={field} />
-            </>
-          )}
-          <button className="btn" onClick={verify} disabled={busy}>Continue</button>
-        </>
-      )}
-      {error && <p style={{ color: "var(--tomato)" }}>{error}</p>}
-    </div>
+    <>
+      <PageBar />
+      <form onSubmit={submit} className="loginbox" style={{ display: "grid", gap: 10, maxWidth: 420, margin: "0 auto" }}>
+        <h2>{t("accTitle")}</h2>
+        <p>{t("accIntro")}</p>
+        <div className="seg" role="tablist">
+          {(["signup", "login"] as const).map((m) => <button type="button" key={m} aria-pressed={mode === m} onClick={() => { setMode(m); setError(""); }}>{t(m === "signup" ? "tabSignup" : "tabLogin")}</button>)}
+        </div>
+        {mode === "signup" && <input autoComplete="name" placeholder={t("fName")} value={f.name} onChange={(e) => set("name", e.target.value)} style={field} required />}
+        <input type="email" autoComplete="email" placeholder={t("fEmail")} value={f.email} onChange={(e) => set("email", e.target.value)} style={field} required />
+        <input type="password" autoComplete={mode === "signup" ? "new-password" : "current-password"} minLength={8} placeholder={t("fPassword")} value={f.password} onChange={(e) => set("password", e.target.value)} style={field} required />
+        {mode === "signup" && (
+          <>
+            <input type="tel" autoComplete="tel" placeholder={t("fPhone")} value={f.phone} onChange={(e) => set("phone", e.target.value)} style={field} />
+            <select value={f.birthMonth} onChange={(e) => set("birthMonth", e.target.value)} style={field}>
+              <option value="">{t("fBirth")}</option>
+              {months.map((m, i) => <option key={m} value={i}>{m[0].toUpperCase() + m.slice(1)}</option>)}
+            </select>
+            <input placeholder={t("fRef")} value={f.referral} onChange={(e) => set("referral", e.target.value)} style={field} />
+            <label style={{ textAlign: "left", fontSize: 14 }}><input type="checkbox" checked={f.offers} onChange={(e) => set("offers", e.target.checked)} /> {t("fOffers")}</label>
+          </>
+        )}
+        <button className="btn" disabled={busy} style={{ padding: 14 }}>{busy ? t("wait") : t(mode === "signup" ? "btnSignup" : "btnLogin")}</button>
+        {error && <p style={{ color: "var(--tomato)", margin: 0 }}>{error}</p>}
+        {mode === "login" && <small className="muted">{t("forgot")}</small>}
+      </form>
+    </>
   );
 }

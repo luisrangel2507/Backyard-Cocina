@@ -59,6 +59,7 @@ model OrderItem {
 model Customer {
   id         String   @id @default(cuid())
   email      String   @unique
+  passwordHash String?
   name       String
   phone      String?
   offers     Boolean  @default(true)  // opted in to offers / new drops

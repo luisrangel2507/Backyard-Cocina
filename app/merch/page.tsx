@@ -1,15 +1,23 @@
-export default function Merch() {
+import Link from "next/link";
+import { getT } from "@/lib/i18n-server";
+import { PageBar } from "@/lib/i18n-client";
+
+export default async function Merch() {
+  const { t } = await getT();
   return (
-    <section className="merch">
-      <div className="mh"><h2>MERCH</h2><span className="soon">Under construction</span></div>
-      <div className="tape" aria-hidden="true" />
-      <div className="mgrid">
-        {[["👕", "Tees"], ["🧢", "Hats"], ["👜", "Totes"]].map(([i, n]) => (
-          <div className="mi" key={n}><span>{i}</span><b>{n}</b></div>
-        ))}
-      </div>
-      <p>Backyard Cocina shirts, hats and more are on the way. Check back soon.</p>
-      <a className="btn" href="/shop">Order salsas</a>
-    </section>
+    <>
+      <PageBar />
+      <section className="merch">
+        <div className="mh"><h2>{t("merchTitle")}</h2><span className="soon">{t("merchSoon")}</span></div>
+        <div className="tape" aria-hidden="true" />
+        <div className="mgrid">
+          {[["👕", t("tees")], ["🧢", t("hats")], ["👜", t("totes")]].map(([i, n]) => (
+            <div className="mi" key={n}><span>{i}</span><b>{n}</b></div>
+          ))}
+        </div>
+        <p>{t("merchP")}</p>
+        <Link className="btn" href="/shop">{t("orderNow")}</Link>
+      </section>
+    </>
   );
 }

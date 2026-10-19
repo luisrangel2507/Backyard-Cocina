@@ -1,7 +1,7 @@
 # Deploy to Railway (Backyard Cocina)
 
 1. Push this folder to a GitHub repo. In Railway: New Project → Deploy from GitHub; add the **PostgreSQL** plugin (it injects `DATABASE_URL`).
-2. Variables (see `.env.example`): `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_SITE_URL` (your Railway/custom domain), `ADMIN_USER`, `ADMIN_PASSWORD`, optional `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM`, `AUTH_SECRET` (long random string for login cookies), `RESEND_API_KEY` + `EMAIL_FROM` (login code emails; without a key the code is printed in server logs), `STRIPE_AUTOMATIC_TAX`.
+2. Variables (see `.env.example`): `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_SITE_URL` (your Railway/custom domain), `ADMIN_USER`, `ADMIN_PASSWORD`, optional `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM`, `AUTH_SECRET` (long random string for login cookies),  `STRIPE_AUTOMATIC_TAX`.
 3. Build = `npm run build`, start = `npm start` (runs `prisma db push` then `next start`).
 4. Once, from the Railway shell: `npm run seed` (creates the 3 salsas + Trio).
 5. Stripe → Developers → Webhooks → endpoint `https://YOUR_DOMAIN/api/webhook`, event `checkout.session.completed`; copy the signing secret into `STRIPE_WEBHOOK_SECRET`. Use test keys (card 4242 4242 4242 4242) first.
@@ -25,3 +25,7 @@
 - `AUTH_SECRET` is required in production. `ADMIN_PASSWORD` must be 12+ characters.
 - Admin login: 5 wrong tries per IP locks it for 15 minutes; session ends after 2 hours idle.
 - Security headers (HSTS, CSP, no framing) in `next.config.ts`.
+
+## Customer accounts (Backyard Club)
+Customers create an account with email + password (scrypt-hashed); no email or SMS provider needed. Stamps: 1 per paid jar. A forgotten password has no automatic reset yet (needs Resend email) — reset it by hand in the database for now.
+Language: EN/ES toggle on every page, remembered in the `bc_lang` cookie.

@@ -1,12 +1,14 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getCustomer } from "@/lib/auth";
+import { getT } from "@/lib/i18n-server";
+import { PageBar } from "@/lib/i18n-client";
 import { FREE_SALSA_EVERY, FREE_MERCH_EVERY, freeSalsasAvailable, merchAvailable, jarsToNextFree } from "@/lib/loyalty";
 import LogoutButton from "./logout";
 
 export const dynamic = "force-dynamic";
-const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 async function saveBirthMonth(form: FormData) {
   "use server";
@@ -20,32 +22,35 @@ async function saveBirthMonth(form: FormData) {
 export default async function Profile() {
   const c = await getCustomer();
   if (!c) redirect("/login");
+  const { t } = await getT();
+  const months = t("months").split(",");
   const stamps = c.jars % FREE_SALSA_EVERY;
   const free = Math.max(0, freeSalsasAvailable(c));
-  const site = process.env.NEXT_PUBLIC_SITE_URL || "";
   return (
-    <div className="profilebox" style={{ display: "grid", gap: 14, maxWidth: 480 }}>
-      <h2>Hi, {c.name}</h2>
-      <div className="card" style={{ padding: 16 }}>
-        <b>Stamp card</b>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, margin: "10px 0", justifyContent: "center" }}>
-          {Array.from({ length: FREE_SALSA_EVERY }, (_, i) => (
-            <span key={i} style={{ width: 28, height: 28, borderRadius: "50%", border: "2px solid var(--cream)", background: i < stamps ? "var(--tomato)" : "transparent" }} />
-          ))}
+    <>
+      <PageBar />
+      <div className="profilebox" style={{ display: "grid", gap: 14, maxWidth: 480, margin: "0 auto" }}>
+        <h2>{t("hi", { name: c.name.split(" ")[0] })}</h2>
+        <div className="card" style={{ padding: 16 }}>
+          <b>{t("stampCard")}</b>
+          <div className="stamps">
+            {Array.from({ length: FREE_SALSA_EVERY }, (_, i) => <span key={i} className={i < stamps ? "on" : ""} style={{ animationDelay: `${i * 70}ms` }} />)}
+          </div>
+          <small>{t("jarsTotal", { n: c.jars, more: jarsToNextFree(c) })}</small>
         </div>
-        <small>{c.jars} jars total · {jarsToNextFree(c)} more for your next free salsa</small>
+        <p>{t("freeAvail")} <b>{free}</b>{free > 0 && t("applyCheckout")}</p>
+        <p>{t("merchAvail")} <b>{Math.max(0, merchAvailable(c))}</b> ({t("every", { n: FREE_MERCH_EVERY })})</p>
+        <p>{t("refCode")} <b>{c.referralCode}</b></p>
+        <form action={saveBirthMonth} style={{ display: "flex", gap: 8 }}>
+          <select name="month" defaultValue={c.birthMonth ?? ""} style={{ padding: 12, borderRadius: 10, border: 0, flex: 1 }}>
+            <option value="">{t("birthPh")}</option>
+            {months.map((m, i) => <option key={m} value={i}>{m[0].toUpperCase() + m.slice(1)}</option>)}
+          </select>
+          <button className="btn">{t("save2")}</button>
+        </form>
+        <Link className="btn" href="/shop" style={{ textAlign: "center", textDecoration: "none" }}>{t("orderNow")}</Link>
+        <LogoutButton label={t("logout")} />
       </div>
-      <p>🎁 Free salsas available: <b>{free}</b>{free > 0 && <> — apply at checkout.</>}</p>
-      <p>👕 Free merch rewards available: <b>{Math.max(0, merchAvailable(c))}</b> (every {FREE_MERCH_EVERY} jars)</p>
-      <p>Your referral code: <b>{c.referralCode}</b>{site && <><br /><small>{site}/login</small></>}</p>
-      <form action={saveBirthMonth} style={{ display: "flex", gap: 8 }}>
-        <select name="month" defaultValue={c.birthMonth ?? ""} style={{ padding: 12, borderRadius: 10, border: 0 }}>
-          <option value="">Birthday month (free salsa!)</option>
-          {MONTHS.map((m, i) => <option key={m} value={i}>{m}</option>)}
-        </select>
-        <button className="btn">Save</button>
-      </form>
-      <LogoutButton />
-    </div>
+    </>
   );
 }
