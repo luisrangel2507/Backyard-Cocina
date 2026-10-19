@@ -500,3 +500,21 @@ body::before,body::after{display:none!important}
 @media(min-width:980px){.drip-m{display:none}.drip-d{display:block}.dh2.driph{margin:30px 0 10px}}
 @media(prefers-reduced-motion:reduce){.drip,.drop{animation:none!important}.drop{opacity:0}}
 @media(min-width:980px){.dh2.driph{width:min(100%,620px)!important}}
+
+/* ---------- "Try our signature salsas" slab-of-salsa title (artwork) ---------- */
+.sigt,.brand h2.sigt,.dh2.sigt{background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;color:inherit!important;-webkit-text-fill-color:initial!important;filter:none!important;padding:0!important;margin:0;line-height:0}
+.dh2.sigt::after{display:none}
+.sigt img{display:block;width:100%;height:auto;-webkit-mask-image:radial-gradient(ellipse 72% 70% at 50% 50%,#000 70%,transparent 100%);mask-image:radial-gradient(ellipse 72% 70% at 50% 50%,#000 70%,transparent 100%);animation:sigIn .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes sigIn{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:none}}
+.brand>div:has(.sigt){max-width:min(66%,260px);flex:none}
+.shop .brand h2.sigt{font-size:0}
+.dh2.sigt-d{display:none}
+@media(min-width:980px){.dh2.sigt-d{display:block;width:min(100%,520px)!important;margin:26px 0 8px}}
+@media(prefers-reduced-motion:reduce){.sigt img{animation:none}}
+.sigt img{-webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent),linear-gradient(180deg,transparent,#000 8%,#000 88%,transparent);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent),linear-gradient(180deg,transparent,#000 8%,#000 88%,transparent);mask-composite:intersect}
+@media(min-width:980px){.dh2.sigt-d{width:min(100%,420px)!important}}
+@media(max-width:979px){
+  .shop .brand>div:has(.sigt){position:relative;z-index:2;max-width:68%}
+  .shop .brand>img{width:44%;margin-left:-2%;position:relative;z-index:1}
+}
+.sigt img{-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 97%,transparent),linear-gradient(180deg,transparent,#000 6%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 97%,transparent),linear-gradient(180deg,transparent,#000 6%,#000 88%,transparent)}
