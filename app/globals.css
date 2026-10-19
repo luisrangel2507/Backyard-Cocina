@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Rubik+Mono+One&family=Rethink+Sans:wght@400;600;700&family=Caveat:wght@700&family=Archivo+Black&family=DM+Serif+Display&family=Bungee&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Rubik+Mono+One&family=Rethink+Sans:wght@400;600;700&family=Caveat:wght@700&family=Archivo+Black&family=DM+Serif+Display&family=Bungee&family=Rye&display=swap");
 :root{--navy:#13285f;--deep:#0c1a42;--cream:#fbf6e3;--green:#139a74;--tomato:#e8402a;--ink:#0d0f17;--muted:#b9c2dc}
 *{box-sizing:border-box}
 body{margin:0;background:var(--navy);color:var(--cream);font-family:"Rethink Sans",system-ui,sans-serif}
@@ -463,3 +463,20 @@ body::before,body::after{display:none!important}
 .langtog button{background-image:repeating-linear-gradient(90deg,#ffffff0d 0 1px,transparent 1px 4px),repeating-linear-gradient(0deg,#00000030 0 1px,transparent 1px 3px);background-color:#0f2250}
 .langtog button[aria-pressed=true]{color:#fff;text-shadow:0 1px 0 #000a;background-color:#e0182d;background-image:repeating-linear-gradient(0deg,#00000022 0 1px,transparent 1px 3px),linear-gradient(90deg,#e0182d 0 34%,#ff3d9a 34% 56%,#ffc53a 56% 76%,#1fa04e 76% 100%)}
 .seg button[aria-pressed=true]{color:#fff;text-shadow:0 1px 0 #000a;background-color:#e0182d;background-image:repeating-linear-gradient(0deg,#00000022 0 1px,transparent 1px 3px),linear-gradient(90deg,#e0182d 0 25%,#ff3d9a 25% 50%,#ffc53a 50% 75%,#1fa04e 75% 100%)}
+
+/* ---------- Rye title + woven thread texture ---------- */
+:root{--thread:repeating-linear-gradient(90deg,#00000040 0 1px,transparent 1px 3px),repeating-linear-gradient(0deg,#ffffff38 0 1px,transparent 1px 3px),repeating-linear-gradient(90deg,#ffffff22 1px 2px,transparent 2px 6px)}
+.zt,.brand h2,.dhero h1 .l1,.dhero h1 .l2,.dhero h1 .l3,.dh2,.how h2,.faq h2,.mystory h1,.merch h2,.mh h2{
+  background-image:var(--thread),var(--zarape)!important;
+  background-size:auto,auto,260px 100%!important;
+  background-repeat:repeat,repeat,repeat-x!important;
+  -webkit-background-clip:text!important;background-clip:text!important;
+}
+.brand h2,.dh2{font-family:Rye,Bungee,serif!important;font-weight:400;letter-spacing:.03em;filter:drop-shadow(0 3px 0 #05102e) drop-shadow(0 0 1px #05102e) drop-shadow(0 0 0.5px #05102e)}
+.mystory h1{background-image:var(--thread),var(--zarape),linear-gradient(var(--green),var(--green))!important;background-size:auto,260px 100%,90% 4px!important;background-repeat:repeat,repeat-x,no-repeat!important;background-position:0 0,0 0,left bottom!important;-webkit-background-clip:text,text,border-box!important;background-clip:text,text,border-box!important}
+@media(max-width:979px){.shop .brand h2{font-size:clamp(1.8rem,8.8vw,2.5rem);line-height:1.08}}
+/* pills: visible thread / cloth weave */
+.chip,.langtog button,.seg button{background-blend-mode:normal}
+.chip{background-image:repeating-linear-gradient(90deg,#ffffff1c 0 1px,transparent 1px 3px),repeating-linear-gradient(0deg,#00000040 0 1px,transparent 1px 3px),repeating-linear-gradient(90deg,#29b6e022 3px 4px,transparent 4px 9px),linear-gradient(180deg,#ffffff14,transparent 55%)}
+.chip[aria-pressed=true]{background-image:repeating-linear-gradient(90deg,#ffffff30 0 1px,transparent 1px 3px),repeating-linear-gradient(0deg,#00000038 0 1px,transparent 1px 3px),linear-gradient(90deg,#e0182d 0 22%,#ff3d9a 22% 40%,#ffc53a 40% 54%,#1fa04e 54% 72%,#29b6e0 72% 88%,#ff7a1a 88% 100%)}
+.langtog button[aria-pressed=true],.seg button[aria-pressed=true]{background-image:repeating-linear-gradient(90deg,#ffffff30 0 1px,transparent 1px 3px),repeating-linear-gradient(0deg,#00000038 0 1px,transparent 1px 3px),linear-gradient(90deg,#e0182d 0 34%,#ff3d9a 34% 56%,#ffc53a 56% 76%,#1fa04e 76% 100%)}
