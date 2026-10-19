@@ -10,7 +10,7 @@ const en = {
   heroL1: "BOLD", heroL2: "MEXICAN", heroL3: "SALSAS", heroScript: "for Backyard Moments",
   heroLead: "Authentic Mexican flavors. Made for BBQs, tailgates and everyday adventures.",
   badgeNatural: "NATURAL\nINGREDIENTS", badgeAuthentic: "AUTHENTIC\nRECIPES", badgeBbq: "PERFECT FOR\nBBQs & TAILGATES",
-  ourSalsas: "OUR SALSAS", slogan: "Small batches.\nBig flavor.",
+  ourSalsas: "TRY OUR SIGNATURE SALSAS", heroTitle: "TRY OUR\nSIGNATURE\nSALSAS", slogan: "Small batches.\nBig flavor.",
   catAll: "All", catPacks: "Packs",
   // product cards
   pack: "Pack", salsa: "Salsa", jars: "jars", save: "SAVE", add: "ADD TO CART", soldOut: "SOLD OUT", added: "✓ ADDED",
@@ -78,7 +78,7 @@ const es: Record<Key, string> = {
   heroL1: "SALSAS", heroL2: "MEXICANAS", heroL3: "AUDACES", heroScript: "para momentos de patio",
   heroLead: "Sabores auténticos mexicanos. Hechas para asados, partidos y aventuras de todos los días.",
   badgeNatural: "INGREDIENTES\nNATURALES", badgeAuthentic: "RECETAS\nAUTÉNTICAS", badgeBbq: "PERFECTAS PARA\nASADOS Y PARTIDOS",
-  ourSalsas: "NUESTRAS SALSAS", slogan: "Lotes pequeños.\nMucho sabor.",
+  ourSalsas: "PRUEBA NUESTRAS SALSAS ESTRELLA", heroTitle: "PRUEBA\nNUESTRAS SALSAS\nESTRELLA", slogan: "Lotes pequeños.\nMucho sabor.",
   catAll: "Todas", catPacks: "Paquetes",
   pack: "Paquete", salsa: "Salsa", jars: "frascos", save: "AHORRA", add: "AGREGAR", soldOut: "AGOTADA", added: "✓ AGREGADA",
   heat1: "Suave", heat3: "Medio", heat4: "Picante", heat5: "Muy picante",

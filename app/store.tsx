@@ -87,7 +87,7 @@ export default function Store({ products, ratings = {} }: { products: Product[];
           <img className="dpic" src="/trio.jpg" alt="Verde, Roja and Creamy salsas" />
         </div>
         <div className="brand">
-          <div><h2>{lang === "es" ? <>NUESTRAS<br />SALSAS</> : <>OUR<br />SALSAS</>}</h2><p className="slogan">{lines(t("slogan"))}</p></div>
+          <div><h2>{lines(t("heroTitle"))}</h2><p className="slogan">{lines(t("slogan"))}</p></div>
           <img src="/trio.jpg" alt="" />
         </div>
       </header>

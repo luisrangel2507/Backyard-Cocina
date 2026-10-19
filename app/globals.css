@@ -427,3 +427,7 @@ body::before,body::after{display:none!important}
   .shop .chip{padding:9px 12px;font-size:14px;gap:5px}
 }
 @media(max-width:979px){.shop .chips{flex-wrap:wrap;overflow:visible;margin-left:0;margin-right:0;padding:0}}
+
+/* longer hero title on phones */
+@media(max-width:979px){.shop .brand h2{font-size:clamp(1.7rem,8.2vw,2.5rem);line-height:1}.shop .brand>div{max-width:62%}}
+@media(min-width:980px){.dh2{font-size:2rem}}
