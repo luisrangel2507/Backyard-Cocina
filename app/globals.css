@@ -420,3 +420,10 @@ body::before,body::after{display:none!important}
 .wrap{padding-right:16px!important;padding-left:16px!important}
 .mystory,.alog{margin-right:-16px!important}
 @media(min-width:980px){.wrap:has(.shop){padding-left:32px!important;padding-right:32px!important}}
+/* category chips: fit on phones, and if they ever overflow they scroll edge to edge instead of being cut */
+@media(max-width:979px){
+  .shop .chips{margin-left:-16px;margin-right:-16px;padding:0 16px 4px;gap:6px;scroll-padding:0 16px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .shop .chips::-webkit-scrollbar{display:none}
+  .shop .chip{padding:9px 12px;font-size:14px;gap:5px}
+}
+@media(max-width:979px){.shop .chips{flex-wrap:wrap;overflow:visible;margin-left:0;margin-right:0;padding:0}}
