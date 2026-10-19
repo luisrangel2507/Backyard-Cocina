@@ -342,3 +342,48 @@ a.chip{text-decoration:none}
 .clubcard .btn{background:var(--cream);color:var(--navy);text-decoration:none;border-radius:999px;padding:12px 26px;margin-top:4px}
 @media(max-width:979px){.shop .logo span{font-size:.95rem}.hr{gap:6px}}
 @media(min-width:980px){.shop .hr{grid-column:3;justify-self:end;gap:14px}.shop .hr .icon{border:0}.reveal{will-change:opacity,transform}}
+
+/* ---------- sarape / woven-textile palette (inspired by Mexican blankets) ---------- */
+:root{--pink:#d4237a;--turq:#3db4d9;--teal:#1f7f6b;--rose:#c99a8c;--orange:#ef7b2b;--royal:#4631c2;--sand:#f3d8a8}
+.weave{background-color:var(--teal);background-image:
+  linear-gradient(135deg,var(--turq) 25%,transparent 25%),linear-gradient(225deg,var(--turq) 25%,transparent 25%),
+  linear-gradient(315deg,var(--pink) 25%,transparent 25%),linear-gradient(45deg,var(--pink) 25%,transparent 25%);
+  background-size:20px 20px;background-position:-10px 0,-10px 0,0 0,0 0}
+.check{height:22px;background-color:var(--teal);background-image:
+  linear-gradient(135deg,var(--turq) 25%,transparent 25%),linear-gradient(225deg,var(--turq) 25%,transparent 25%),
+  linear-gradient(315deg,var(--pink) 25%,transparent 25%),linear-gradient(45deg,var(--pink) 25%,transparent 25%);
+  background-size:22px 22px;background-position:-11px 0,-11px 0,0 0,0 0;box-shadow:0 3px 0 var(--orange)}
+.dh2{background:none!important;padding-bottom:14px!important;position:relative}
+.dh2::after{content:"";position:absolute;left:0;bottom:0;width:100%;height:8px;background-color:var(--teal);background-image:
+  linear-gradient(135deg,var(--turq) 25%,transparent 25%),linear-gradient(225deg,var(--turq) 25%,transparent 25%),
+  linear-gradient(315deg,var(--pink) 25%,transparent 25%),linear-gradient(45deg,var(--pink) 25%,transparent 25%);
+  background-size:16px 16px;background-position:-8px 0,-8px 0,0 0,0 0;clip-path:inset(0)}
+.pc{box-shadow:inset 0 5px 0 var(--c)}
+.chip:hover{border-color:var(--turq)}
+.chip[aria-pressed=true]{background:var(--sand);color:var(--navy);border-color:var(--sand)}
+.how li:nth-child(1) span{background:var(--pink)}.how li:nth-child(2) span{background:var(--turq);color:var(--navy)}.how li:nth-child(3) span{background:var(--orange)}
+.how li{border-top:4px solid var(--rose)}.how li:nth-child(1){border-color:var(--pink)}.how li:nth-child(2){border-color:var(--turq)}.how li:nth-child(3){border-color:var(--orange)}
+.clubcard{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--pink),var(--orange));padding-bottom:36px}
+.clubcard::after{content:"";position:absolute;left:0;right:0;bottom:0;height:14px;background-color:var(--teal);background-image:
+  linear-gradient(135deg,var(--turq) 25%,transparent 25%),linear-gradient(225deg,var(--turq) 25%,transparent 25%),
+  linear-gradient(315deg,var(--sand) 25%,transparent 25%),linear-gradient(45deg,var(--sand) 25%,transparent 25%);
+  background-size:14px 14px;background-position:-7px 0,-7px 0,0 0,0 0}
+.drop{background:linear-gradient(135deg,var(--royal),var(--pink))}
+.merch{border-top:6px solid var(--turq)}
+.foot{position:relative;padding-top:34px}
+.foot::before{content:"";position:absolute;left:0;right:0;top:0;height:16px;background-color:var(--teal);background-image:
+  linear-gradient(135deg,var(--turq) 25%,transparent 25%),linear-gradient(225deg,var(--turq) 25%,transparent 25%),
+  linear-gradient(315deg,var(--pink) 25%,transparent 25%),linear-gradient(45deg,var(--pink) 25%,transparent 25%);
+  background-size:16px 16px;background-position:-8px 0,-8px 0,0 0,0 0;border-radius:4px}
+.slogan{color:var(--sand);border-bottom-color:var(--pink)}
+.dscript{color:var(--sand);border-bottom-color:var(--pink)}
+.dhero h1 em{color:var(--orange)}
+.dbadges svg{color:var(--turq)}
+.badge{background:var(--pink)}
+.stamps span.on{background:var(--pink);border-color:var(--pink)}
+.seg button[aria-pressed=true],.langtog button[aria-pressed=true]{background:var(--sand)}
+.ms-eyebrow{color:var(--turq)}.ms-eyebrow::after{background:var(--pink)}
+.cline{border-left:6px solid var(--turq)}
+.cartbar{border-top:4px solid var(--pink)}
+.buy .addbtn{background:var(--orange);color:#fff}
+@media(min-width:980px){.shop .buy .addbtn{background:var(--orange);color:#fff}.shop .pbody .eyebrow,.shop .chili small{color:var(--sand)}.dhero{position:relative}}
