@@ -486,3 +486,17 @@ body::before,body::after{display:none!important}
 .dhero h1 .l2{background-image:var(--thread),var(--gold-fill)!important;background-size:auto,auto,100% 100%!important}
 .chip[aria-pressed=true]{background-color:#d93a22;background-image:repeating-linear-gradient(90deg,#ffffff30 0 1px,transparent 1px 3px),repeating-linear-gradient(0deg,#00000038 0 1px,transparent 1px 3px),var(--red-fill)}
 .langtog button[aria-pressed=true],.seg button[aria-pressed=true]{background-color:#d93a22;background-image:repeating-linear-gradient(90deg,#ffffff30 0 1px,transparent 1px 3px),repeating-linear-gradient(0deg,#00000038 0 1px,transparent 1px 3px),var(--red-fill)}
+
+/* ---------- dripping salsa title ---------- */
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.driph,.brand h2.driph,.dh2.driph{background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;color:inherit!important;-webkit-text-fill-color:initial!important;filter:none!important;padding:0!important;margin:0;font-size:inherit}
+.dh2.driph::after{display:none}
+.drip-m{width:min(100%,238px);height:auto;display:block;overflow:visible}
+.drip-d{display:none;width:min(100%,620px);height:auto;overflow:visible}
+.drip{transform-box:fill-box;transform-origin:50% 0;animation:dripGrow 4.2s ease-in-out infinite}
+.drop{animation:dropFall 4.2s ease-in infinite;opacity:0}
+@keyframes dripGrow{0%,12%{transform:scaleY(.55)}55%,100%{transform:scaleY(1)}}
+@keyframes dropFall{0%,45%{opacity:0;transform:translateY(0)}55%{opacity:1}100%{opacity:0;transform:translateY(22px)}}
+@media(min-width:980px){.drip-m{display:none}.drip-d{display:block}.dh2.driph{margin:30px 0 10px}}
+@media(prefers-reduced-motion:reduce){.drip,.drop{animation:none!important}.drop{opacity:0}}
+@media(min-width:980px){.dh2.driph{width:min(100%,620px)!important}}

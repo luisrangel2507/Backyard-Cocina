@@ -5,6 +5,7 @@ import type { Product } from "@prisma/client";
 import { useCart } from "@/lib/cart";
 import { LangToggle, useT } from "@/lib/i18n-client";
 import { localizeProduct } from "@/lib/i18n";
+import DripTitle from "./DripTitle";
 
 const money = (c: number) => `$${(c / 100).toFixed(2)}`;
 const CATS: [string, string][] = [["All", "catAll"], ["Verde", ""], ["Creamy", ""], ["Roja", ""], ["Packs", "catPacks"]];
@@ -87,12 +88,12 @@ export default function Store({ products, ratings = {} }: { products: Product[];
           <img className="dpic" src="/trio.jpg" alt="Verde, Roja and Creamy salsas" />
         </div>
         <div className="brand">
-          <div><h2>{lines(t("heroTitle"))}</h2><p className="slogan">{lines(t("slogan"))}</p></div>
+          <div><h2 className="driph"><DripTitle /></h2><p className="slogan">{lines(t("slogan"))}</p></div>
           <img src="/trio.jpg" alt="" />
         </div>
       </header>
 
-      <h2 className="dh2">{t("ourSalsas")}</h2>
+      <h2 className="dh2 driph"><DripTitle /></h2>
       <div className="chips">
         {CATS.map(([c, k]) => <button key={c} className="chip" aria-pressed={c === cat} onClick={() => setCat(c)}>{catLabel(c, k)}</button>)}
       </div>
