@@ -7,7 +7,7 @@ import { LangToggle, useT } from "@/lib/i18n-client";
 import { localizeProduct } from "@/lib/i18n";
 
 const money = (c: number) => `$${(c / 100).toFixed(2)}`;
-const CATS: [string, string, string][] = [["All", "", "catAll"], ["Verde", "🌿", ""], ["Creamy", "🧄", ""], ["Roja", "🌶️", ""], ["Packs", "🎁", "catPacks"]];
+const CATS: [string, string][] = [["All", "catAll"], ["Verde", ""], ["Creamy", ""], ["Roja", ""], ["Packs", "catPacks"]];
 export type Rating = { avg: number; count: number };
 const Stars = ({ r }: { r: Rating }) => (
   <span className="stars" aria-label={`${r.avg.toFixed(1)} out of 5`}>{"★★★★★"} <b>{r.avg.toFixed(1)}</b> <small>({r.count})</small></span>
@@ -94,7 +94,7 @@ export default function Store({ products, ratings = {} }: { products: Product[];
 
       <h2 className="dh2">{t("ourSalsas")}</h2>
       <div className="chips">
-        {CATS.map(([c, e, k]) => <button key={c} className="chip" aria-pressed={c === cat} onClick={() => setCat(c)}>{e && <span aria-hidden="true">{e}</span>}{catLabel(c, k)}</button>)}
+        {CATS.map(([c, k]) => <button key={c} className="chip" aria-pressed={c === cat} onClick={() => setCat(c)}>{catLabel(c, k)}</button>)}
       </div>
 
       <div className="list" key={cat}>
