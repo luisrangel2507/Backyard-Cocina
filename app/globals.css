@@ -415,3 +415,8 @@ body{
   background-attachment:fixed,fixed,scroll,scroll;
   background-size:auto;
 }
+/* side stripes removed */
+body::before,body::after{display:none!important}
+.wrap{padding-right:16px!important;padding-left:16px!important}
+.mystory,.alog{margin-right:-16px!important}
+@media(min-width:980px){.wrap:has(.shop){padding-left:32px!important;padding-right:32px!important}}
