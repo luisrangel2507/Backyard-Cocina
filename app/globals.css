@@ -387,3 +387,19 @@ a.chip{text-decoration:none}
 .cartbar{border-top:4px solid var(--pink)}
 .buy .addbtn{background:var(--orange);color:#fff}
 @media(min-width:980px){.shop .buy .addbtn{background:var(--orange);color:#fff}.shop .pbody .eyebrow,.shop .chili small{color:var(--sand)}.dhero{position:relative}}
+
+/* ---------- real sarape artwork ---------- */
+body{background-color:#0c1a3d;background-image:url(/navy-texture.jpg);background-size:340px}
+.check{height:30px;background:url(/sarape-top.png) center/auto 100% repeat-x;box-shadow:none}
+.foot::before{height:28px;background:url(/sarape-bottom.png) center/auto 100% repeat-x;border-radius:0}
+.dh2::after{height:14px;background:url(/sarape-bottom.png) left center/auto 100% repeat-x;clip-path:none}
+.clubcard::after{height:20px;background:url(/sarape-bottom.png) center/auto 100% repeat-x}
+/* vertical stripes down the right edge, like the blanket */
+body::after{content:"";position:fixed;top:30px;bottom:0;right:0;width:clamp(14px,3.2vw,46px);background:url(/sarape-stripes.jpg) right top/cover no-repeat;z-index:5;pointer-events:none;box-shadow:-3px 0 10px #0006}
+.wrap{padding-right:calc(16px + clamp(14px,3.2vw,46px))}
+.mystory,.alog{margin-right:calc(-16px - clamp(14px,3.2vw,46px))}
+@media(min-width:980px){body::before{content:"";position:fixed;top:30px;bottom:0;left:0;width:clamp(14px,2.4vw,40px);background:url(/sarape-stripes.jpg) left top/cover no-repeat;transform:scaleX(-1);z-index:5;pointer-events:none;box-shadow:3px 0 10px #0006}.wrap{padding-left:calc(16px + clamp(14px,2.4vw,40px))}}
+body::after{background-size:100% 100%;width:clamp(16px,3.2vw,46px)}
+@media(min-width:980px){body::before{background-size:100% 100%}}
+.buy .addbtn{font-size:11px;padding:12px 4px}
+@media(max-width:979px){.buy{gap:4px}.buy .step button{width:24px}}
