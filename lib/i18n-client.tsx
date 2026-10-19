@@ -12,6 +12,8 @@ export function useT() {
   return { lang, t: (key: Key, vars?: Record<string, string | number>) => translate(lang, key, vars) };
 }
 
+const SHOW_TOGGLE = false; // keep in sync with SPANISH_ENABLED in i18n-server.ts
+
 export function LangToggle() {
   const { lang } = useT();
   const router = useRouter();
@@ -20,6 +22,7 @@ export function LangToggle() {
     document.cookie = `bc_lang=${l}; path=/; max-age=31536000; samesite=lax`;
     router.refresh();
   };
+  if (!SHOW_TOGGLE) return null;
   return (
     <span className="langtog" role="group" aria-label="Language">
       {(["en", "es"] as const).map((l) => <button key={l} aria-pressed={lang === l} onClick={() => set(l)}>{l.toUpperCase()}</button>)}
