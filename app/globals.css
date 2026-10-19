@@ -518,3 +518,9 @@ body::before,body::after{display:none!important}
   .shop .brand>img{width:44%;margin-left:-2%;position:relative;z-index:1}
 }
 .sigt img{-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 97%,transparent),linear-gradient(180deg,transparent,#000 6%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 97%,transparent),linear-gradient(180deg,transparent,#000 6%,#000 88%,transparent)}
+/* phone hero: only the title artwork, centered */
+@media(max-width:979px){
+  .shop .brand{justify-content:center;margin:0}
+  .shop .brand>div:has(.sigt){max-width:min(92%,380px);display:flex;flex-direction:column;align-items:center;text-align:center}
+  .shop .brand .slogan{margin-top:2px;transform:rotate(-2deg)}
+}

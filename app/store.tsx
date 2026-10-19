@@ -88,7 +88,6 @@ export default function Store({ products, ratings = {} }: { products: Product[];
         </div>
         <div className="brand">
           <div><h2 className="sigt"><img src="/signature-title.jpg" alt="Try our signature salsas" width={598} height={526} /></h2><p className="slogan">{lines(t("slogan"))}</p></div>
-          <img src="/trio.jpg" alt="" />
         </div>
       </header>
 
