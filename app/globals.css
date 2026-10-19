@@ -403,3 +403,5 @@ body::after{background-size:100% 100%;width:clamp(16px,3.2vw,46px)}
 @media(min-width:980px){body::before{background-size:100% 100%}}
 .buy .addbtn{font-size:11px;padding:12px 4px}
 @media(max-width:979px){.buy{gap:4px}.buy .step button{width:24px}}
+/* smoother fabric: softened, seamless tile at 2x density so it stays sharp on phones */
+body{background-color:#0c1a3d;background-image:url(/navy-texture.jpg);background-size:320px 320px}
