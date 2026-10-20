@@ -87,11 +87,11 @@ export default function Store({ products, ratings = {} }: { products: Product[];
           <img className="dpic" src="/trio.jpg" alt="Verde, Roja and Creamy salsas" />
         </div>
         <div className="brand">
-          <div><h2 className="sigt"><img src="/signature-title.jpg" alt="Try our signature salsas" width={598} height={526} /></h2><p className="slogan">{lines(t("slogan"))}</p></div>
+          <div><h2 className="sigt"><img src="/signature-title.webp" alt="Try our signature salsas" width={896} height={716} /></h2></div>
         </div>
       </header>
 
-      <h2 className="dh2 sigt sigt-d"><img src="/signature-title.jpg" alt="Try our signature salsas" width={598} height={526} /></h2>
+      <h2 className="dh2 sigt sigt-d"><img src="/signature-title.webp" alt="Try our signature salsas" width={896} height={716} /></h2>
       <div className="chips">
         {CATS.map(([c, k]) => <button key={c} className="chip" aria-pressed={c === cat} onClick={() => setCat(c)}>{catLabel(c, k)}</button>)}
       </div>
