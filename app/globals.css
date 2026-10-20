@@ -322,7 +322,7 @@ a.chip{text-decoration:none}
 .stamps span{width:30px;height:30px;border-radius:50%;border:2px solid var(--cream)}
 .stamps span.on{background:var(--tomato);border-color:var(--tomato);animation:stampIn .5s cubic-bezier(.2,.9,.3,1.4) both}
 .alog-btn:hover{filter:brightness(1.1)}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){*:not(.curtain *),*:not(.curtain *)::before,*:not(.curtain *)::after{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
 
 /* ---------- language toggle, page bar, account ---------- */
 .langtog{display:inline-flex;border:1.5px solid #fbf6e366;border-radius:999px;overflow:hidden;background:transparent}
@@ -663,6 +663,6 @@ html{background:#0c1d4a}
 /* while salsa covers the screen, finish entrance animations instantly so nothing flickers on reveal */
 html[data-pouring] .wrap *{animation-delay:0s!important;animation-duration:1ms!important;transition:none!important}
 html[data-pouring] .reveal{opacity:1!important;transform:none!important}
-@media(prefers-reduced-motion:reduce){.curtain{display:none}}
+
 /* images: no pop-in flash */
 .pimg,.dimg,.thumb img{background:#0b1a3e}

@@ -37,7 +37,6 @@ export function SalsaPour() {
     const onPour = (e: Event) => {
       const href = (e as CustomEvent<string>).detail;
       if (target.current) return;
-      if (matchMedia("(prefers-reduced-motion: reduce)").matches) { router.push(href); return; }
       target.current = href;
       covered.current = false;
       try { router.prefetch(href); navigator.vibrate?.([18, 40, 18]); } catch {}
