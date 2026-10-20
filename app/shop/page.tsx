@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import Store, { type Rating } from "../store";
 
 export const dynamic = "force-dynamic";
-const ORDER = ["trio", "verde", "roja", "creamy"];
+const ORDER = ["verde", "roja", "creamy", "trio"];
 
 export default async function Shop() {
   const products = (await db.product.findMany({ where: { active: true } }))
