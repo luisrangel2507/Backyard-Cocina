@@ -654,7 +654,7 @@ html{background:#0c1d4a}
 /* phase 3: drain away downwards */
 .curtain-out{pointer-events:none}
 .curtain-out .p2{animation:pourOut 1.05s cubic-bezier(.55,0,.85,.4) both}
-.curtain-out .p1{animation:pourOut 1.05s cubic-bezier(.55,0,.85,.4) .1s both}
+.curtain-out .p1{display:none}
 .curtain-out .pour-drips{animation:stretchOut 1.05s ease-in both}
 .curtain-out .p1 .pour-drips{animation-name:stretchOutM}
 @keyframes pourOut{from{transform:translate3d(0,0,0)}to{transform:translate3d(0,calc(100% + 240px),0)}}
