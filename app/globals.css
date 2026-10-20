@@ -581,3 +581,9 @@ body{background-image:radial-gradient(ellipse at 20% 0%,#16306a40 0,transparent 
 
 /* woven cloth background: crisp procedural weave (2x resolution, tiles seamlessly) */
 body{background-color:#0c1d4a!important;background-image:radial-gradient(ellipse at 15% 0%,#2b4aa044 0,transparent 55%),radial-gradient(ellipse at 90% 100%,#050d24aa 0,transparent 60%),url(/cloth.webp)!important;background-size:auto,auto,256px 256px!important;background-attachment:fixed,fixed,scroll!important}
+
+/* no shadows or outlines around lettering */
+.zt,.brand h2,.dhero h1 .l1,.dhero h1 .l2,.dhero h1 .l3,.dh2,.how h2,.faq h2,.mystory h1,.merch h2,.mh h2,.clubcard h2,
+.prof-hi .hi,.prof-hi .nm,.chip,.langtog button,.seg button,.stampcard h2,.rrow span{filter:none!important;text-shadow:none!important}
+.sigt img{filter:none!important}
+.chip[aria-pressed=true],.langtog button[aria-pressed=true],.seg button[aria-pressed=true]{text-shadow:none!important}
