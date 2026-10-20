@@ -17,6 +17,8 @@ const en = {
   heat1: "Mild", heat3: "Medium", heat4: "Hot", heat5: "Extra hot",
   perUnit: "12 oz",
   // sections
+  trust1: "Handmade in Torrance", trust2: "Small batches", trust3: "Made fresh to order", trust4: "Pickup & local delivery",
+  igTitle: "Follow the backyard", igText: "Behind the scenes, new flavors and pickup days.", igBtn: "@backyardcocina on Instagram",
   howTitle: "How it works",
   how1: "Order online", how1d: "Pick your salsas, a day and a time.",
   how2: "Made fresh", how2d: "Brant makes your batch by hand in small runs.",
@@ -83,6 +85,8 @@ const es: Record<Key, string> = {
   pack: "Paquete", salsa: "Salsa", jars: "frascos", save: "AHORRA", add: "AGREGAR", soldOut: "AGOTADA", added: "✓ AGREGADA",
   heat1: "Suave", heat3: "Medio", heat4: "Picante", heat5: "Muy picante",
   perUnit: "12 oz",
+  trust1: "Hecho a mano en Torrance", trust2: "Lotes pequeños", trust3: "Hecho al momento", trust4: "Recoge o entrega local",
+  igTitle: "Síguenos", igText: "Detrás de cámaras, sabores nuevos y días de recogida.", igBtn: "@backyardcocina en Instagram",
   howTitle: "Cómo funciona",
   how1: "Pide en línea", how1d: "Elige tus salsas, un día y una hora.",
   how2: "Hecha al momento", how2d: "Brant prepara tu lote a mano, en tandas pequeñas.",

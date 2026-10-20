@@ -8,6 +8,7 @@ import { PageBar } from "@/lib/i18n-client";
 import { FREE_SALSA_EVERY, FREE_MERCH_EVERY, freeSalsasAvailable, merchAvailable, jarsToNextFree, makeReferralCode } from "@/lib/loyalty";
 import LogoutButton from "./logout";
 import CopyCode from "./CopyCode";
+import Confetti from "./Confetti";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +42,7 @@ export default async function Profile() {
   const first = c.name.split(" ")[0];
   return (
     <div className="prof">
+      <Confetti earned={free} />
       <PageBar />
       <h1 className="prof-hi"><span className="hi">HI,</span><span className="nm">{first.toUpperCase()}</span></h1>
 

@@ -587,3 +587,36 @@ body{background-color:#0c1d4a!important;background-image:radial-gradient(ellipse
 .prof-hi .hi,.prof-hi .nm,.chip,.langtog button,.seg button,.stampcard h2,.rrow span{filter:none!important;text-shadow:none!important}
 .sigt img{filter:none!important}
 .chip[aria-pressed=true],.langtog button[aria-pressed=true],.seg button[aria-pressed=true]{text-shadow:none!important}
+
+/* ---------- design system pass: one heading style, better contrast ---------- */
+:root{--muted:#d3dbef}
+/* every section heading: Bungee, cream, no effects */
+.how h2,.faq h2,.igcard h2,.clubcard h2,.merch h2,.mh h2,.drop h2,.dh2:not(.sigt),.mystory h1,.stampcard h2,.cartpage h2,.profilebox h2,.loginbox h2,.success h2,.detail h2,.empty h3{
+  font-family:Bungee,"Archivo Black",Impact,sans-serif!important;font-weight:400!important;letter-spacing:.02em;
+  color:var(--cream)!important;-webkit-text-fill-color:var(--cream)!important;background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;filter:none!important;text-shadow:none!important}
+.stampcard h2{color:#0d1a3d!important;-webkit-text-fill-color:#0d1a3d!important}
+.mystory h1{font-family:Rye,Bungee,serif!important}
+.prof-hi .hi,.prof-hi .nm{font-family:Bungee,sans-serif!important}
+.prof-hi .nm{background:url(/prof-weave.jpg) 0 0/auto 100% repeat-x!important;-webkit-background-clip:text!important;background-clip:text!important;-webkit-text-fill-color:transparent!important;color:transparent!important}
+.how h2,.faq h2,.igcard h2{font-size:clamp(1.5rem,6vw,2.1rem)}
+/* readability: no tiny text */
+.muted,.slogan,.how li small,.rrow small,.refbox small,.cinfo small,.price small,.foot,.dbadges li,.faq p{font-size:max(13px,1em)}
+.dbadges li,.refbox small,.rrow small{font-size:12.5px}
+.faq p,.how li small,.clubcard p,.igcard p{color:#e4eaf8}
+.foot,.foot a,.foot span{color:#d3dbef}
+a:focus-visible,button:focus-visible,summary:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #f0b03a;outline-offset:2px;border-radius:8px}
+/* trust badges */
+.trust{list-style:none;padding:0;margin:26px 0 0;display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.trust li{display:flex;gap:10px;align-items:center;background:#0b1a3e;border:1px solid #fbf6e326;border-radius:14px;padding:12px;font-weight:700;font-size:13.5px;line-height:1.2}
+.trust svg{flex:none;color:#f0b03a}
+@media(min-width:980px){.trust{grid-template-columns:repeat(4,1fr)}}
+/* instagram card */
+.igcard{margin-top:28px;border-radius:22px;padding:22px;display:grid;gap:8px;justify-items:center;text-align:center;background:linear-gradient(135deg,#4631c2,#d4237a 60%,#ef7b2b)}
+.igcard h2{margin:0}.igcard p{margin:0;max-width:40ch}
+.igcard .btn{background:var(--cream);color:var(--navy);border-radius:999px;padding:12px 22px;text-decoration:none;margin-top:6px}
+/* confetti */
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:50;overflow:hidden}
+.confetti i{position:absolute;top:-20px;border-radius:2px;animation:confFall linear forwards}
+@keyframes confFall{to{transform:translateY(105vh) rotate(720deg);opacity:.9}}
+@media(prefers-reduced-motion:reduce){.confetti{display:none}}
+@media(max-width:400px){.buy .addbtn{font-size:10px;letter-spacing:0;padding:12px 2px}.buy .step button{width:22px}.buy .step b{min-width:12px}.pbody{padding:14px 10px 12px}}

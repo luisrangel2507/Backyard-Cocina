@@ -121,7 +121,7 @@ export default function Store({ products, ratings = {} }: { products: Product[];
                     <b>{q}</b>
                     <button onClick={() => setQty({ ...qty, [p.id]: Math.min(24, q + 1) })} aria-label="+">+</button>
                   </span>
-                  <button className={`addbtn${justAdded === p.id ? " done" : ""}`} onClick={() => { add(p.id, q); setQty({ ...qty, [p.id]: 1 }); setJustAdded(p.id); setTimeout(() => setJustAdded((x) => (x === p.id ? null : x)), 1100); }} disabled={p.stock < 1}>
+                  <button className={`addbtn${justAdded === p.id ? " done" : ""}`} onClick={() => { try { navigator.vibrate?.(14); } catch {} add(p.id, q); setQty({ ...qty, [p.id]: 1 }); setJustAdded(p.id); setTimeout(() => setJustAdded((x) => (x === p.id ? null : x)), 1100); }} disabled={p.stock < 1}>
                     {p.stock < 1 ? t("soldOut") : justAdded === p.id ? t("added") : t("add")}
                   </button>
                 </div>
@@ -130,6 +130,12 @@ export default function Store({ products, ratings = {} }: { products: Product[];
           );
         })}
       </div>
+
+      <ul className="trust reveal">
+        {([["M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z", "trust1"], ["M12 3c1 3 4 4 4 8a4 4 0 0 1-8 0c0-2 1-3 2-4 0 2 1 2 2 1 0-2-1-3 0-5z M6 20h12", "trust2"], ["M12 6v6l4 2 M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z", "trust3"], ["M3 7h11v9H3z M14 10h4l3 3v3h-7z M7 19a1.500 1.500 0 1 0 0-.1 M17 19a1.500 1.500 0 1 0 0-.1", "trust4"]] as const).map(([d, k]) => (
+          <li key={k}><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={d} /></svg><span>{t(k)}</span></li>
+        ))}
+      </ul>
 
       <section className="how reveal">
         <h2>{t("howTitle")}</h2>
@@ -144,6 +150,13 @@ export default function Store({ products, ratings = {} }: { products: Product[];
         <h2>{t("clubTitle")}</h2>
         <p>{t("clubText")}</p>
         <Link className="btn" href={member ? "/profile" : "/login"}>{member ? t("clubIn") : t("clubJoin")}</Link>
+      </section>
+
+      <section className="igcard reveal">
+        <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.500" cy="6.500" r="1" fill="currentColor" /></svg>
+        <h2>{t("igTitle")}</h2>
+        <p>{t("igText")}</p>
+        <a className="btn" href="https://www.instagram.com/backyardcocina" target="_blank" rel="noopener">{t("igBtn")}</a>
       </section>
 
       <section className="faq reveal">
