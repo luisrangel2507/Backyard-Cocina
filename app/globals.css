@@ -621,15 +621,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,select:focus-visible,
 @media(prefers-reduced-motion:reduce){.confetti{display:none}}
 @media(max-width:400px){.buy .addbtn{font-size:10px;letter-spacing:0;padding:12px 2px}.buy .step button{width:22px}.buy .step b{min-width:12px}.pbody{padding:14px 10px 12px}}
 
-/* ---------- welcome screen + salsa pour transition ---------- */
-.welcome{position:fixed;inset:0;z-index:20;background:#0a1630;overflow:hidden}
-.welcome-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 30%}
-.welcome-btn{position:absolute;left:50%;bottom:max(7%,calc(env(safe-area-inset-bottom) + 28px));transform:translateX(-50%);display:flex;align-items:center;gap:14px;border:0;cursor:pointer;color:#fff;font:inherit;font-weight:800;font-size:clamp(1.1rem,4.6vw,1.5rem);padding:18px 34px;border-radius:999px;background:#e5471f;box-shadow:inset 0 -4px 0 #00000030,0 10px 28px #000a;animation:welcomeIn .8s ease .5s both,welcomePulse 2.4s ease-in-out 1.6s infinite}
-.welcome-btn i{font-style:normal;font-size:1.4em;transition:transform .2s}
-.welcome-btn:hover i{transform:translateX(4px)}
-.welcome-btn:disabled{opacity:.9;animation:none}
-@keyframes welcomeIn{from{opacity:0;transform:translate(-50%,24px)}to{opacity:1;transform:translate(-50%,0)}}
-@keyframes welcomePulse{0%,100%{box-shadow:inset 0 -4px 0 #00000030,0 10px 28px #000a,0 0 0 0 #ff6a3d88}50%{box-shadow:inset 0 -4px 0 #00000030,0 10px 28px #000a,0 0 0 14px #ff6a3d00}}
+/* ---------- salsa pour transition ---------- */
 .curtain{position:fixed;inset:0;z-index:999;pointer-events:none;overflow:hidden}
 .curtain-in{pointer-events:auto}
 .pour{position:absolute;left:0;right:0;top:0;height:100%;will-change:transform}
@@ -647,7 +639,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible,select:focus-visible,
 .curtain-out .p2{animation:pourOut .95s cubic-bezier(.5,.05,.7,.4) .24s both}
 .curtain-out .p3{animation:pourOut .95s cubic-bezier(.5,.05,.7,.4) .12s both}
 @keyframes pourOut{from{transform:translateY(0)}to{transform:translateY(calc(100% + 160px))}}
-@media(prefers-reduced-motion:reduce){.curtain{display:none}.welcome-btn{animation:none}}
+@media(prefers-reduced-motion:reduce){.curtain{display:none}}
 
 .pour.p1{z-index:1}.pour.p2{z-index:2}.pour.p3{z-index:3}
-.welcome-btn span{white-space:nowrap}.welcome-btn{white-space:nowrap}
