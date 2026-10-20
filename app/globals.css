@@ -625,10 +625,14 @@ a:focus-visible,button:focus-visible,summary:focus-visible,select:focus-visible,
 .curtain{position:fixed;inset:0;z-index:999;pointer-events:none;overflow:hidden}
 .curtain-in{pointer-events:auto}
 .pour{position:absolute;left:0;right:0;top:0;height:100%;will-change:transform}
-.pour-body{position:absolute;inset:0;background-color:var(--c);
-  background-image:radial-gradient(circle at 12% 18%,#ffffff22 0 3px,transparent 4px),radial-gradient(circle at 70% 44%,#00000030 0 5px,transparent 6px),radial-gradient(circle at 35% 72%,#2f8a4a99 0 3px,transparent 4px),radial-gradient(circle at 85% 86%,#ffffff1c 0 4px,transparent 5px),radial-gradient(circle at 52% 30%,#2f8a4a88 0 2px,transparent 3px),linear-gradient(180deg,#ffffff14,transparent 30%);
-  background-size:90px 110px,130px 120px,110px 100px,150px 130px,70px 90px,100% 100%}
-.pour-drips{position:absolute;left:0;right:0;top:100%;width:100%;height:150px;display:block;margin-top:-1px}
+.pour-body{position:absolute;inset:0;background:url(/salsa-pour.webp) center/cover no-repeat}
+.pour-drips{position:absolute;left:0;right:0;top:100%;height:170px;margin-top:-1px;overflow:hidden;
+  -webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 170' preserveAspectRatio='none'><path d='M0 0H400V40C392 40 392 78 384 78C376 78 378 48 366 48C352 48 354 118 340 118C326 118 330 56 316 56C302 56 304 146 290 146C276 146 280 62 264 62C250 62 252 96 240 96C228 96 230 52 216 52C202 52 204 128 190 128C176 128 180 60 164 60C150 60 152 100 140 100C128 100 130 50 116 50C102 50 104 158 90 158C76 158 80 66 64 66C50 66 52 90 40 90C28 90 30 52 16 52C8 52 8 80 0 80Z'/></svg>") 0 0/100% 100% no-repeat;
+  mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 170' preserveAspectRatio='none'><path d='M0 0H400V40C392 40 392 78 384 78C376 78 378 48 366 48C352 48 354 118 340 118C326 118 330 56 316 56C302 56 304 146 290 146C276 146 280 62 264 62C250 62 252 96 240 96C228 96 230 52 216 52C202 52 204 128 190 128C176 128 180 60 164 60C150 60 152 100 140 100C128 100 130 50 116 50C102 50 104 158 90 158C76 158 80 66 64 66C50 66 52 90 40 90C28 90 30 52 16 52C8 52 8 80 0 80Z'/></svg>") 0 0/100% 100% no-repeat}
+.pour-drips>div{position:absolute;left:0;right:0;top:0;height:100vh;background:url(/salsa-pour.webp) center bottom/cover no-repeat;transform:scaleY(-1)}
+.pour.p1 .pour-body,.pour.p1 .pour-drips>div{filter:brightness(.62) saturate(1.1)}
+.pour.p2 .pour-body{background-position:30% center}.pour.p2 .pour-drips>div{background-position:30% bottom}
+.pour.p3 .pour-body,.pour.p3 .pour-drips>div{filter:brightness(1.12) saturate(1.15)}.pour.p3 .pour-body{background-position:70% center}.pour.p3 .pour-drips>div{background-position:70% bottom}
 /* falls in: covers the screen */
 .curtain-in .p1{animation:pourDown .95s cubic-bezier(.5,.05,.7,.4) both}
 .curtain-in .p2{animation:pourDown .95s cubic-bezier(.5,.05,.7,.4) .12s both}
