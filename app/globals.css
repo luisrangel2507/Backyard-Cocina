@@ -532,3 +532,35 @@ body::before,body::after{display:none!important}
   .shop .brand>div:has(.sigt){max-width:min(62%,250px)}
 }
 @media(min-width:980px){.dh2.sigt-d{width:min(100%,360px)!important}}
+
+/* ---------- profile / stamp card ---------- */
+.prof{position:relative;max-width:520px;margin:0 auto;display:grid;gap:14px;padding-bottom:150px;overflow:hidden}
+.prof-hi{margin:4px 0 0;display:flex;flex-direction:column;line-height:.9;text-align:left}
+.prof-hi .hi{font-family:Rye,Bungee,serif;font-weight:400;font-size:clamp(3rem,15vw,4.6rem);color:var(--cream);text-shadow:0 4px 0 #05102e}
+.prof-hi .nm{font-family:Rye,Bungee,serif;font-weight:400;font-size:clamp(3.4rem,18vw,5.6rem);background:url(/prof-weave.jpg) 0 0/auto 100% repeat-x;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;filter:drop-shadow(0 4px 0 #05102e) drop-shadow(0 0 2px #f6e8c8)}
+.stampcard{background-color:#f3e6c8;background-image:radial-gradient(circle at 20% 10%,#fff6dd99,transparent 55%),repeating-linear-gradient(0deg,#00000008 0 1px,transparent 1px 3px);color:#0d1a3d;border:3px solid #c8283b;outline:2px solid #f3e6c8;outline-offset:-9px;border-radius:22px;padding:18px 14px 14px;text-align:center;box-shadow:0 10px 26px #0007}
+.stampcard h2{font-family:Bungee,sans-serif;font-weight:400;margin:0 0 10px;font-size:1.7rem;letter-spacing:.02em;color:#0d1a3d}
+.stamps2{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:6px 0 12px;justify-items:center}
+.stamps2 span{width:100%;max-width:58px;aspect-ratio:1;border-radius:50%;border:2px dashed #a8323a;display:grid;place-items:center;color:#b8aa8f}
+.stamps2 span.on{background:#c8283b;border:2px solid #7a1220;color:#fff;animation:stampIn .5s cubic-bezier(.2,.9,.3,1.4) both}
+.stampcard p{margin:0;font-size:.95rem}
+.rrow{display:grid;grid-template-columns:96px 1fr 28px;align-items:center;gap:12px;border:1.5px solid #fbf6e355;border-radius:12px;background:#0b1a3e;overflow:hidden;text-decoration:none;color:var(--cream);transition:transform .2s}
+.rrow:hover{transform:translateY(-2px)}
+.rrow img{width:96px;height:100%;object-fit:cover;display:block;min-height:70px}
+.rrow span{display:flex;flex-direction:column;padding:10px 0;font-family:Bungee,sans-serif;font-size:clamp(.95rem,4.2vw,1.2rem);line-height:1.15}
+.rrow span b{font-weight:400}.rrow em{font-style:normal;color:#f0b03a}
+.rrow small{font-family:"Rethink Sans",sans-serif;color:var(--muted);font-size:.7rem;letter-spacing:.06em;margin-top:2px}
+.rrow i{font-style:normal;color:#e0384a;font-size:2rem;line-height:1}
+.refbox{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1.5px dashed #fbf6e366;border-radius:12px;padding:12px 14px;background:#0b1a3e}
+.refbox small{display:block;font-weight:700;letter-spacing:.06em;font-size:.72rem;color:var(--cream);opacity:.85}
+.refbox b{font-size:1.25rem;letter-spacing:.04em}
+.copybtn{width:54px;height:54px;border:1.5px dashed #29b6e0;border-radius:10px;background:transparent;color:var(--cream);cursor:pointer;display:grid;place-items:center;font-size:1.3rem}
+.birth{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.birth select{padding:14px;border-radius:999px;border:2px solid #fbf6e3;background:#f3e6c8;color:#0d1a3d;font:inherit;font-weight:600}
+.birth button{border:0;border-radius:999px;background:#c8283b;color:#fff;font:inherit;font-weight:700;font-size:1.05rem;cursor:pointer;box-shadow:inset 0 -3px 0 #00000030}
+.orderbtn{display:flex;gap:12px;justify-content:center;align-items:center;text-decoration:none;color:#fff;font-weight:800;font-size:1.3rem;padding:18px;border-radius:999px;background:#e5471f;box-shadow:inset 0 -4px 0 #00000028,0 8px 18px #0006;margin:6px 24px 0;transition:transform .2s}
+.orderbtn:hover{transform:translateY(-2px)}
+.prof .btn{justify-self:center;min-width:70%;border-radius:999px;padding:14px}
+.prof-agave{position:absolute;left:-18px;bottom:-6px;width:120px;z-index:0;pointer-events:none;opacity:.95;-webkit-mask-image:linear-gradient(90deg,#000 60%,transparent);mask-image:linear-gradient(90deg,#000 60%,transparent);mix-blend-mode:lighten}
+.prof>*:not(.prof-agave){position:relative;z-index:1}
+.stamps2 svg{width:70%;height:70%}

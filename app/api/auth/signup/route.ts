@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { encrypt } from "@/lib/crypto";
 import { hashPassword } from "@/lib/password";
 import { sessionCookie } from "@/lib/auth";
+import { makeReferralCode } from "@/lib/loyalty";
 
 export async function POST(req: Request) {
   const b = await req.json().catch(() => ({}));
@@ -21,7 +22,7 @@ export async function POST(req: Request) {
   const customer = await db.customer.create({
     data: {
       email, name, passwordHash: await hashPassword(password), phone: encrypt(b.phone ? String(b.phone).slice(0, 30) : null),
-      offers: b.offers !== false, jars, birthMonth: Number.isFinite(month) ? month : null, referredBy: ref?.id,
+      referralCode: makeReferralCode(), offers: b.offers !== false, jars, birthMonth: Number.isFinite(month) ? month : null, referredBy: ref?.id,
     },
   });
   if (past.length) await db.order.updateMany({ where: { id: { in: past.map((o) => o.id) } }, data: { customerId: customer.id } });
