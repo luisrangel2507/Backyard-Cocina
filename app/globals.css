@@ -621,28 +621,48 @@ a:focus-visible,button:focus-visible,summary:focus-visible,select:focus-visible,
 @media(prefers-reduced-motion:reduce){.confetti{display:none}}
 @media(max-width:400px){.buy .addbtn{font-size:10px;letter-spacing:0;padding:12px 2px}.buy .step button{width:22px}.buy .step b{min-width:12px}.pbody{padding:14px 10px 12px}}
 
-/* ---------- salsa pour transition ---------- */
-.curtain{position:fixed;inset:0;z-index:999;pointer-events:none;overflow:hidden}
-.curtain-in{pointer-events:auto}
-.pour{position:absolute;left:0;right:0;top:0;height:100%;will-change:transform}
+/* ---------- salsa pour transition (persistent layer, see SalsaCurtain.tsx) ---------- */
+html{background:#0c1d4a}
+.curtain{position:fixed;inset:0;z-index:999;pointer-events:auto;overflow:hidden;contain:strict}
+.pour{position:absolute;left:-2%;right:-2%;top:0;height:100%;will-change:transform;transform:translate3d(0,calc(-100% - 220px),0)}
 .pour-body{position:absolute;inset:0;background:url(/salsa-pour.webp) center/cover no-repeat}
-.pour-drips{position:absolute;left:0;right:0;top:100%;height:170px;margin-top:-1px;overflow:hidden;
-  -webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 170' preserveAspectRatio='none'><path d='M0 0H400V40C392 40 392 78 384 78C376 78 378 48 366 48C352 48 354 118 340 118C326 118 330 56 316 56C302 56 304 146 290 146C276 146 280 62 264 62C250 62 252 96 240 96C228 96 230 52 216 52C202 52 204 128 190 128C176 128 180 60 164 60C150 60 152 100 140 100C128 100 130 50 116 50C102 50 104 158 90 158C76 158 80 66 64 66C50 66 52 90 40 90C28 90 30 52 16 52C8 52 8 80 0 80Z'/></svg>") 0 0/100% 100% no-repeat;
-  mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 170' preserveAspectRatio='none'><path d='M0 0H400V40C392 40 392 78 384 78C376 78 378 48 366 48C352 48 354 118 340 118C326 118 330 56 316 56C302 56 304 146 290 146C276 146 280 62 264 62C250 62 252 96 240 96C228 96 230 52 216 52C202 52 204 128 190 128C176 128 180 60 164 60C150 60 152 100 140 100C128 100 130 50 116 50C102 50 104 158 90 158C76 158 80 66 64 66C50 66 52 90 40 90C28 90 30 52 16 52C8 52 8 80 0 80Z'/></svg>") 0 0/100% 100% no-repeat}
+.pour-drips{position:absolute;left:0;right:0;top:100%;height:200px;margin-top:-1px;overflow:hidden;transform-origin:50% 0;will-change:transform;
+  -webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' preserveAspectRatio='none'><path d='M0 0H400V46C393 46 393 84 385 84C377 84 379 54 367 54C353 54 355 128 341 128C327 128 331 62 317 62C303 62 305 170 290 170C275 170 280 68 264 68C250 68 252 104 240 104C228 104 230 58 216 58C202 58 204 140 190 140C176 140 180 66 164 66C150 66 152 110 140 110C128 110 130 56 116 56C102 56 104 188 89 188C74 188 80 72 64 72C50 72 52 98 40 98C28 98 30 58 16 58C8 58 8 88 0 88Z'/></svg>") 0 0/100% 100% no-repeat;
+  mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' preserveAspectRatio='none'><path d='M0 0H400V46C393 46 393 84 385 84C377 84 379 54 367 54C353 54 355 128 341 128C327 128 331 62 317 62C303 62 305 170 290 170C275 170 280 68 264 68C250 68 252 104 240 104C228 104 230 58 216 58C202 58 204 140 190 140C176 140 180 66 164 66C150 66 152 110 140 110C128 110 130 56 116 56C102 56 104 188 89 188C74 188 80 72 64 72C50 72 52 98 40 98C28 98 30 58 16 58C8 58 8 88 0 88Z'/></svg>") 0 0/100% 100% no-repeat}
 .pour-drips>div{position:absolute;left:0;right:0;top:0;height:100vh;background:url(/salsa-pour.webp) center bottom/cover no-repeat;transform:scaleY(-1)}
-.pour.p1 .pour-body,.pour.p1 .pour-drips>div{filter:brightness(.62) saturate(1.1)}
-.pour.p2 .pour-body{background-position:30% center}.pour.p2 .pour-drips>div{background-position:30% bottom}
-.pour.p3 .pour-body,.pour.p3 .pour-drips>div{filter:brightness(1.12) saturate(1.15)}.pour.p3 .pour-body{background-position:70% center}.pour.p3 .pour-drips>div{background-position:70% bottom}
-/* falls in: covers the screen */
-.curtain-in .p1{animation:pourDown .95s cubic-bezier(.5,.05,.7,.4) both}
-.curtain-in .p2{animation:pourDown .95s cubic-bezier(.5,.05,.7,.4) .12s both}
-.curtain-in .p3{animation:pourDown .95s cubic-bezier(.5,.05,.7,.4) .24s both}
-@keyframes pourDown{from{transform:translateY(calc(-100% - 160px))}to{transform:translateY(0)}}
-/* drains away on the next page */
-.curtain-out .p1{animation:pourOut .95s cubic-bezier(.5,.05,.7,.4) .36s both}
-.curtain-out .p2{animation:pourOut .95s cubic-bezier(.5,.05,.7,.4) .24s both}
-.curtain-out .p3{animation:pourOut .95s cubic-bezier(.5,.05,.7,.4) .12s both}
-@keyframes pourOut{from{transform:translateY(0)}to{transform:translateY(calc(100% + 160px))}}
+.p1 .pour-body,.p1 .pour-drips>div{filter:brightness(.55) saturate(1.15)}
+.p1 .pour-drips{transform:scaleX(-1)}
+.p2 .pour-body{background-position:35% center}.p2 .pour-drips>div{background-position:35% bottom}
+.p2 .pour-body::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#00000055,transparent 18%,transparent 82%,#0000004d),linear-gradient(90deg,#0003,transparent 12%,transparent 88%,#0003)}
+.pour-gloss{position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,#ffffff1f 42%,transparent 54%);mix-blend-mode:screen;opacity:.8;animation:gloss 1.6s ease-in-out infinite}
+@keyframes gloss{from{transform:translateX(-40%)}to{transform:translateX(40%)}}
+/* droplets falling ahead of the sheet */
+.pour-drops{position:absolute;inset:0;pointer-events:none}
+.pour-drops i{position:absolute;top:-30px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(circle at 35% 30%,#ffb3a0,#d92b16 45%,#7c0d06);box-shadow:inset 0 -2px 3px #0005;opacity:0}
+.curtain-in .pour-drops i{animation:dropLead .55s cubic-bezier(.55,0,1,.45) both}
+@keyframes dropLead{0%{opacity:1;transform:translateY(0)}100%{opacity:1;transform:translateY(105vh)}}
+/* phase 1: pour in (gravity: accelerates) */
+.curtain-in .p1{animation:pourIn 1s cubic-bezier(.6,.02,.8,.48) both}
+.curtain-in .p2{animation:pourIn 1s cubic-bezier(.6,.02,.8,.48) .07s both}
+.curtain-in .pour-drips{animation:stretch 1s cubic-bezier(.6,.02,.8,.48) both}
+.curtain-in .p1 .pour-drips{animation-name:stretchM}
+@keyframes pourIn{from{transform:translate3d(0,calc(-100% - 220px),0)}to{transform:translate3d(0,0,0)}}
+@keyframes stretch{0%{transform:scaleY(.45)}70%{transform:scaleY(1.35)}100%{transform:scaleY(1)}}
+@keyframes stretchM{0%{transform:scaleX(-1) scaleY(.45)}70%{transform:scaleX(-1) scaleY(1.35)}100%{transform:scaleX(-1) scaleY(1)}}
+/* phase 2: hold, fully covered */
+.curtain-hold .pour{transform:translate3d(0,0,0)}
+/* phase 3: drain away downwards */
+.curtain-out{pointer-events:none}
+.curtain-out .p2{animation:pourOut 1.05s cubic-bezier(.55,0,.85,.4) both}
+.curtain-out .p1{animation:pourOut 1.05s cubic-bezier(.55,0,.85,.4) .1s both}
+.curtain-out .pour-drips{animation:stretchOut 1.05s ease-in both}
+.curtain-out .p1 .pour-drips{animation-name:stretchOutM}
+@keyframes pourOut{from{transform:translate3d(0,0,0)}to{transform:translate3d(0,calc(100% + 240px),0)}}
+@keyframes stretchOut{from{transform:scaleY(1)}to{transform:scaleY(1.5)}}
+@keyframes stretchOutM{from{transform:scaleX(-1) scaleY(1)}to{transform:scaleX(-1) scaleY(1.5)}}
+/* while salsa covers the screen, finish entrance animations instantly so nothing flickers on reveal */
+html[data-pouring] .wrap *{animation-delay:0s!important;animation-duration:1ms!important;transition:none!important}
+html[data-pouring] .reveal{opacity:1!important;transform:none!important}
 @media(prefers-reduced-motion:reduce){.curtain{display:none}}
-
-.pour.p1{z-index:1}.pour.p2{z-index:2}.pour.p3{z-index:3}
+/* images: no pop-in flash */
+.pimg,.dimg,.thumb img{background:#0b1a3e}

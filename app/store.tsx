@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import type { Product } from "@prisma/client";
 import { useCart } from "@/lib/cart";
 import { LangToggle, useT } from "@/lib/i18n-client";
-import { PourArrival } from "./SalsaCurtain";
 import { localizeProduct } from "@/lib/i18n";
 
 const money = (c: number) => `$${(c / 100).toFixed(2)}`;
@@ -45,7 +44,6 @@ export default function Store({ products, ratings = {} }: { products: Product[];
 
   return (
     <div className="shop" ref={root}>
-      <PourArrival />
       <header className="hero">
         <div className="hrow">
           <button className="icon" aria-label="Menu" aria-expanded={menu} onClick={() => setMenu(!menu)}>
