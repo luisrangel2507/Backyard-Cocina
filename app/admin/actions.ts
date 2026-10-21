@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { decrypt } from "@/lib/crypto";
 import { sendSms, orderText } from "@/lib/sms";
+import { sendEmail, orderReadyEmail } from "@/lib/email";
 
 export async function setStatus(id: string, status: string) {
   const o = await db.order.update({ where: { id }, data: { status }, include: { customer: true } });
@@ -10,6 +11,11 @@ export async function setStatus(id: string, status: string) {
   const text = orderText(o, first);
   const phone = decrypt(o.phone);
   if (phone && text) await sendSms(phone, text);
+  const notify = status === "ready" || (status === "out" && o.fulfillment === "delivery");
+  if (notify && o.email) {
+    const full = await db.order.findUnique({ where: { id }, include: { items: { include: { product: true } } } });
+    if (full) await sendEmail(o.email, status === "ready" && o.fulfillment === "pickup" ? `Your salsa is ready! #${id.slice(-6).toUpperCase()} 🌶` : `Your salsa is on the way 🚗`, orderReadyEmail({ ...full, fulfillment: status === "out" ? "delivery" : full.fulfillment }, first));
+  }
   revalidatePath("/admin");
 }
 

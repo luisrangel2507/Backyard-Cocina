@@ -11,6 +11,12 @@ export default function Login() {
   const [f, setF] = useState({ name: "", email: "", password: "", phone: "", birthMonth: "", referral: "", offers: true });
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [sent, setSent] = useState(false);
+  async function forgot() {
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email)) { setError(t("forgotNeedEmail")); return; }
+    await fetch("/api/auth/forgot", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: f.email }) });
+    setSent(true); setError("");
+  }
   const months = t("months").split(",");
   const set = (k: keyof typeof f, v: string | boolean) => setF({ ...f, [k]: v });
 
@@ -48,7 +54,7 @@ export default function Login() {
         )}
         <button className="btn" disabled={busy} style={{ padding: 14 }}>{busy ? t("wait") : t(mode === "signup" ? "btnSignup" : "btnLogin")}</button>
         {error && <p style={{ color: "var(--tomato)", margin: 0 }}>{error}</p>}
-        {mode === "login" && <small className="muted">{t("forgot")}</small>}
+        {mode === "login" && (sent ? <small className="muted">{t("forgotSent")}</small> : <button type="button" className="linkbtn" onClick={forgot}>{t("forgot")}</button>)}
       </form>
     </>
   );

@@ -54,7 +54,7 @@ const en = {
   fName: "Your name", fEmail: "Email", fPassword: "Password (8+ characters)", fPhone: "Phone (optional)", fBirth: "Birthday month (optional, free salsa!)", fRef: "Referral code (optional)", fOffers: "Send me offers and new drops",
   btnSignup: "Create my account", btnLogin: "Log in", wait: "One moment…",
   errFields: "Fill in your name, email and a password of 8+ characters", errExists: "That email already has an account. Log in instead.", errBad: "Wrong email or password", errMany: "Too many attempts. Try again in 15 minutes.",
-  forgot: "Forgot your password? Text us and we'll reset it.",
+  forgot: "Forgot your password?", forgotNeedEmail: "Type your email above first", forgotSent: "If that email has an account, we sent a link to reset your password.",
   // profile
   hi: "Hi, {name}", stampCard: "Stamp card", jarsTotal: "{n} jars total · {more} more for your next free salsa",
   freeAvail: "🎁 Free salsas available:", applyCheckout: " — use it in your cart.", merchAvail: "👕 Free merch rewards available:", every: "every {n} jars",
@@ -119,7 +119,7 @@ const es: Record<Key, string> = {
   fName: "Tu nombre", fEmail: "Correo", fPassword: "Contraseña (8+ caracteres)", fPhone: "Teléfono (opcional)", fBirth: "Mes de cumpleaños (opcional, ¡salsa gratis!)", fRef: "Código de referido (opcional)", fOffers: "Quiero recibir ofertas y novedades",
   btnSignup: "Crear mi cuenta", btnLogin: "Iniciar sesión", wait: "Un momento…",
   errFields: "Escribe tu nombre, correo y una contraseña de 8+ caracteres", errExists: "Ese correo ya tiene cuenta. Inicia sesión.", errBad: "Correo o contraseña incorrectos", errMany: "Demasiados intentos. Prueba en 15 minutos.",
-  forgot: "¿Olvidaste tu contraseña? Escríbenos y la restablecemos.",
+  forgot: "¿Olvidaste tu contraseña?", forgotNeedEmail: "Primero escribe tu correo arriba", forgotSent: "Si ese correo tiene cuenta, te enviamos un enlace para cambiar tu contraseña.",
   hi: "Hola, {name}", stampCard: "Tarjeta de sellos", jarsTotal: "{n} frascos en total · {more} más para tu próxima salsa gratis",
   freeAvail: "🎁 Salsas gratis disponibles:", applyCheckout: " — úsala en tu carrito.", merchAvail: "👕 Premios de merch disponibles:", every: "cada {n} frascos",
   refCode: "Tu código de referido:", save2: "Guardar", logout: "Cerrar sesión", birthPh: "Mes de cumpleaños (¡salsa gratis!)", orderNow: "Pedir salsas",

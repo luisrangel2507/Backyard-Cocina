@@ -124,3 +124,15 @@ model Expense {
   amountCents Int
   createdAt   DateTime @default(now())
 }
+
+// One-time password reset links (token stored hashed, valid 1 hour).
+model PasswordReset {
+  id         String   @id @default(cuid())
+  customerId String
+  tokenHash  String   @unique
+  expiresAt  DateTime
+  usedAt     DateTime?
+  createdAt  DateTime @default(now())
+
+  @@index([customerId])
+}

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { db, stripe } from "@/lib/db";
 import { encrypt } from "@/lib/crypto";
+import { sendEmail, orderConfirmationEmail, newOrderAdminEmail } from "@/lib/email";
 
 // Orders are only marked paid here, after Stripe confirms the payment.
 export async function POST(req: Request) {
@@ -47,6 +48,15 @@ export async function POST(req: Request) {
         ...(member ? [db.customer.update({ where: { id: member.id }, data: { jars: { increment: paidJars }, freeUsed: { increment: usedFree ? 1 : 0 } } })] : []),
         ...items.map(([id, q]) => db.product.update({ where: { id }, data: { stock: { decrement: q } } })),
       ]);
+      // Emails never block or fail the webhook.
+      const order = await db.order.findUnique({ where: { stripeSessionId: s.id }, include: { items: { include: { product: true } } } });
+      if (order) {
+        const first = (member?.name ?? s.customer_details?.name ?? "").split(" ")[0] || undefined;
+        const jobs: Promise<unknown>[] = [];
+        if (email) jobs.push(sendEmail(email, `Order #${order.id.slice(-6).toUpperCase()} confirmed 🌶`, orderConfirmationEmail(order, first, s.id)));
+        if (process.env.ADMIN_EMAIL) jobs.push(sendEmail(process.env.ADMIN_EMAIL.split(",").map((x) => x.trim()), `🌶 New order #${order.id.slice(-6).toUpperCase()} · ${order.jarCount} jars`, newOrderAdminEmail(order, member?.name ?? s.customer_details?.name ?? email ?? "Guest")));
+        await Promise.allSettled(jobs);
+      }
     }
   }
   return NextResponse.json({ received: true });

@@ -29,3 +29,7 @@
 ## Customer accounts (Backyard Club)
 Customers create an account with email + password (scrypt-hashed); no email or SMS provider needed. Stamps: 1 per paid jar. A forgotten password has no automatic reset yet (needs Resend email) — reset it by hand in the database for now.
 Language: EN/ES toggle on every page, remembered in the `bc_lang` cookie.
+
+## Email (Resend)
+Railway variables: `RESEND_API_KEY`, `EMAIL_FROM` (e.g. `Backyard Cocina <hola@backyardcocina.com>`, domain must be verified in Resend), `ADMIN_EMAIL` (Brant; comma-separate for several).
+Sends: order confirmation (customer), new-order alert (admin), "ready / on the way" (customer, when Brant marks it), password reset link.
