@@ -12,7 +12,7 @@ export default function Welcome() {
   const [busy, setBusy] = useState(false);
   const [box, setBox] = useState<React.CSSProperties>({});
   const [img, setImg] = useState<React.CSSProperties>({ inset: 0, width: "100%", height: "100%", objectFit: "cover" });
-  useEffect(() => { router.prefetch("/shop"); }, [router]);
+  useEffect(() => { router.prefetch("/shop"); try { sessionStorage.setItem("bc-intro", "1"); } catch {} }, [router]);
   useEffect(() => {
     const place = () => {
       const W = innerWidth, H = innerHeight, w = W / H >= 0.75;

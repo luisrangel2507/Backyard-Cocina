@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { Product } from "@prisma/client";
 import { useCart } from "@/lib/cart";
 import { LangToggle, useT } from "@/lib/i18n-client";
@@ -26,6 +27,14 @@ export default function Store({ products, ratings = {} }: { products: Product[];
   const subtotal = Object.entries(cart).reduce((a, [id, q]) => a + (products.find((p) => p.id === id)?.priceCents ?? 0) * q, 0);
   const last = Object.keys(cart).slice(-1)[0];
   const root = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  // Every new visit (app open, QR scan, shared link) starts on the cat intro so the salsa pour plays.
+  const [ok, setOk] = useState(false);
+  useLayoutEffect(() => {
+    let seen = false;
+    try { seen = sessionStorage.getItem("bc-intro") === "1"; } catch { seen = true; }
+    if (seen) setOk(true); else router.replace("/");
+  }, [router]);
 
   useEffect(() => { fetch("/api/me").then((r) => r.json()).then((d) => setMember(!!d.member)).catch(() => setMember(false)); }, []);
 
@@ -43,7 +52,7 @@ export default function Store({ products, ratings = {} }: { products: Product[];
   const heat = (n: number) => (n <= 2 ? t("heat1") : n === 3 ? t("heat3") : n === 4 ? t("heat4") : t("heat5"));
 
   return (
-    <div className="shop" ref={root}>
+    <div className="shop" ref={root} style={ok ? undefined : { visibility: "hidden" }}>
       <header className="hero">
         <div className="hrow">
           <button className="icon" aria-label="Menu" aria-expanded={menu} onClick={() => setMenu(!menu)}>
