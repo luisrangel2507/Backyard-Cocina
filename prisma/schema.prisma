@@ -19,6 +19,8 @@ model Product {
   jars        Int     @default(1)   // stamps earned per unit (Trio = 3)
   pairs       String[]
   tip         String  @default("")
+  image       String? // uploaded photo (data URL); falls back to /<id>.jpg
+  sort        Int     @default(100)
   reviews     Review[]
   items       OrderItem[]
 }

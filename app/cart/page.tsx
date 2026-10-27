@@ -22,7 +22,7 @@ export default function CartPage() {
   const [me, setMe] = useState<{ name: string; freeSalsas: number } | null | undefined>(undefined);
   const [useFree, setUseFree] = useState(false);
   useEffect(() => { fetch("/api/me").then((r) => r.json()).then((d) => setMe(d.member)).catch(() => setMe(null)); }, []);
-  const [catalog, setCatalog] = useState<{ id: string; name: string; priceCents: number; jars: number }[]>([]);
+  const [catalog, setCatalog] = useState<{ id: string; name: string; priceCents: number; jars: number; image?: string | null }[]>([]);
   useEffect(() => { fetch("/api/products").then((r) => r.json()).then(setCatalog).catch(() => {}); }, []);
   const items = Object.entries(cart);
   const info = (id: string) => catalog.find((p) => p.id === id);
@@ -50,7 +50,7 @@ export default function CartPage() {
           const p = info(id);
           return (
             <div className="cline" key={id}>
-              <img src={`/${id}.jpg`} alt="" />
+              <img src={p?.image || `/${id}.jpg`} alt="" />
               <div className="cinfo">
                 <b>{p?.name ?? id}</b>
                 <small>{p ? `${$(p.priceCents)} ${t("each")}` : ""}{p && p.jars > 1 ? ` · ${p.jars} ${t("jars")}` : ""}</small>

@@ -666,3 +666,17 @@ html[data-pouring] .reveal{opacity:1!important;transform:none!important}
 
 /* images: no pop-in flash */
 .pimg,.dimg,.thumb img{background:#0b1a3e}
+/* admin product editor */
+.addprod>summary,.eprod>summary{list-style:none;cursor:pointer}.addprod>summary::-webkit-details-marker,.eprod>summary::-webkit-details-marker{display:none}
+.addprod>summary{text-align:center;border-radius:999px;padding:14px;background:var(--tomato)}
+.eprod>summary.aprod{grid-template-columns:56px 1fr auto}
+.eprod .aprod div{display:grid}
+.pform{display:grid;gap:10px;background:var(--cream);color:var(--ink);border-radius:16px;padding:14px;margin-top:8px}
+.pform label{display:grid;gap:4px;font-weight:700;font-size:13px}
+.pform input:not([type=checkbox]):not([type=color]):not([type=file]),.pform select,.pform textarea{padding:10px;border-radius:10px;border:1px solid #0002;font:inherit;font-weight:400;background:#fff}
+.pform .prow2{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;align-items:end}
+.pform .chk{display:flex;gap:6px;align-items:center}
+.pform input[type=color]{width:100%;height:42px;border:0;background:none}
+.pphoto{display:grid!important;place-items:center;aspect-ratio:4/3;border:2px dashed #0003;border-radius:14px;overflow:hidden;cursor:pointer;background:#fff}
+.pphoto img{width:100%;height:100%;object-fit:cover}.pphoto input{display:none}
+.pform .linkbtn{color:#c62828}

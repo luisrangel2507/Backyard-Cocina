@@ -6,9 +6,9 @@ import type { Product } from "@prisma/client";
 import { useCart } from "@/lib/cart";
 import { LangToggle, useT } from "@/lib/i18n-client";
 import { localizeProduct } from "@/lib/i18n";
+import { productImage } from "@/lib/productImage";
 
 const money = (c: number) => `$${(c / 100).toFixed(2)}`;
-const CATS: [string, string][] = [["All", "catAll"], ["Verde", ""], ["Creamy", ""], ["Roja", ""], ["Packs", "catPacks"]];
 export type Rating = { avg: number; count: number };
 const Stars = ({ r }: { r: Rating }) => (
   <span className="stars" aria-label={`${r.avg.toFixed(1)} out of 5`}>{"★★★★★"} <b>{r.avg.toFixed(1)}</b> <small>({r.count})</small></span>
@@ -23,6 +23,7 @@ export default function Store({ products, ratings = {} }: { products: Product[];
   const [qty, setQty] = useState<Record<string, number>>({});
   const [justAdded, setJustAdded] = useState<string | null>(null);
   const [member, setMember] = useState<boolean | null>(null);
+  const CATS: [string, string][] = [["All", "catAll"], ...Array.from(new Set(products.map((p) => p.category))).sort((a, b) => (a === "Packs" ? 1 : b === "Packs" ? -1 : 0)).map((c) => [c, c === "Packs" ? "catPacks" : ""] as [string, string])];
   const single = Math.min(...products.filter((p) => p.jars === 1).map((p) => p.priceCents));
   const subtotal = Object.entries(cart).reduce((a, [id, q]) => a + (products.find((p) => p.id === id)?.priceCents ?? 0) * q, 0);
   const last = Object.keys(cart).slice(-1)[0];
@@ -111,7 +112,7 @@ export default function Store({ products, ratings = {} }: { products: Product[];
           const save = p.jars > 1 && isFinite(single) ? p.jars * single - p.priceCents : 0;
           return (
             <article className="pc rise" key={p.id} style={{ ["--c" as any]: p.color, animationDelay: `${idx * 90}ms` }}>
-              <Link className="pimg" href={`/shop/${p.id}`}><img src={`/${p.id}.jpg`} alt={p.name} />{p.jars > 1 && <span className="pack">{p.jars} {t("jars")}</span>}</Link>
+              <Link className="pimg" href={`/shop/${p.id}`}><img src={productImage(p)} alt={p.name} />{p.jars > 1 && <span className="pack">{p.jars} {t("jars")}</span>}</Link>
               <div className="pbody">
                 <span className="eyebrow">{p.jars > 1 ? t("pack") : t("salsa")}</span>
                 {p.jars === 1 && <span className="oz">8 oz</span>}
@@ -195,7 +196,7 @@ export default function Store({ products, ratings = {} }: { products: Product[];
 
       {count > 0 && (
         <div className="cartbar slideup">
-          {last && <span className="thumb"><img src={`/${last}.jpg`} alt="" /><b key={count}>{count}</b></span>}
+          {last && <span className="thumb"><img src={productImage(products.find((x) => x.id === last) ?? { id: last })} alt="" /><b key={count}>{count}</b></span>}
           <span className="cbtxt">{count} {count > 1 ? t("items") : t("item")} · {money(subtotal)}</span>
           <Link className="btn" href="/cart">{t("viewCart")}</Link>
         </div>

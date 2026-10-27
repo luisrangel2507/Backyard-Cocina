@@ -19,10 +19,39 @@ export async function setStatus(id: string, status: string) {
   revalidatePath("/admin");
 }
 
+const slug = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "salsa";
+
+/** Create or update a product from the admin form. A new photo arrives as a small resized data URL. */
 export async function saveProduct(form: FormData) {
-  const id = String(form.get("id"));
-  const price = Math.round(Number(form.get("price")) * 100);
-  await db.product.update({ where: { id }, data: { priceCents: price > 0 ? price : undefined, stock: form.get("soldOut") ? 0 : 100 } });
+  const g = (k: string) => String(form.get(k) ?? "").trim();
+  const price = Math.round(Number(g("price")) * 100);
+  const image = g("image");
+  const data = {
+    name: g("name").slice(0, 60),
+    category: (g("newCategory") || g("category") || "Salsa").slice(0, 30),
+    priceCents: price > 0 ? price : 899,
+    heat: Math.min(5, Math.max(1, Number(g("heat")) || 2)),
+    jars: Math.min(12, Math.max(1, Number(g("jars")) || 1)),
+    description: g("description").slice(0, 400),
+    pairs: g("pairs").split(",").map((x) => x.trim()).filter(Boolean).slice(0, 6),
+    tip: g("tip").slice(0, 300),
+    color: /^#[0-9a-f]{6}$/i.test(g("color")) ? g("color") : "#139a74",
+    stock: form.get("soldOut") ? 0 : 100,
+    ...(image.startsWith("data:image/") && image.length < 900_000 ? { image } : {}),
+  };
+  if (!data.name) return;
+  const id = g("id");
+  if (id) await db.product.update({ where: { id }, data });
+  else {
+    let newId = slug(data.name), n = 1;
+    while (await db.product.findUnique({ where: { id: newId } })) newId = `${slug(data.name)}-${++n}`;
+    await db.product.create({ data: { id: newId, ...data } });
+  }
+  revalidatePath("/admin"); revalidatePath("/shop");
+}
+
+export async function removeProduct(id: string) {
+  await db.product.update({ where: { id }, data: { active: false } });
   revalidatePath("/admin"); revalidatePath("/shop");
 }
 

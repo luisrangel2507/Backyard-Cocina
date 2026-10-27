@@ -4,6 +4,7 @@ import { db, money } from "@/lib/db";
 import { getT } from "@/lib/i18n-server";
 import { PageBar } from "@/lib/i18n-client";
 import { localizeProduct } from "@/lib/i18n";
+import { productImage } from "@/lib/productImage";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +20,7 @@ export default async function Salsa(props: { params: Promise<{ id: string }> }) 
     <PageBar />
     <article className="detail">
       <Link href="/shop" className="muted">{t("allSalsas")}</Link>
-      <img src={`/${p.id}.jpg`} alt={p.name} className="dimg" />
+      <img src={productImage(p)} alt={p.name} className="dimg" />
       <h2>{p.name}</h2>
       <p>{L.description}</p>
       <b className="lbl">{t("pairsWith")}</b>

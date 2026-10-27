@@ -3,6 +3,8 @@ import { partnerToken } from "@/lib/auth";
 import { slotsFor } from "@/lib/schedule";
 import { decrypt } from "@/lib/crypto";
 import LogoutAdmin from "./logout";
+import ProductForm from "./ProductForm";
+import { productImage } from "@/lib/productImage";
 import { setStatus, saveProduct, saveSchedule, confirmOrder, rejectOrder, textCustomer, savePartner, addExpense, deleteExpense } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -74,7 +76,7 @@ async function Orders({ filter }: { filter: string }) {
               {o.phone && <span className="calls"><a className="ibtn" href={`tel:${o.phone}`} aria-label="Call">📞</a><a className="ibtn" href={`sms:${o.phone}`} aria-label="Text">💬</a></span>}
             </div>
             <div className="items">{o.items.map((i) => (
-              <div key={i.id} className="it"><img src={`/${i.product.id}.jpg`} alt="" /><div><b>{i.quantity} × {i.product.name.replace("Salsa ", "")}</b><div>{money(i.product.priceCents * i.quantity)}</div></div></div>
+              <div key={i.id} className="it"><img src={productImage(i.product)} alt="" /><div><b>{i.quantity} × {i.product.name.replace("Salsa ", "")}</b><div>{money(i.product.priceCents * i.quantity)}</div></div></div>
             ))}</div>
             <div className="of"><span>Total</span><b>{money(o.totalCents)}</b></div>
             <div className="chs"><span className="pill">{o.fulfillment === "pickup" ? "Pickup" : "Delivery"}</span><span className="pill">{jars} {jars === 1 ? "jar" : "jars"}</span></div>
@@ -106,16 +108,26 @@ async function Orders({ filter }: { filter: string }) {
 }
 
 async function Products() {
-  const products = await db.product.findMany({ where: { active: true }, orderBy: { priceCents: "asc" } });
-  return products.map((p) => (
-    <form key={p.id} action={saveProduct} className="aprod">
-      <img src={`/${p.id}.jpg`} alt="" />
-      <div><b>{p.name}</b><label><input type="checkbox" name="soldOut" defaultChecked={p.stock < 1} /> Sold out</label></div>
-      <input type="hidden" name="id" value={p.id} />
-      <input name="price" type="number" step="0.01" min="0" defaultValue={(p.priceCents / 100).toFixed(2)} aria-label="Price" />
-      <button className="btn">Save</button>
-    </form>
-  ));
+  const products = await db.product.findMany({ where: { active: true }, orderBy: [{ sort: "asc" }, { priceCents: "asc" }] });
+  const cats = Array.from(new Set(["Verde", "Roja", "Creamy", "Packs", ...products.map((p) => p.category)]));
+  return (
+    <div style={{ display: "grid", gap: 14 }}>
+      <details className="addprod">
+        <summary className="btn">+ Add a new salsa</summary>
+        <ProductForm cats={cats} />
+      </details>
+      {products.map((p) => (
+        <details key={p.id} className="eprod">
+          <summary className="aprod">
+            <img src={productImage(p)} alt="" />
+            <div><b>{p.name}</b><small className="muted">{p.category} · ${(p.priceCents / 100).toFixed(2)}{p.stock < 1 ? " · SOLD OUT" : ""}</small></div>
+            <span className="muted">Edit ›</span>
+          </summary>
+          <ProductForm cats={cats} product={{ id: p.id, name: p.name, category: p.category, price: (p.priceCents / 100).toFixed(2), heat: p.heat, jars: p.jars, description: p.description, pairs: p.pairs.join(", "), tip: p.tip, color: p.color, soldOut: p.stock < 1, image: productImage(p) }} />
+        </details>
+      ))}
+    </div>
+  );
 }
 
 async function Sales() {
