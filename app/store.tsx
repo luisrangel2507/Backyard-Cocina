@@ -114,14 +114,14 @@ export default function Store({ products, ratings = {} }: { products: Product[];
               <Link className="pimg" href={`/shop/${p.id}`}><img src={`/${p.id}.jpg`} alt={p.name} />{p.jars > 1 && <span className="pack">{p.jars} {t("jars")}</span>}</Link>
               <div className="pbody">
                 <span className="eyebrow">{p.jars > 1 ? t("pack") : t("salsa")}</span>
-                {p.jars === 1 && <span className="oz">12 oz</span>}
+                {p.jars === 1 && <span className="oz">8 oz</span>}
                 <h3>{p.name.replace(/^Salsa\s+|\s+Salsa$/i, "")}</h3>
                 <span className="chili" aria-label={`${p.heat}/5`} title={`${p.heat}/5`}>{[1, 2, 3, 4, 5].map((n) => <i key={n} className={n <= p.heat ? "on" : ""}>🌶</i>)}<small>{heat(p.heat)}</small></span>
                 <p>{L.description}</p>
                 {p.jars > 1 && <div className="pairs">{L.pairs.map((x) => <span key={x}>{x}</span>)}</div>}
                 {r && <Link href={`/shop/${p.id}`} className="rlink"><Stars r={r} /></Link>}
                 <div className="prow">
-                  <span className="price">{money(p.priceCents)} <small>12 oz</small></span>
+                  <span className="price">{money(p.priceCents)} <small>8 oz</small></span>
                   {save > 0 && <span className="save">{t("save")}<br />{money(save)}</span>}
                 </div>
                 <div className="buy">
