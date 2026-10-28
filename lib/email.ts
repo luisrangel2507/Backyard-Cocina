@@ -2,7 +2,7 @@
 import { PICKUP_ADDRESS } from "./zones";
 
 const FROM = () => process.env.EMAIL_FROM || "Backyard Cocina <onboarding@resend.dev>";
-const SITE = () => process.env.NEXT_PUBLIC_SITE_URL || "";
+const SITE = () => (process.env.NEXT_PUBLIC_SITE_URL || "").replace(/\/+$/, "");
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 export const money = (c: number) => `$${(c / 100).toFixed(2)}`;
 

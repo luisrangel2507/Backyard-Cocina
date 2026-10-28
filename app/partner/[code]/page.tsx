@@ -17,7 +17,7 @@ export default async function PartnerView(props: { params: Promise<{ code: strin
   const owed = orders.reduce((a, o) => a + o.commissionCents, 0);
   const since = new Date(Date.now() - 30 * 864e5);
   const month = orders.filter((o) => o.createdAt >= since);
-  const site = process.env.NEXT_PUBLIC_SITE_URL || "";
+  const site = (process.env.NEXT_PUBLIC_SITE_URL || "").replace(/\/+$/, "");
   return (
     <div className="adm">
       <span className="eyebrowl">Backyard Cocina · Partner</span>

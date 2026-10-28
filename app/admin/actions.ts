@@ -88,11 +88,18 @@ export async function textCustomer(id: string, form: FormData) {
 }
 
 export async function savePartner(form: FormData) {
-  const code = String(form.get("code")).trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
-  const name = String(form.get("name")).trim();
-  const commissionCents = Math.round(Number(form.get("commission")) * 100);
-  if (!code || !name || !(commissionCents >= 0)) return;
-  await db.partner.upsert({ where: { code }, update: { name, commissionCents }, create: { code, name, commissionCents } });
+  const g = (k: string) => String(form.get(k) ?? "").trim();
+  const id = g("id");
+  const name = g("name").slice(0, 80);
+  const commissionCents = Math.round(Number(g("commission")) * 100);
+  if (!name || !(commissionCents >= 0)) return;
+  const data = { name, commissionCents, contact: g("contact").slice(0, 120), notes: g("notes").slice(0, 500), active: !form.get("paused") };
+  if (id) await db.partner.update({ where: { id }, data });
+  else {
+    const code = g("code").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 20);
+    if (!code) return;
+    await db.partner.upsert({ where: { code }, update: data, create: { code, ...data } });
+  }
   revalidatePath("/admin");
 }
 

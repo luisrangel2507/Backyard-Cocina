@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     if (c) {
       const token = randomBytes(32).toString("base64url");
       await db.passwordReset.create({ data: { customerId: c.id, tokenHash: createHash("sha256").update(token).digest("hex"), expiresAt: new Date(Date.now() + 3600_000) } });
-      const site = process.env.NEXT_PUBLIC_SITE_URL || new URL(req.url).origin;
+      const site = (process.env.NEXT_PUBLIC_SITE_URL || new URL(req.url).origin).replace(/\/+$/, "");
       await sendEmail(email, "Reset your Backyard Club password", resetPasswordEmail(`${site}/reset?token=${token}`));
     }
   }

@@ -166,7 +166,7 @@ async function Schedule() {
 async function Partners() {
   const partners = await db.partner.findMany({ orderBy: { name: "asc" } });
   const orders = await db.order.findMany({ where: { partnerCode: { not: null }, status: { not: "cancelled" } } });
-  const site = process.env.NEXT_PUBLIC_SITE_URL || "";
+  const site = (process.env.NEXT_PUBLIC_SITE_URL || "").replace(/\/+$/, "");
   return (
     <div style={{ display: "grid", gap: 16 }}>
       {partners.map((p) => {
@@ -174,23 +174,41 @@ async function Partners() {
         const jars = mine.reduce((a, o) => a + o.jarCount, 0);
         const owed = mine.reduce((a, o) => a + o.commissionCents, 0);
         return (
-          <div className="card" key={p.id} style={{ padding: 14, display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
-            <img src={`/api/qr?code=${p.code}`} alt={`QR ${p.code}`} width={140} height={140} style={{ background: "#fff", borderRadius: 8 }} />
-            <div>
-              <b>{p.name}</b> · code {p.code}<br />
-              <small>{site}/r/{p.code}</small><br />
-              {mine.length} orders · {jars} jars · commission {money(p.commissionCents)}/jar<br />
-              <b>Owed: {money(owed)}</b><br />
-              <small>Partner view (send to them): <a href={`/partner/${p.code}?k=${partnerToken(p.code)}`}>{site}/partner/{p.code}?k={partnerToken(p.code)}</a></small>
+          <div className="card" key={p.id} style={{ padding: 14, display: "grid", gap: 10, opacity: p.active ? 1 : .65 }}>
+            <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
+              <img src={`/api/qr?code=${p.code}`} alt={`QR ${p.code}`} width={140} height={140} style={{ background: "#fff", borderRadius: 8 }} />
+              <div style={{ minWidth: 0, overflowWrap: "anywhere" }}>
+                <b>{p.name}</b> · code {p.code}{!p.active && <b style={{ color: "#f0b03a" }}> · PAUSED</b>}<br />
+                {p.contact && <><small>{p.contact}</small><br /></>}
+                <small>{site}/r/{p.code}</small><br />
+                {mine.length} orders · {jars} jars · commission {money(p.commissionCents)}/jar<br />
+                <b>Owed: {money(owed)}</b><br />
+                <small>Partner view (send to them): <a href={`/partner/${p.code}?k=${partnerToken(p.code)}`}>{site}/partner/{p.code}?k={partnerToken(p.code)}</a></small>
+                <br /><a href={`/api/qr?code=${p.code}`} download={`qr-${p.code}.png`}><small>Download QR</small></a>
+              </div>
             </div>
+            <details>
+              <summary className="btn ghost" style={{ listStyle: "none", textAlign: "center", cursor: "pointer" }}>Edit partner</summary>
+              <form action={savePartner} className="pform" style={{ marginTop: 8 }}>
+                <input type="hidden" name="id" value={p.id} />
+                <label>Name<input name="name" required defaultValue={p.name} /></label>
+                <label>Commission per jar ($)<input name="commission" type="number" step="0.01" min="0" defaultValue={(p.commissionCents / 100).toFixed(2)} /></label>
+                <label>Contact (name, phone or email)<input name="contact" defaultValue={p.contact} /></label>
+                <label>Notes<textarea name="notes" rows={2} defaultValue={p.notes} /></label>
+                <label className="chk"><input type="checkbox" name="paused" defaultChecked={!p.active} /> Pause (QR stops giving commission)</label>
+                <small className="muted" style={{ color: "#555" }}>The code ({p.code}) can&apos;t change, so printed QRs keep working.</small>
+                <button className="btn">Save changes</button>
+              </form>
+            </details>
           </div>
         );
       })}
       <form action={savePartner} style={{ display: "grid", gap: 8, maxWidth: 360 }}>
-        <b>Add / update partner</b>
+        <b>Add a partner</b>
         <input name="name" placeholder="Name (Blade & Barber)" required style={{ padding: 10, borderRadius: 10, border: 0 }} />
         <input name="code" placeholder="Code (BLADE)" required style={{ padding: 10, borderRadius: 10, border: 0 }} />
         <input name="commission" type="number" step="0.01" defaultValue="1.00" placeholder="Commission per jar ($)" style={{ padding: 10, borderRadius: 10, border: 0 }} />
+        <input name="contact" placeholder="Contact (optional)" style={{ padding: 10, borderRadius: 10, border: 0 }} />
         <button className="btn">Save partner</button>
       </form>
     </div>

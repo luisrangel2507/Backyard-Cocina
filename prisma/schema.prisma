@@ -114,6 +114,8 @@ model Partner {
   code            String  @unique // uppercase, e.g. BLADE
   name            String
   commissionCents Int     @default(100) // paid per jar sold
+  contact         String  @default("") // person, phone or email
+  notes           String  @default("")
   active          Boolean @default(true)
 }
 
