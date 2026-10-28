@@ -32,7 +32,7 @@ export default async function Admin(props: { searchParams: Promise<{ tab?: strin
     <div className="adm">
       <header className="ahead">
         <span className="abrand"><img src="/logo.png" alt="Backyard Cocina" /><span className="kadm">KITCHEN ADMIN</span></span>
-        <LogoutAdmin />
+        <span style={{ display: "flex", gap: 8 }}><a href="/shop" className="alogout">← Shop</a><LogoutAdmin /></span>
       </header>
       <nav className="atabs">{TABS.map(([id, label]) => <Tab key={id} id={id}>{label}</Tab>)}</nav>
       {tab === "orders" && <Orders filter={filter} />}

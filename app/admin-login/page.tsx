@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 
 const UserIcon = () => <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="10" cy="8" r="4" /><path d="M3 20c0-3.5 3-6 7-6s7 2.5 7 6" /><path d="M18 9l1.5 1.5L22 8" /></svg>;
 const LockIcon = () => <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="4" y="10" width="16" height="11" rx="2.5" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /><circle cx="12" cy="15.5" r="1.3" fill="currentColor" /></svg>;
@@ -19,6 +20,7 @@ export default function AdminLogin() {
   }
   return (
     <div className="alog">
+      <Link href="/shop" className="alog-back" aria-label="Back to the shop">← Shop</Link>
       <img className="alog-top" src="/admin-top.jpg" alt="Backyard Cocina · Kitchen admin" />
       <form onSubmit={login} className="alog-card">
         <label className="alog-f"><UserIcon /><input autoComplete="username" placeholder="User" value={user} onChange={(e) => setUser(e.target.value)} /></label>
