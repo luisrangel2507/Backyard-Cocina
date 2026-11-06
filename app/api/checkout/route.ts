@@ -49,10 +49,10 @@ export async function POST(req: Request) {
     line_items: [
       ...lines.map((l) => ({
         quantity: l.q,
-        price_data: { currency: "usd", unit_amount: l.p!.priceCents, product_data: { name: l.p!.name } },
+        price_data: { currency: "usd", unit_amount: l.p!.priceCents, tax_behavior: "exclusive", product_data: { name: l.p!.name } },
       })),
       ...(fulfillment === "delivery"
-        ? [{ quantity: 1, price_data: { currency: "usd", unit_amount: zone!.feeCents, product_data: { name: `Delivery · ${zone!.name}` } } }]
+        ? [{ quantity: 1, price_data: { currency: "usd", unit_amount: zone!.feeCents, tax_behavior: "exclusive", product_data: { name: `Delivery · ${zone!.name}` } } }]
         : []),
     ],
     phone_number_collection: { enabled: true },

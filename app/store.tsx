@@ -122,7 +122,7 @@ export default function Store({ products, ratings = {} }: { products: Product[];
                 {p.jars > 1 && <div className="pairs">{L.pairs.map((x) => <span key={x}>{x}</span>)}</div>}
                 {r && <Link href={`/shop/${p.id}`} className="rlink"><Stars r={r} /></Link>}
                 <div className="prow">
-                  <span className="price">{money(p.priceCents)} <small>8 oz</small></span>
+                  <span className="price">{money(p.priceCents)} <small>+ tax · 8 oz</small></span>
                   {save > 0 && <span className="save">{t("save")}<br />{money(save)}</span>}
                 </div>
                 <div className="buy">
