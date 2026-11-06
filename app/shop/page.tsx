@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import Store, { type Rating } from "../store";
 
 export const dynamic = "force-dynamic";
-const ORDER = ["verde", "roja", "creamy", "trio"];
+const ORDER = ["verde", "creamy", "roja", "mamacita", "nomames", "trio"];
 const rank = (id: string) => { const i = ORDER.indexOf(id); return i < 0 ? 50 : i; };
 
 export default async function Shop() {
