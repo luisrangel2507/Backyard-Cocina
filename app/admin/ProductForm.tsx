@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { saveProduct, removeProduct } from "./actions";
 
 type P = { id: string; name: string; category: string; price: string; heat: number; jars: number; description: string; pairs: string; tip: string; color: string; soldOut: boolean; image: string };
@@ -7,24 +7,36 @@ type P = { id: string; name: string; category: string; price: string; heat: numb
 // Resize a photo in the browser to max 800px WebP so it can be stored with the product.
 async function shrink(file: File): Promise<string> {
   const img = await createImageBitmap(file);
-  const k = Math.min(1, 800 / Math.max(img.width, img.height));
+  const k = Math.min(1, 700 / Math.max(img.width, img.height));
   const c = document.createElement("canvas");
   c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
   c.getContext("2d")!.drawImage(img, 0, 0, c.width, c.height);
-  return c.toDataURL("image/webp", 0.82);
+  let d = c.toDataURL("image/webp", 0.8);
+  if (!d.startsWith("data:image/webp")) d = c.toDataURL("image/jpeg", 0.8); // older iOS Safari has no WebP encoder
+  return d;
 }
 
 export default function ProductForm({ cats, product }: { cats: string[]; product?: P }) {
   const [image, setImage] = useState("");
   const [preview, setPreview] = useState(product?.image ?? "");
   const [newCat, setNewCat] = useState(false);
+  const [msg, setMsg] = useState("");
+  const [pending, start] = useTransition();
+  const submit = (fd: FormData) => start(async () => {
+    setMsg("");
+    try {
+      const r = await saveProduct(fd);
+      if (r && !r.ok) setMsg(r.error); else if (!product) { setMsg("✓ Added"); setImage(""); setPreview(""); }
+      else setMsg("✓ Saved");
+    } catch { setMsg("Couldn't save. Try a smaller photo or try again."); }
+  });
   return (
-    <form action={saveProduct} className="pform">
+    <form action={submit} className="pform">
       {product && <input type="hidden" name="id" value={product.id} />}
       <input type="hidden" name="image" value={image} />
       <label className="pphoto">
         {preview ? <img src={preview} alt="" /> : <span>📷 Add photo</span>}
-        <input type="file" accept="image/*" onChange={async (e) => { const f = e.target.files?.[0]; if (!f) return; const d = await shrink(f); setImage(d); setPreview(d); }} />
+        <input type="file" accept="image/*" onChange={async (e) => { const f = e.target.files?.[0]; if (!f) return; try { const d = await shrink(f); setImage(d); setPreview(d); setMsg(""); } catch { setMsg("That photo format isn't supported. Try a JPG or PNG."); } }} />
       </label>
       <label>Name<input name="name" required maxLength={60} defaultValue={product?.name} placeholder="Salsa Macha" /></label>
       <label>Type
@@ -47,7 +59,8 @@ export default function ProductForm({ cats, product }: { cats: string[]; product
         <label>Color<input name="color" type="color" defaultValue={product?.color ?? "#139a74"} /></label>
         <label className="chk"><input type="checkbox" name="soldOut" defaultChecked={product?.soldOut} /> Sold out</label>
       </div>
-      <button className="btn">{product ? "Save changes" : "Add salsa"}</button>
+      <button className="btn" disabled={pending}>{pending ? "Saving…" : product ? "Save changes" : "Add salsa"}</button>
+      {msg && <b style={{ color: msg.startsWith("✓") ? "#1f7a4f" : "#c62828" }}>{msg}</b>}
       {product && <button type="button" className="linkbtn" onClick={async () => { if (confirm(`Remove ${product.name} from the shop?`)) await removeProduct(product.id); }}>Remove from shop</button>}
     </form>
   );

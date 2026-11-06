@@ -39,15 +39,21 @@ export async function saveProduct(form: FormData) {
     stock: form.get("soldOut") ? 0 : 100,
     ...(image.startsWith("data:image/") && image.length < 900_000 ? { image } : {}),
   };
-  if (!data.name) return;
-  const id = g("id");
-  if (id) await db.product.update({ where: { id }, data });
-  else {
-    let newId = slug(data.name), n = 1;
-    while (await db.product.findUnique({ where: { id: newId } })) newId = `${slug(data.name)}-${++n}`;
-    await db.product.create({ data: { id: newId, ...data } });
+  if (!data.name) return { ok: false, error: "Add a name" };
+  try {
+    const id = g("id");
+    if (id) await db.product.update({ where: { id }, data });
+    else {
+      let newId = slug(data.name), n = 1;
+      while (await db.product.findUnique({ where: { id: newId } })) newId = `${slug(data.name)}-${++n}`;
+      await db.product.create({ data: { id: newId, ...data } });
+    }
+  } catch (e) {
+    console.error("saveProduct failed", e);
+    return { ok: false, error: "Couldn't save. Try a smaller photo or try again." };
   }
   revalidatePath("/admin"); revalidatePath("/shop");
+  return { ok: true, error: "" };
 }
 
 export async function removeProduct(id: string) {

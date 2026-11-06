@@ -27,6 +27,8 @@ const headers = [
 
 const config: NextConfig = {
   poweredByHeader: false,
+  // product photos are sent through a server action; the 1 MB default is too small
+  experimental: { serverActions: { bodySizeLimit: "4mb" } },
   async headers() {
     return [{ source: "/:path*", headers }];
   },
