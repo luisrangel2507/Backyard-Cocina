@@ -4,8 +4,9 @@ import { slotsFor } from "@/lib/schedule";
 import { decrypt } from "@/lib/crypto";
 import LogoutAdmin from "./logout";
 import ProductForm from "./ProductForm";
+import PosMenu from "./PosMenu";
 import { productImage } from "@/lib/productImage";
-import { setStatus, saveProduct, saveSchedule, confirmOrder, rejectOrder, textCustomer, savePartner, addExpense, deleteExpense } from "./actions";
+import { setStatus, saveProduct, saveSchedule, confirmOrder, rejectOrder, textCustomer, savePartner, addExpense, deleteExpense, voidSale } from "./actions";
 
 export const dynamic = "force-dynamic";
 const LABEL: Record<string, string> = { new: "New", ready: "Ready", out: "Out for delivery", done: "Completed" };
@@ -13,6 +14,7 @@ const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const DOT: Record<string, string> = { new: "#e8402a", ready: "#e9a82b", out: "#4cc38a", done: "#9aa3b8" };
 const I = (d: React.ReactNode) => <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">{d}</svg>;
 const ICONS: Record<string, React.ReactNode> = {
+  sell: I(<><path d="M4 7h16l-1.500 11a2 2 0 0 1-2 1.700H7.500A2 2 0 0 1 5.500 18z" /><path d="M9 7V5a3 3 0 0 1 6 0v2" /><path d="M12 11v5M9.500 13.500h5" /></>),
   orders: I(<><rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4h6v3H9zM9 11h6M9 15h4" /></>),
   products: I(<><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z" /><path d="M4 7.5l8 4.5 8-4.5M12 12v9" /></>),
   money: I(<><rect x="3" y="6" width="18" height="12" rx="2" /><circle cx="12" cy="12" r="2.5" /><path d="M6 9v.01M18 15v.01" /></>),
@@ -20,7 +22,7 @@ const ICONS: Record<string, React.ReactNode> = {
   schedule: I(<><rect x="4" y="5" width="16" height="16" rx="2" /><path d="M4 10h16M9 3v4M15 3v4M9 14h.01M13 14h.01M11 17h.01" /></>),
   partners: I(<><circle cx="9" cy="8" r="3.2" /><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5" /><circle cx="17" cy="7" r="2.6" /><path d="M16 13.2c3 .2 5 2.2 5 5" /></>),
 };
-const TABS: [string, string][] = [["orders", "Orders"], ["products", "Products"], ["money", "Money"], ["sales", "Sales"], ["schedule", "Schedule"], ["partners", "Partners"]];
+const TABS: [string, string][] = [["sell", "Sell"], ["orders", "Orders"], ["products", "Products"], ["money", "Money"], ["sales", "Sales"], ["schedule", "Schedule"], ["partners", "Partners"]];
 
 export default async function Admin(props: { searchParams: Promise<{ tab?: string; s?: string; p?: string }> }) {
   const searchParams = await props.searchParams;
@@ -38,6 +40,7 @@ export default async function Admin(props: { searchParams: Promise<{ tab?: strin
       {tab === "orders" && <Orders filter={filter} />}
       {tab === "products" && <Products />}
       {tab === "sales" && <Sales />}
+      {tab === "sell" && <Sell />}
       {tab === "money" && <Money period={searchParams.p || "month"} />}
       {tab === "schedule" && <Schedule />}
       {tab === "partners" && <Partners />}
@@ -138,6 +141,8 @@ async function Sales() {
   return (
     <div className="kpis">
       <div><span>Sales · 7 days</span><b>{money(revenue)}</b></div>
+      <div><span>Online</span><b>{money(orders.filter((o) => o.source !== "in_person").reduce((a, o) => a + o.totalCents, 0))}</b></div>
+      <div><span>In person</span><b>{money(orders.filter((o) => o.source === "in_person").reduce((a, o) => a + o.totalCents, 0))}</b></div>
       <div><span>Orders</span><b>{orders.length}</b></div>
       <div><span>Jars</span><b>{jars}</b></div>
       <div><span>Backyard Club members</span><b>{members}</b></div>
@@ -238,7 +243,7 @@ async function Money({ period }: { period: string }) {
   const today = now.toISOString().slice(0, 10);
   type Row = { id: string; date: Date; label: string; cents: number; expense?: boolean };
   const rows: Row[] = [
-    ...orders.map((o) => ({ id: o.id, date: o.createdAt, label: `Order #${o.id.slice(-6).toUpperCase()} · ${o.jarCount} jars${o.partnerCode ? ` · ${o.partnerCode}` : ""}`, cents: o.totalCents })),
+    ...orders.map((o) => ({ id: o.id, date: o.createdAt, label: `${o.source === "in_person" ? `In person (${o.paymentMethod ?? "cash"})` : `Order #${o.id.slice(-6).toUpperCase()}`} · ${o.jarCount} jars${o.partnerCode ? ` · ${o.partnerCode}` : ""}`, cents: o.totalCents })),
     ...expenses.map((e) => ({ id: e.id, date: e.date, label: `${e.description} · ${e.category}`, cents: -e.amountCents, expense: true })),
   ].sort((a, b) => +b.date - +a.date);
   return (
@@ -274,6 +279,30 @@ async function Money({ period }: { period: string }) {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+async function Sell() {
+  const products = await db.product.findMany({ where: { active: true }, orderBy: [{ sort: "asc" }, { priceCents: "asc" }] });
+  const start = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Los_Angeles" })); start.setHours(0, 0, 0, 0);
+  const today = await db.order.findMany({ where: { source: "in_person", createdAt: { gte: new Date(Date.now() - 24 * 3600e3) } }, include: { items: { include: { product: true } } }, orderBy: { createdAt: "desc" } });
+  const todays = today.filter((o) => new Date(o.createdAt.toLocaleString("en-US", { timeZone: "America/Los_Angeles" })) >= start && o.status !== "cancelled");
+  const byPay = ["cash", "card", "venmo", "zelle", "other"].map((m) => [m, todays.filter((o) => o.paymentMethod === m).reduce((a, o) => a + o.totalCents, 0)] as const).filter(([, v]) => v > 0);
+  return (
+    <div style={{ display: "grid", gap: 14 }}>
+      <PosMenu products={products.map((p) => ({ id: p.id, name: p.name, priceCents: p.priceCents, color: p.color, image: productImage(p), stock: p.stock, jars: p.jars }))} />
+      <div className="kpis">
+        <div><span>In person · today</span><b>{money(todays.reduce((a, o) => a + o.totalCents, 0))}</b></div>
+        <div><span>Jars sold today</span><b>{todays.reduce((a, o) => a + o.jarCount, 0)}</b></div>
+      </div>
+      {byPay.length > 0 && <div className="pairs">{byPay.map(([m, v]) => <span key={m} style={{ background: "var(--deep)", color: "var(--cream)" }}>{m}: {money(v)}</span>)}</div>}
+      {todays.map((o) => (
+        <div className="line" key={o.id}>
+          <span><small className="muted">{o.createdAt.toLocaleTimeString("en-US", { timeZone: "America/Los_Angeles", hour: "numeric", minute: "2-digit" })}</small> {o.items.map((i) => `${i.quantity}× ${i.product.name}`).join(", ")} <small className="muted">· {o.paymentMethod}</small></span>
+          <span style={{ display: "flex", gap: 8, alignItems: "center" }}><b>{money(o.totalCents)}</b><form action={voidSale.bind(null, o.id)}><button className="linkbtn" aria-label="Void sale">Void</button></form></span>
+        </div>
+      ))}
     </div>
   );
 }

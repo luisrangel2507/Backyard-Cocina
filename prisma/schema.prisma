@@ -27,7 +27,9 @@ model Product {
 
 model Order {
   id              String      @id @default(cuid())
-  stripeSessionId String      @unique
+  stripeSessionId String      @unique // in-person sales use "pos_<id>"
+  source          String      @default("online") // online | in_person
+  paymentMethod   String?     // in person: cash | card | venmo | zelle | other
   email           String?
   customer        Customer?   @relation(fields: [customerId], references: [id])
   customerId      String?

@@ -122,3 +122,43 @@ export async function deleteExpense(id: string) {
   await db.expense.delete({ where: { id } });
   revalidatePath("/admin");
 }
+
+/** Record an in-person sale (market, pickup counter, barbershop...). Counts in Money/Sales and decrements stock. */
+export async function recordSale(input: { items: { id: string; q: number }[]; payment: string; email?: string; note?: string; discountCents?: number }) {
+  const ids = input.items.filter((i) => i.q > 0).map((i) => i.id);
+  if (!ids.length) return { ok: false, error: "Add at least one salsa" };
+  const products = await db.product.findMany({ where: { id: { in: ids } } });
+  const lines = input.items.map((i) => ({ p: products.find((p) => p.id === i.id), q: Math.min(99, Math.max(0, Math.floor(i.q))) })).filter((l) => l.p && l.q > 0);
+  const subtotal = lines.reduce((a, l) => a + l.p!.priceCents * l.q, 0);
+  const total = Math.max(0, subtotal - Math.max(0, Math.floor(input.discountCents ?? 0)));
+  const jarCount = lines.reduce((a, l) => a + l.p!.jars * l.q, 0);
+  const payment = ["cash", "card", "venmo", "zelle", "other"].includes(input.payment) ? input.payment : "cash";
+  const email = input.email?.trim().toLowerCase() || null;
+  const member = email ? await db.customer.findUnique({ where: { email } }) : null;
+  const { randomUUID } = await import("crypto");
+  try {
+    await db.$transaction([
+      db.order.create({ data: {
+        stripeSessionId: `pos_${randomUUID()}`, source: "in_person", paymentMethod: payment, email, customerId: member?.id,
+        status: "done", confirmed: true, totalCents: total, fulfillment: "pickup", jarCount,
+        pickupSlot: input.note?.slice(0, 120) || "In person",
+        items: { create: lines.map((l) => ({ productId: l.p!.id, quantity: l.q, priceCents: l.p!.priceCents })) },
+      } }),
+      ...(member ? [db.customer.update({ where: { id: member.id }, data: { jars: { increment: jarCount } } })] : []),
+      ...lines.map((l) => db.product.update({ where: { id: l.p!.id }, data: { stock: { decrement: l.q } } })),
+    ]);
+  } catch (e) { console.error("recordSale failed", e); return { ok: false, error: "Couldn't save the sale. Try again." }; }
+  revalidatePath("/admin");
+  return { ok: true, error: "", total, member: member?.name ?? null };
+}
+
+export async function voidSale(id: string) {
+  const o = await db.order.findUnique({ where: { id }, include: { items: true } });
+  if (!o || o.source !== "in_person" || o.status === "cancelled") return;
+  await db.$transaction([
+    db.order.update({ where: { id }, data: { status: "cancelled" } }),
+    ...(o.customerId ? [db.customer.update({ where: { id: o.customerId }, data: { jars: { decrement: o.jarCount } } })] : []),
+    ...o.items.map((i) => db.product.update({ where: { id: i.productId }, data: { stock: { increment: i.quantity } } })),
+  ]);
+  revalidatePath("/admin");
+}
