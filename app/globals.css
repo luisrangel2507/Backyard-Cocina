@@ -743,3 +743,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .posgrid{grid-template-columns:repeat(2,1fr)}
 @media(min-width:560px){.posgrid{grid-template-columns:repeat(3,1fr)}}
 .price small{white-space:nowrap}
+/* splash fix: art anchored to the bottom edge and tall enough to cover the whole screen (incl. iOS home-bar area) */
+.splash{inset:0;height:auto;min-height:100lvh}
+.splash-art{top:auto;bottom:0;transform:translateX(-50%);width:max(100vw,calc(100lvh * 851 / 1848))}
+@media (min-aspect-ratio:3/4){.splash-art{top:50%;bottom:auto;width:auto;height:100lvh;transform:translate(-50%,-50%)}}
