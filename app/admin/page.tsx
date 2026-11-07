@@ -22,6 +22,14 @@ const ICONS: Record<string, React.ReactNode> = {
   schedule: I(<><rect x="4" y="5" width="16" height="16" rx="2" /><path d="M4 10h16M9 3v4M15 3v4M9 14h.01M13 14h.01M11 17h.01" /></>),
   partners: I(<><circle cx="9" cy="8" r="3.2" /><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5" /><circle cx="17" cy="7" r="2.6" /><path d="M16 13.2c3 .2 5 2.2 5 5" /></>),
 };
+const OI = (d: React.ReactNode) => <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{d}</svg>;
+const OICON: Record<string, React.ReactNode> = {
+  new: OI(<><path d="M12 3l8 4.500v9L12 21l-8-4.500v-9z" /><path d="M4 7.500l8 4.500 8-4.500M12 12v9" /></>),
+  ready: OI(<><path d="M7 3h10M7 21h10M8 3c0 5 8 5 8 9s-8 4-8 9M16 3c0 5-8 5-8 9s8 4 8 9" /></>),
+  out: OI(<><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" /><circle cx="7" cy="18" r="1.600" /><circle cx="17" cy="18" r="1.600" /></>),
+  done: OI(<><circle cx="12" cy="12" r="9" /><path d="M8 12.500l2.800 2.800L16 10" /></>),
+  all: OI(<><path d="M12 3l9 5-9 5-9-5z" /><path d="M3 13l9 5 9-5" /></>),
+};
 const TABS: [string, string][] = [["sell", "Sell"], ["orders", "Orders"], ["products", "Products"], ["money", "Money"], ["sales", "Sales"], ["schedule", "Schedule"], ["partners", "Partners"]];
 
 export default async function Admin(props: { searchParams: Promise<{ tab?: string; s?: string; p?: string }> }) {
@@ -34,10 +42,11 @@ export default async function Admin(props: { searchParams: Promise<{ tab?: strin
     <div className="adm">
       <header className="ahead2">
         <img src="/logo.png" alt="Backyard Cocina" />
-        <div><b>{TABS.find(([id]) => id === tab)?.[1] ?? "Kitchen"}</b><small>KITCHEN ADMIN</small></div>
+        <div><b>BACKYARD<br />COCINA</b><small>KITCHEN ADMIN</small></div>
         <a href="/shop" className="aicon" aria-label="Back to the shop"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 10l9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" /></svg></a>
         <LogoutAdmin />
       </header>
+      <h1 className="apage">{ICONS[tab]}<span>{TABS.find(([id]) => id === tab)?.[1] ?? "Kitchen"}</span></h1>
       <nav className="atabs abottom">{TABS.map(([id, label]) => <Tab key={id} id={id}>{label}</Tab>)}</nav>
       {tab === "orders" && <Orders filter={filter} />}
       {tab === "products" && <Products />}
@@ -59,13 +68,17 @@ async function Orders({ filter }: { filter: string }) {
   })).map((o) => ({ ...o, phone: decrypt(o.phone), deliveryAddress: decrypt(o.deliveryAddress) }));
   return (
     <>
-      <div className="chips">{["new", "ready", "out", "done", "all"].map((k) => (
-        <a key={k} className="chip" aria-pressed={k === filter} href={`/admin?tab=orders&s=${k}`}>{k === "all" ? "All" : <>{LABEL[k]} <i className="dot" style={{ background: DOT[k] }} /> <b>{count(k)}</b></>}</a>
+      <div className="otiles">{(["new", "ready", "out", "done", "all"] as const).map((k) => (
+        <a key={k} className={`otile ot-${k}`} aria-pressed={k === filter} href={`/admin?tab=orders&s=${k}`}>
+          {OICON[k]}
+          <span>{k === "all" ? "All" : k === "done" ? "Completed" : LABEL[k]}</span>
+          {k !== "all" && <b>{count(k)}</b>}
+        </a>
       ))}</div>
       {!orders.length && (
         <div className="empty">
           <img src="/logo.png" alt="" />
-          <h3>No orders here yet</h3>
+          <h3><svg className="burst l" viewBox="0 0 30 40" aria-hidden="true"><path d="M24 6L12 13M26 20H10M24 34L12 27" stroke="#1fb7a0" strokeWidth="4" strokeLinecap="round" fill="none" /></svg><span>No orders<br />here yet</span><svg className="burst r" viewBox="0 0 30 40" aria-hidden="true"><path d="M6 6l12 7M4 20h16M6 34l12-7" stroke="#1fb7a0" strokeWidth="4" strokeLinecap="round" fill="none" /></svg></h3>
           <p>New orders will appear here when customers place them.</p>
         </div>
       )}
