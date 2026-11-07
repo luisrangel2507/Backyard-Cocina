@@ -747,3 +747,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .splash{inset:0;height:auto;min-height:100lvh}
 .splash-art{top:auto;bottom:0;transform:translateX(-50%);width:max(100vw,calc(100lvh * 851 / 1848))}
 @media (min-aspect-ratio:3/4){.splash-art{top:50%;bottom:auto;width:auto;height:100lvh;transform:translate(-50%,-50%)}}
+/* splash v3: use the LARGE viewport (screen incl. Safari's toolbar area) so nothing shows below the art */
+.splash{top:0;left:0;right:0;bottom:auto!important;height:calc(100lvh + env(safe-area-inset-bottom) + 2px)!important;min-height:0}
+.splash-art{bottom:0}
+html:has(.splash),body:has(.splash){background:#1b2414!important;overflow:hidden}
