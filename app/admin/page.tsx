@@ -32,11 +32,13 @@ export default async function Admin(props: { searchParams: Promise<{ tab?: strin
   );
   return (
     <div className="adm">
-      <header className="ahead">
-        <span className="abrand"><img src="/logo.png" alt="Backyard Cocina" /><span className="kadm">KITCHEN ADMIN</span></span>
-        <span style={{ display: "flex", gap: 8 }}><a href="/shop" className="alogout">← Shop</a><LogoutAdmin /></span>
+      <header className="ahead2">
+        <img src="/logo.png" alt="Backyard Cocina" />
+        <div><b>{TABS.find(([id]) => id === tab)?.[1] ?? "Kitchen"}</b><small>KITCHEN ADMIN</small></div>
+        <a href="/shop" className="aicon" aria-label="Back to the shop"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 10l9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" /></svg></a>
+        <LogoutAdmin />
       </header>
-      <nav className="atabs">{TABS.map(([id, label]) => <Tab key={id} id={id}>{label}</Tab>)}</nav>
+      <nav className="atabs abottom">{TABS.map(([id, label]) => <Tab key={id} id={id}>{label}</Tab>)}</nav>
       {tab === "orders" && <Orders filter={filter} />}
       {tab === "products" && <Products />}
       {tab === "sales" && <Sales />}
