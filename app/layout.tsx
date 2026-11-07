@@ -6,7 +6,7 @@ import { fontVars } from "./fonts";
 import type { Viewport } from "next";
 
 // width=device-width stops iOS from shrinking/zooming the page; inputs are >=16px so focus never zooms.
-export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover", themeColor: "#0c1d4a" };
+export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover", themeColor: "#0c1d4a", interactiveWidget: "resizes-content" };
 
 export const metadata = {
   title: "Backyard Cocina",

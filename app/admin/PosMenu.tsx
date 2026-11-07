@@ -44,7 +44,7 @@ export default function PosMenu({ products }: { products: P[] }) {
       <div className="posgrid">
         {products.map((p) => (
           <button key={p.id} className="positem" style={{ ["--c" as any]: p.color }} onClick={() => add(p.id, 1)}>
-            <span className="pimgw"><img src={p.image} alt="" /><i className="pbadge">{BADGE[badgeFor(p)]}</i></span>
+            <span className="pimgw"><img src={p.image} alt="" onError={(e) => { const f = `/${p.id}.jpg`; if (!e.currentTarget.src.endsWith(f)) e.currentTarget.src = f; }} /><i className="pbadge">{BADGE[badgeFor(p)]}</i></span>
             <span className="pn">{p.name}</span>
             <span className="pp">{$(p.priceCents)}</span>
             {cart[p.id] ? <span className="pq">{cart[p.id]}</span> : null}

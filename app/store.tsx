@@ -112,7 +112,7 @@ export default function Store({ products, ratings = {} }: { products: Product[];
           const save = p.jars > 1 && isFinite(single) ? p.jars * single - p.priceCents : 0;
           return (
             <article className="pc rise" key={p.id} style={{ ["--c" as any]: p.color, animationDelay: `${idx * 90}ms` }}>
-              <Link className="pimg" href={`/shop/${p.id}`}><img src={productImage(p)} alt={p.name} />{p.jars > 1 && <span className="pack">{p.jars} {t("jars")}</span>}</Link>
+              <Link className="pimg" href={`/shop/${p.id}`}><img src={productImage(p)} alt={p.name} onError={(e) => { const f = `/${p.id}.jpg`; if (!e.currentTarget.src.endsWith(f)) e.currentTarget.src = f; }} />{p.jars > 1 && <span className="pack">{p.jars} {t("jars")}</span>}</Link>
               <div className="pbody">
                 <span className="eyebrow">{p.jars > 1 ? t("pack") : t("salsa")}</span>
                 {p.jars === 1 && <span className="oz">8 oz</span>}

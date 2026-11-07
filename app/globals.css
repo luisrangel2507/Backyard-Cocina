@@ -798,3 +798,7 @@ html:has(.splash),body:has(.splash){background:#1b2414!important;overflow:hidden
 /* iOS Safari paints the strip under its toolbar with the page background color; blend the art into it instead of a hard edge */
 html:has(.splash),body:has(.splash){background:#1d1a10!important}
 .splash-art::after{content:"";position:absolute;left:0;right:0;bottom:0;height:9%;background:linear-gradient(transparent,#1d1a10);pointer-events:none}
+
+/* no double-tap zoom on iPhone (taps on buttons/cards were zooming the page) */
+html,body,button,a,input,select,textarea,label,summary{touch-action:manipulation}
+.positem,.posgrid,.pos{-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
