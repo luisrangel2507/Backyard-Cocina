@@ -3,6 +3,16 @@ import { useState, useTransition } from "react";
 import { recordSale } from "./actions";
 
 type P = { id: string; name: string; priceCents: number; color: string; image: string; stock: number; jars: number };
+const G = (d: React.ReactNode) => <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{d}</svg>;
+const BADGE: Record<string, React.ReactNode> = {
+  fire: G(<path d="M12 3c1 3 5 5 5 10a5 5 0 0 1-10 0c0-3 2-4 3-6 0 2 1 3 2 3 1-2 0-4 0-7z" />),
+  sun: G(<><path d="M4 18h16M7 18a5 5 0 0 1 10 0M12 7V4M5.500 11.500 4 10M18.500 11.500 20 10" /></>),
+  leaf: G(<><path d="M5 19C5 10 10 5 19 5c0 9-5 14-14 14z" /><path d="M5 19 13 11" /></>),
+  heart: G(<path d="M12 20s-7-4.500-7-10a4 4 0 0 1 7-2.500A4 4 0 0 1 19 10c0 5.500-7 10-7 10z" />),
+  devil: G(<><path d="M6 4l2 4M18 4l-2 4" /><circle cx="12" cy="14" r="6" /><path d="M9.500 13h.01M14.500 13h.01M9.500 16.500c1.500 1 3.500 1 5 0" /></>),
+  pack: G(<><rect x="3" y="8" width="18" height="12" rx="2" /><path d="M7 8V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2" /></>),
+};
+const badgeFor = (p: P) => (p.jars > 1 ? "pack" : ({ nomames: "fire", creamy: "sun", verde: "leaf", mamacita: "heart", roja: "devil" } as Record<string, string>)[p.id] ?? "fire");
 const $ = (c: number) => `$${(c / 100).toFixed(2)}`;
 const PAY = [["cash", "💵 Cash"], ["card", "💳 Card"], ["venmo", "Venmo"], ["zelle", "Zelle"], ["other", "Other"]] as const;
 
@@ -34,7 +44,7 @@ export default function PosMenu({ products }: { products: P[] }) {
       <div className="posgrid">
         {products.map((p) => (
           <button key={p.id} className="positem" style={{ ["--c" as any]: p.color }} onClick={() => add(p.id, 1)}>
-            <img src={p.image} alt="" />
+            <span className="pimgw"><img src={p.image} alt="" /><i className="pbadge">{BADGE[badgeFor(p)]}</i></span>
             <span className="pn">{p.name}</span>
             <span className="pp">{$(p.priceCents)}</span>
             {cart[p.id] ? <span className="pq">{cart[p.id]}</span> : null}

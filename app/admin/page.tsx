@@ -307,9 +307,9 @@ async function Sell() {
   return (
     <div style={{ display: "grid", gap: 14 }}>
       <PosMenu products={products.map((p) => ({ id: p.id, name: p.name, priceCents: p.priceCents, color: p.color, image: productImage(p), stock: p.stock, jars: p.jars }))} />
-      <div className="kpis">
-        <div><span>In person · today</span><b>{money(todays.reduce((a, o) => a + o.totalCents, 0))}</b></div>
-        <div><span>Jars sold today</span><b>{todays.reduce((a, o) => a + o.jarCount, 0)}</b></div>
+      <div className="poskpi">
+        <div className="k1"><svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><ellipse cx="12" cy="6" rx="7" ry="2.500" /><path d="M5 6v4c0 1.400 3.100 2.500 7 2.500s7-1.100 7-2.500V6M5 10v4c0 1.400 3.100 2.500 7 2.500s7-1.100 7-2.500v-4M5 14v4c0 1.400 3.100 2.500 7 2.500s7-1.100 7-2.500v-4" /></svg><span>In person · today<b>{money(todays.reduce((a, o) => a + o.totalCents, 0))}</b></span></div>
+        <div className="k2"><svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="3" width="12" height="4" rx="1" /><path d="M7 7h10v12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2z" /><path d="M7 12h10" /></svg><span>Jars sold today<b>{todays.reduce((a, o) => a + o.jarCount, 0)}</b></span></div>
       </div>
       {byPay.length > 0 && <div className="pairs">{byPay.map(([m, v]) => <span key={m} style={{ background: "var(--deep)", color: "var(--cream)" }}>{m}: {money(v)}</span>)}</div>}
       {todays.map((o) => (
