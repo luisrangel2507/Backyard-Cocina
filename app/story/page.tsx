@@ -14,8 +14,11 @@ export default async function Story() {
         <p className="ms-eyebrow">{t("stEyebrow")}</p>
         <h1>{t("stTitle")}</h1>
         <p>{t("st1")}</p>
-        <p>{t("st2a")}<b>{t("st2b")}</b></p>
+        <p>{t("st2")}</p>
         <p>{t("st3")}</p>
+        <p>{t("st4a")}<b>{t("st4b")}</b></p>
+        <p>{t("st5")}</p>
+        <p className="ms-tag">{t("stTag")}</p>
       </div>
       <Link className="ms-btn" href="/shop">{t("stOrder")} <span aria-hidden="true">→</span></Link>
       <img className="ms-table" src="/story-table.jpg" alt="" />
