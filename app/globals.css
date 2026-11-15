@@ -804,3 +804,4 @@ html,body,button,a,input,select,textarea,label,summary{touch-action:manipulation
 .positem,.posgrid,.pos{-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 .ms-text .ms-tag{font-family:var(--f-dmserif),Georgia,serif;font-size:clamp(20px,5.4vw,26px);color:var(--green);margin-top:6px}
 @media(max-width:759px){.ms-text{width:auto;max-width:none;padding-right:24px}.ms-text::before{content:"";float:right;width:calc(48vw - 30px);height:calc(97vw - 40px);margin-left:10px}}
+.how ol{display:flex;flex-wrap:wrap;justify-content:center}.how li{flex:1 1 180px;max-width:calc(50% - 5px)}
