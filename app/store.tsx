@@ -62,7 +62,6 @@ export default function Store({ products, ratings = {} }: { products: Product[];
           <Link href="/shop" className="logo"><img src="/logo.png" alt="" /><span>BACKYARD<br />COCINA<small>MEXICAN ROOTS. BACKYARD SOUL.</small></span></Link>
           <nav className="dnav" aria-label="Main">
             <Link href="/story">{t("ourStory")}</Link>
-            <Link href="/merch">{t("merch")}</Link>
             <Link href={member ? "/profile" : "/login"}>{t("club")}</Link>
           </nav>
           <span className="hr">
@@ -78,7 +77,6 @@ export default function Store({ products, ratings = {} }: { products: Product[];
             <Link href="/shop" onClick={() => setMenu(false)}>{t("menuOrder")}</Link>
             <Link href="/story">{t("menuStory")}</Link>
             <Link href={member ? "/profile" : "/login"}>{t("menuClub")}</Link>
-            <Link href="/merch">{t("menuMerch")}</Link>
             <Link href="/cart">{t("menuCart")}</Link>
             <Link href="/admin">{t("menuKitchen")}</Link>
           </nav>
@@ -173,17 +171,6 @@ export default function Store({ products, ratings = {} }: { products: Product[];
         <h2>{t("faqTitle")}</h2>
         {([1, 2, 3, 4, 5, 6] as const).map((n) => <details key={n}><summary>{t(`q${n}` as any)}</summary><p>{t(`a${n}` as any)}</p></details>)}
       </section>
-
-      <section className="drop reveal">
-        <span className="soon">{t("dropTag")}</span>
-        <h2>{t("dropTitle")}</h2>
-        <p>{t("dropText")}</p>
-      </section>
-
-      <Link href="/merch" className="merch reveal" style={{ display: "block", textDecoration: "none" }}>
-        <div className="mh"><h2>{t("merchTitle")}</h2><span className="soon">{t("merchSoon")}</span></div>
-        <p>{t("merchText")}</p>
-      </Link>
 
       <footer className="foot">
         <b>{t("footTitle")}</b>

@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { getCustomer } from "@/lib/auth";
 import { getT } from "@/lib/i18n-server";
 import { PageBar } from "@/lib/i18n-client";
-import { FREE_SALSA_EVERY, FREE_MERCH_EVERY, freeSalsasAvailable, merchAvailable, jarsToNextFree, makeReferralCode } from "@/lib/loyalty";
+import { FREE_SALSA_EVERY, freeSalsasAvailable, jarsToNextFree, makeReferralCode } from "@/lib/loyalty";
 import LogoutButton from "./logout";
 import CopyCode from "./CopyCode";
 import Confetti from "./Confetti";
@@ -38,7 +38,6 @@ export default async function Profile() {
   const months = t("months").split(",");
   const stamps = c.jars % FREE_SALSA_EVERY;
   const free = Math.max(0, freeSalsasAvailable(c));
-  const merch = Math.max(0, merchAvailable(c));
   const first = c.name.split(" ")[0];
   return (
     <div className="prof">
@@ -59,11 +58,6 @@ export default async function Profile() {
         <span><b>FREE SALSAS</b><b>AVAILABLE: <em>{free}</em></b>{free > 0 && <small>USE IT IN YOUR CART</small>}</span>
         <i aria-hidden="true">›</i>
       </Link>
-      <div className="rrow">
-        <img src="/prof-shirt.jpg" alt="" />
-        <span><b>FREE MERCH REWARDS</b><b>AVAILABLE: <em>{merch}</em></b><small>({t("every", { n: FREE_MERCH_EVERY }).toUpperCase()})</small></span>
-        <i aria-hidden="true">›</i>
-      </div>
 
       <div className="refbox">
         <div><small>YOUR REFERRAL CODE:</small><b>{c.referralCode}</b></div>
