@@ -6,6 +6,7 @@ import LogoutAdmin from "./logout";
 import ProductForm from "./ProductForm";
 import PosMenu from "./PosMenu";
 import { productImage } from "@/lib/productImage";
+import { syncRecentPaidSessions } from "@/lib/orders";
 import { setStatus, saveProduct, saveSchedule, confirmOrder, rejectOrder, textCustomer, savePartner, saveBlade, addExpense, deleteExpense, voidSale } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -60,6 +61,7 @@ export default async function Admin(props: { searchParams: Promise<{ tab?: strin
 }
 
 async function Orders({ filter }: { filter: string }) {
+  await syncRecentPaidSessions(); // picks up paid orders the webhook missed
   const all = await db.order.findMany({ where: { status: { not: "cancelled" } }, select: { status: true } });
   const count = (k: string) => all.filter((o) => o.status === k).length;
   const orders = (await db.order.findMany({

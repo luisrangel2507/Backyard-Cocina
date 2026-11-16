@@ -1,66 +1,18 @@
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
-import { db, stripe } from "@/lib/db";
-import { encrypt } from "@/lib/crypto";
-import { sendEmail, orderConfirmationEmail, newOrderAdminEmail } from "@/lib/email";
-import { pickupPlace } from "@/lib/zones";
-import { bladeInfo } from "@/lib/blade";
+import { stripe } from "@/lib/db";
+import { recordPaidSession } from "@/lib/orders";
 
-// Orders are only marked paid here, after Stripe confirms the payment.
+// Stripe tells us here when a checkout is paid. (The order page and the admin also save missed orders, see lib/orders.ts.)
 export async function POST(req: Request) {
-  const sig = req.headers.get("stripe-signature")!;
+  const sig = req.headers.get("stripe-signature") ?? "";
   let event: Stripe.Event;
   try {
     event = stripe.webhooks.constructEvent(await req.text(), sig, process.env.STRIPE_WEBHOOK_SECRET!);
-  } catch {
+  } catch (e) {
+    console.error("Stripe webhook: bad signature. Check STRIPE_WEBHOOK_SECRET matches this endpoint and mode (test vs live).", (e as Error).message);
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
-
-  if (event.type === "checkout.session.completed") {
-    const s = event.data.object as Stripe.Checkout.Session;
-    const exists = await db.order.findUnique({ where: { stripeSessionId: s.id } });
-    if (!exists) {
-      const items = JSON.parse(s.metadata?.items || "[]") as [string, number, number][];
-      const email = s.customer_details?.email?.toLowerCase();
-      // Only Backyard Club members earn stamps; guests can claim later by signing up with the same email.
-      const member = email ? await db.customer.findUnique({ where: { email } }) : null;
-      const usedFree = s.metadata?.freeSalsa === "1";
-      const paidJars = Number(s.metadata?.jarCount || 0) - (usedFree ? 1 : 0);
-      const partner = s.metadata?.partner ? await db.partner.findUnique({ where: { code: s.metadata.partner } }) : null;
-      await db.$transaction([
-        db.order.create({
-          data: {
-            stripeSessionId: s.id,
-            email,
-            customerId: member?.id,
-            freeSalsaUsed: usedFree,
-            status: "new",
-            totalCents: s.amount_total ?? 0,
-            fulfillment: s.metadata?.fulfillment || "pickup",
-            deliveryAddress: encrypt(s.metadata?.address),
-            pickupSlot: s.metadata?.pickupSlot || null,
-            slotDay: s.metadata?.slotDay || null,
-            jarCount: Number(s.metadata?.jarCount || 0),
-            phone: encrypt(s.customer_details?.phone),
-            partnerCode: partner?.code,
-            commissionCents: partner ? Math.max(0, paidJars) * partner.commissionCents : 0,
-            items: { create: items.map(([productId, quantity, priceCents]) => ({ productId, quantity, priceCents })) },
-          },
-        }),
-        ...(member ? [db.customer.update({ where: { id: member.id }, data: { jars: { increment: paidJars }, freeUsed: { increment: usedFree ? 1 : 0 } } })] : []),
-        // Blade & Barber pickups come off their shelf count; everything else off the kitchen stock.
-        ...items.map(([id, q]) => db.product.update({ where: { id }, data: s.metadata?.fulfillment === "blade" ? { bladeStock: { decrement: q } } : { stock: { decrement: q } } })),
-      ]);
-      // Emails never block or fail the webhook.
-      const order = await db.order.findUnique({ where: { stripeSessionId: s.id }, include: { items: { include: { product: true } } } });
-      if (order) {
-        const first = (member?.name ?? s.customer_details?.name ?? "").split(" ")[0] || undefined;
-        const jobs: Promise<unknown>[] = [];
-        if (email) jobs.push(sendEmail(email, `Order #${order.id.slice(-6).toUpperCase()} confirmed 🌶`, orderConfirmationEmail(order, first, s.id, pickupPlace(order.fulfillment, order.fulfillment === "blade" ? (await bladeInfo()).address : ""))));
-        if (process.env.ADMIN_EMAIL) jobs.push(sendEmail(process.env.ADMIN_EMAIL.split(",").map((x) => x.trim()), `🌶 New order #${order.id.slice(-6).toUpperCase()} · ${order.jarCount} jars`, newOrderAdminEmail(order, member?.name ?? s.customer_details?.name ?? email ?? "Guest")));
-        await Promise.allSettled(jobs);
-      }
-    }
-  }
+  if (event.type === "checkout.session.completed") await recordPaidSession(event.data.object as Stripe.Checkout.Session);
   return NextResponse.json({ received: true });
 }

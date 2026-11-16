@@ -1,6 +1,7 @@
 import { db, stripe, money } from "@/lib/db";
 import { pickupPlace, isPickup } from "@/lib/zones";
 import { bladeInfo } from "@/lib/blade";
+import { recordPaidSession } from "@/lib/orders";
 import { getT } from "@/lib/i18n-server";
 import { PageBar } from "@/lib/i18n-client";
 
@@ -12,6 +13,8 @@ export default async function Success(props: { searchParams: Promise<{ session_i
   const { t } = await getT();
   const s = searchParams.session_id ? await stripe.checkout.sessions.retrieve(searchParams.session_id, { expand: ["invoice"] }) : null;
   if (!s || s.payment_status !== "paid") return <><PageBar /><p>{t("okNoPay")}</p></>;
+  // If Stripe's webhook hasn't saved the order (or isn't set up right), save it now from the paid session.
+  await recordPaidSession(s).catch((e) => console.error("recordPaidSession from order page failed", e));
   const o = await db.order.findUnique({ where: { stripeSessionId: s.id } });
   const steps = o?.fulfillment === "delivery"
     ? [["new", t("stReceived")], ["ready", t("stPacked")], ["out", t("stOnWay")], ["done", t("stDelivered")]]
