@@ -37,7 +37,7 @@ const en = {
   viewCart: "View cart →", item: "item", items: "items",
   // cart
   cartTitle: "Your cart", cartEmpty: "Nothing here yet.", browse: "Browse salsas", clearCart: "Empty cart", subtotal: "Subtotal", each: "each",
-  howWant: "How do you want it?", pickupFree: "Pickup in Torrance · Free", bladePickup: "💈 Pickup at Blade & Barber · Free", bladeAt: "Pick up at", bladeHours: "Hours:", bladeReady: "We’ll text you when it’s ready to pick up.", bladeShort: "Only {n} {name} at Blade & Barber right now.", bladeNone: "No jars at Blade & Barber right now.", atBlade: "{n} at Blade & Barber", noneAtBlade: "None at Blade & Barber", deliveryZone: "Delivery · by zone",
+  howWant: "How do you want it?", pickupFree: "Pickup in Torrance · Free", bladePickup: "💈 Pickup at Blade & Barber · Free", bladeAt: "Pick up at", pickupAddrLater: "We’ll send you the pickup address with your order confirmation.", bladeHours: "Hours:", bladeReady: "We’ll text you when it’s ready to pick up.", bladeShort: "Only {n} {name} at Blade & Barber right now.", bladeNone: "No jars at Blade & Barber right now.", atBlade: "{n} at Blade & Barber", noneAtBlade: "None at Blade & Barber", deliveryZone: "Delivery · by zone",
   zip: "ZIP code", street: "Street address", pickupAt: "Pickup at", soldOutShort: " · sold out", onlyLeft: " · only {n} jars left",
   deliveryTo: "Delivery to {zone}: {fee}", noDelivery: "We don't deliver to that ZIP yet. Choose pickup instead.",
   useFree: "🎁 Use my free salsa ({n} available)", loginToEarn: "Create a free account", loginToEarn2: " to earn stamps and get free salsas.",
@@ -107,7 +107,7 @@ const es: Record<Key, string> = {
   footTitle: "De nuestro patio a tu mesa", footMade: "Hecho en Torrance, CA · Recoge o entrega local",
   viewCart: "Ver carrito →", item: "artículo", items: "artículos",
   cartTitle: "Tu carrito", cartEmpty: "Aún no hay nada.", browse: "Ver salsas", clearCart: "Vaciar carrito", subtotal: "Subtotal", each: "c/u",
-  howWant: "¿Cómo lo quieres?", pickupFree: "Recoger en Torrance · Gratis", bladePickup: "💈 Recoger en Blade & Barber · Gratis", bladeAt: "Recoge en", bladeHours: "Horario:", bladeReady: "Te mandamos un mensaje cuando esté listo para recoger.", bladeShort: "Solo hay {n} {name} en Blade & Barber ahora.", bladeNone: "No hay frascos en Blade & Barber ahora.", atBlade: "{n} en Blade & Barber", noneAtBlade: "Sin frascos en Blade & Barber", deliveryZone: "Entrega · por zona",
+  howWant: "¿Cómo lo quieres?", pickupFree: "Recoger en Torrance · Gratis", bladePickup: "💈 Recoger en Blade & Barber · Gratis", bladeAt: "Recoge en", pickupAddrLater: "Te mandamos la dirección para recoger junto con la confirmación de tu pedido.", bladeHours: "Horario:", bladeReady: "Te mandamos un mensaje cuando esté listo para recoger.", bladeShort: "Solo hay {n} {name} en Blade & Barber ahora.", bladeNone: "No hay frascos en Blade & Barber ahora.", atBlade: "{n} en Blade & Barber", noneAtBlade: "Sin frascos en Blade & Barber", deliveryZone: "Entrega · por zona",
   zip: "Código postal", street: "Dirección", pickupAt: "Recoger en", soldOutShort: " · agotado", onlyLeft: " · solo quedan {n} frascos",
   deliveryTo: "Entrega a {zone}: {fee}", noDelivery: "Todavía no entregamos en ese código postal. Elige recoger.",
   useFree: "🎁 Usar mi salsa gratis ({n} disponible)", loginToEarn: "Crea una cuenta gratis", loginToEarn2: " para ganar sellos y salsas gratis.",

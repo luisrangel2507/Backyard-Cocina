@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useCart } from "@/lib/cart";
-import { zoneFor, PICKUP_ADDRESS, BLADE_NAME } from "@/lib/zones";
+import { zoneFor, BLADE_NAME } from "@/lib/zones";
 import { PageBar, useT } from "@/lib/i18n-client";
 
 const box = { padding: 12, borderRadius: 10, border: 0 } as const;
@@ -30,7 +30,6 @@ export default function CartPage() {
   const info = (id: string) => catalog.find((p) => p.id === id);
   const subtotal = items.reduce((a, [id, q]) => a + (info(id)?.priceCents ?? 0) * q, 0);
   const $ = (c: number) => `$${(c / 100).toFixed(2)}`;
-  const bladeOn = catalog.some((p) => p.bladeStock > 0);
   // Items in the cart that Blade & Barber doesn't have enough of
   const bladeShort = items.map(([id, q]) => ({ p: info(id), q })).filter(({ p, q }) => p && p.bladeStock < q);
 
@@ -77,7 +76,7 @@ export default function CartPage() {
             <div style={{ marginTop: 20, display: "grid", gap: 10 }}>
               <b>{t("howWant")}</b>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                {(bladeOn ? (["pickup", "delivery", "blade"] as const) : (["pickup", "delivery"] as const)).map((f) => (
+                {(["pickup", "delivery", "blade"] as const).map((f) => (
                   <button key={f} className="btn" onClick={() => setFulfillment(f)}
                     style={{ background: fulfillment === f ? "var(--cream)" : "transparent", color: fulfillment === f ? "var(--navy)" : "var(--cream)", border: "1.5px solid var(--cream)", ...(f === "blade" ? { gridColumn: "1 / -1" } : {}) }}>
                     {t(f === "pickup" ? "pickupFree" : f === "blade" ? "bladePickup" : "deliveryZone")}
@@ -102,7 +101,7 @@ export default function CartPage() {
                 </>
               ) : (
                 <>
-                  <p style={{ margin: 0 }}>{t("pickupAt")} <b>{PICKUP_ADDRESS}</b></p>
+                  <small>{t("pickupAddrLater")}</small>
                   <select value={pickupSlot} onChange={(e) => setPickupSlot(e.target.value)} style={box}>
                     {slots.map((s) => <option key={s.label} value={s.label} disabled={s.left <= 0}>{s.label}{s.left <= 0 ? t("soldOutShort") : s.left <= 10 ? t("onlyLeft", { n: s.left }) : ""}</option>)}
                   </select>
