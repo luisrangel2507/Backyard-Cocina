@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useCart } from "@/lib/cart";
 import { zoneFor, BLADE_NAME } from "@/lib/zones";
 import { PageBar, useT } from "@/lib/i18n-client";
+import SlotPicker, { type Slot } from "./SlotPicker";
 
 const box = { padding: 12, borderRadius: 10, border: 0 } as const;
 
@@ -17,7 +18,7 @@ export default function CartPage() {
   const [zip, setZip] = useState("");
   const zone = zoneFor(zip);
   const [pickupSlot, setPickupSlot] = useState("");
-  const [slots, setSlots] = useState<{ label: string; left: number }[]>([]);
+  const [slots, setSlots] = useState<Slot[]>([]);
   useEffect(() => { fetch("/api/slots").then((r) => r.json()).then((s) => { setSlots(s); setPickupSlot(s.find((x: any) => x.left > 0)?.label ?? ""); }); }, []);
   const [me, setMe] = useState<{ name: string; freeSalsas: number } | null | undefined>(undefined);
   const [useFree, setUseFree] = useState(false);
@@ -95,16 +96,12 @@ export default function CartPage() {
                   <input placeholder={t("zip")} inputMode="numeric" maxLength={5} value={zip} onChange={(e) => setZip(e.target.value)} style={box} />
                   {zip.length === 5 && <small>{zone ? t("deliveryTo", { zone: zone.name, fee: $(zone.feeCents) }) : t("noDelivery")}</small>}
                   <input placeholder={t("street")} value={address} onChange={(e) => setAddress(e.target.value)} style={box} />
-                  <select value={pickupSlot} onChange={(e) => setPickupSlot(e.target.value)} style={box}>
-                    {slots.map((s) => <option key={s.label} value={s.label} disabled={s.left <= 0}>{s.label}{s.left <= 0 ? t("soldOutShort") : ""}</option>)}
-                  </select>
+                  <SlotPicker slots={slots} value={pickupSlot} onChange={setPickupSlot} />
                 </>
               ) : (
                 <>
                   <small>{t("pickupAddrLater")}</small>
-                  <select value={pickupSlot} onChange={(e) => setPickupSlot(e.target.value)} style={box}>
-                    {slots.map((s) => <option key={s.label} value={s.label} disabled={s.left <= 0}>{s.label}{s.left <= 0 ? t("soldOutShort") : s.left <= 10 ? t("onlyLeft", { n: s.left }) : ""}</option>)}
-                  </select>
+                  <SlotPicker slots={slots} value={pickupSlot} onChange={setPickupSlot} />
                 </>
               )}
             </div>
@@ -114,7 +111,7 @@ export default function CartPage() {
               </label>
             )}
             {me === null && <p style={{ marginTop: 16 }}><small><Link href="/login" style={{ color: "var(--gold)", fontWeight: 700 }}>{t("loginToEarn")}</Link>{t("loginToEarn2")}</small></p>}
-            <button className="btn" style={{ marginTop: 20, width: "100%", padding: 14, background: "var(--tomato)" }} onClick={checkout} disabled={loading || (fulfillment === "delivery" && !zone) || (fulfillment === "blade" && bladeShort.length > 0)}>
+            <button className="btn" style={{ marginTop: 20, width: "100%", padding: 14, background: "var(--tomato)" }} onClick={checkout} disabled={loading || (fulfillment !== "blade" && !pickupSlot) || (fulfillment === "delivery" && !zone) || (fulfillment === "blade" && bladeShort.length > 0)}>
               {loading ? t("opening") : t("checkout")}
             </button>
           </>
