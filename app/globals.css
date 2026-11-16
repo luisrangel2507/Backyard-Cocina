@@ -856,3 +856,5 @@ html,body,button,a,input,select,textarea,label,summary{touch-action:manipulation
     .pbody p{-webkit-line-clamp:10;min-height:13em}
   }
 }
+/* How it works has 2 steps now: the second keeps the orange of the old "Pick up or delivery" step */
+.how li:nth-child(2) span{background:var(--orange);color:#fff}.how li:nth-child(2){border-color:var(--orange)}

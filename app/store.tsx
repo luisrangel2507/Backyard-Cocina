@@ -151,8 +151,7 @@ export default function Store({ products, ratings = {} }: { products: Product[];
         <h2>{t("howTitle")}</h2>
         <ol>
           <li><span>1</span><b>{t("how1")}</b><small>{t("how1d")}</small></li>
-          <li><span>2</span><b>{t("how2")}</b><small>{t("how2d")}</small></li>
-          <li><span>3</span><b>{t("how3")}</b><small>{t("how3d")}</small></li>
+          <li><span>2</span><b>{t("how3")}</b><small>{t("how3d")}</small></li>
         </ol>
       </section>
 
