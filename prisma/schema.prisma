@@ -32,6 +32,7 @@ model Order {
   source          String      @default("online") // online | in_person
   paymentMethod   String?     // in person: cash | card | venmo | zelle | other
   email           String?
+  customerName    String?     // name entered at Stripe checkout
   customer        Customer?   @relation(fields: [customerId], references: [id])
   customerId      String?
   freeSalsaUsed   Boolean     @default(false)

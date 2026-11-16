@@ -27,6 +27,7 @@ export async function recordPaidSession(s: Stripe.Checkout.Session) {
         data: {
           stripeSessionId: s.id,
           email,
+          customerName: s.customer_details?.name?.slice(0, 120) || null,
           customerId: member?.id,
           freeSalsaUsed: usedFree,
           status: "new",
@@ -72,6 +73,11 @@ export async function syncRecentPaidSessions() {
     const known = new Set((await db.order.findMany({ where: { stripeSessionId: { in: list.data.map((s) => s.id) } }, select: { stripeSessionId: true } })).map((o) => o.stripeSessionId));
     let added = 0;
     for (const s of list.data) if (!known.has(s.id) && (await recordPaidSession(s))) added++;
+    // Older orders were saved without the customer's name: fill it in from Stripe.
+    for (const s of list.data) {
+      const nm = s.customer_details?.name?.slice(0, 120);
+      if (nm && known.has(s.id)) await db.order.updateMany({ where: { stripeSessionId: s.id, customerName: null }, data: { customerName: nm } });
+    }
     return added;
   } catch (e) {
     console.error("Stripe sync failed", e);

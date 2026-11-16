@@ -896,3 +896,40 @@ html,body,button,a,input,select,textarea,label,summary{touch-action:manipulation
 .fsum{margin-top:18px;padding:12px 14px;border-radius:14px;background:#1fb7a022;border:1px solid #1fb7a066;font-weight:600}
 .fsum.warn{background:#e8402a22;border-color:#e8402a88;color:#ffd2c9}
 .btn.soft{opacity:.75}
+
+/* admin: order card v2 */
+.ord2{background:var(--cream);color:var(--ink);border-radius:20px;padding:16px;margin-bottom:14px;display:grid;gap:14px;box-shadow:0 8px 22px #0006;border-top:6px solid var(--tomato)}
+.ord2.st-ready{border-top-color:var(--gold)}.ord2.st-out{border-top-color:#4a7bd8}.ord2.st-done{border-top-color:var(--green);opacity:.8}
+.o2-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.o2-id{display:block;font-family:var(--f-bungee),sans-serif;font-weight:400;font-size:1.35rem;letter-spacing:.04em;color:var(--navy)}
+.o2-top small{color:#5a6178;font-size:13px}
+.o2-status{font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:6px 10px;border-radius:999px;white-space:nowrap;background:#e8402a;color:#fff}
+.o2-status.s-ready{background:var(--gold);color:var(--ink)}.o2-status.s-out{background:#4a7bd8}.o2-status.s-done{background:var(--green)}
+.o2-when{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:16px;background:#13285f;color:var(--cream)}
+.o2-when.k-delivery{background:#1f4fa8}.o2-when.k-blade{background:#5a2a82}
+.o2-ico{font-size:30px;line-height:1}
+.o2-when small{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.8}
+.o2-when b{display:block;font-size:1.25rem;margin-top:2px}
+.o2-when span{display:block;margin-top:4px;font-size:14px}
+.o2-who{display:flex;gap:12px;align-items:center}
+.o2-av{flex:none;width:44px;height:44px;border-radius:50%;background:var(--navy);color:var(--cream);display:grid;place-items:center;font-weight:800}
+.o2-name{flex:1;min-width:0;display:grid}
+.o2-name b{font-size:1.05rem}
+.o2-name a{color:var(--ink);text-decoration:none;font-weight:600}
+.o2-name small{color:#5a6178;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.o2-calls{display:flex;gap:8px}
+.o2-ib{width:44px;height:44px;border-radius:50%;background:#13285f12;display:grid;place-items:center;text-decoration:none;font-size:18px}
+.o2-items{display:grid;gap:8px;padding:12px;border-radius:16px;background:#13285f0a}
+.o2-it{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center}
+.o2-it img{width:40px;height:40px;border-radius:10px;object-fit:cover}
+.o2-total{display:flex;justify-content:space-between;align-items:baseline;padding-top:8px;border-top:1px solid #0002;font-weight:700}
+.o2-total small{font-weight:500;color:#5a6178}
+.o2-total b{font-size:1.3rem}
+.ord2 .btn{width:100%;border-radius:14px;padding:14px;font-weight:800;background:var(--navy)}
+.ord2 .btn.rej{background:transparent;color:#c62828;border:2px solid #c62828}
+.ord2 .btn.ok{background:var(--green)}
+.ord2 .btn.ghost{background:transparent;color:var(--navy);border:2px solid var(--navy);text-align:center;display:block;text-decoration:none}
+.ord2 .acts{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}
+.o2-msg summary{cursor:pointer;list-style:none;text-align:center;font-weight:700;color:var(--navy);padding:6px}
+.o2-msg summary::-webkit-details-marker{display:none}
+.ord2 .cmp{display:grid;gap:8px;margin-top:8px}.ord2 .cmp textarea{border-radius:12px;padding:10px;font:inherit;border:1px solid #0003}

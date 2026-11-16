@@ -10,6 +10,8 @@ import { syncRecentPaidSessions } from "@/lib/orders";
 import { setStatus, saveProduct, saveSchedule, confirmOrder, rejectOrder, textCustomer, savePartner, saveBlade, addExpense, deleteExpense, voidSale } from "./actions";
 
 export const dynamic = "force-dynamic";
+/** "+13104698505" -> "(310) 469-8505" */
+const fmtPhone = (p: string) => { const d = p.replace(/\D/g, "").replace(/^1(?=\d{10}$)/, ""); return d.length === 10 ? `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}` : p; };
 const LABEL: Record<string, string> = { new: "New", ready: "Ready", out: "Out for delivery", done: "Completed" };
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const DOT: Record<string, string> = { new: "#e8402a", ready: "#e9a82b", out: "#4cc38a", done: "#9aa3b8" };
@@ -88,39 +90,57 @@ async function Orders({ filter }: { filter: string }) {
         const next = o.status === "new" ? "ready" : o.status === "ready" ? (o.fulfillment === "delivery" ? "out" : "done") : o.status === "out" ? "done" : null;
         const btn = next === "ready" ? "Mark ready · text customer" : next === "out" ? "Out for delivery · text" : next === "done" ? (o.fulfillment !== "delivery" ? "Picked up" : "Delivered") : "";
         const jars = o.items.reduce((a, i) => a + i.quantity, 0);
+        const name = o.customer?.name || o.customerName || o.email || "Guest";
+        const first = name.includes("@") ? "there" : name.split(" ")[0];
+        const kind = o.fulfillment === "blade" ? { cls: "blade", icon: "💈", label: "Pickup · Blade & Barber" }
+          : o.fulfillment === "delivery" ? { cls: "delivery", icon: "🚗", label: "Delivery" }
+          : { cls: "pickup", icon: "🏡", label: "Pickup · Torrance" };
+        const addr = o.fulfillment === "delivery" ? (o.deliveryAddress ?? "").replace(/^[\s,]+|[\s,]+$/g, "") : "";
+        const when = o.pickupSlot && o.fulfillment !== "blade" ? o.pickupSlot : o.fulfillment === "blade" ? (o.pickupSlot?.replace(/^Blade & Barber ?·? ?/, "") || "During their shop hours") : "";
         return (
-          <div key={o.id} className={`ord st-${o.status}`}>
-            <div className="oh"><b>#{o.id.slice(-6).toUpperCase()}</b><span className="pill">{LABEL[o.status] ?? o.status}</span></div>
-            <div className="muted">{o.createdAt.toLocaleString("en-US", { timeZone: "America/Los_Angeles", dateStyle: "medium", timeStyle: "short" })}</div>
-            <div className="who"><div><b>{o.customer?.name ?? o.email ?? "Guest"}</b><div>{o.phone}</div></div>
-              {o.phone && <span className="calls"><a className="ibtn" href={`tel:${o.phone}`} aria-label="Call">📞</a><a className="ibtn" href={`sms:${o.phone}`} aria-label="Text">💬</a></span>}
+          <article key={o.id} className={`ord2 st-${o.status}`}>
+            <header className="o2-top">
+              <div><b className="o2-id">#{o.id.slice(-6).toUpperCase()}</b><small>{o.createdAt.toLocaleString("en-US", { timeZone: "America/Los_Angeles", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</small></div>
+              <span className={`o2-status s-${o.status}`}>{o.status === "new" && !o.confirmed ? "New · needs confirm" : LABEL[o.status] ?? o.status}</span>
+            </header>
+
+            <div className={`o2-when k-${kind.cls}`}>
+              <span className="o2-ico" aria-hidden="true">{kind.icon}</span>
+              <div><small>{kind.label}</small><b>{when || "—"}</b>{addr && <span>📍 {addr}</span>}</div>
             </div>
-            <div className="items">{o.items.map((i) => (
-              <div key={i.id} className="it"><img src={productImage(i.product)} alt="" /><div><b>{i.quantity} × {i.product.name.replace("Salsa ", "")}</b><div>{money(i.product.priceCents * i.quantity)}</div></div></div>
-            ))}</div>
-            <div className="of"><span>Total</span><b>{money(o.totalCents)}</b></div>
-            <div className="chs"><span className="pill">{o.fulfillment === "blade" ? "💈 Blade & Barber" : o.fulfillment === "pickup" ? "Pickup" : "Delivery"}</span><span className="pill">{jars} {jars === 1 ? "jar" : "jars"}</span></div>
-            {o.pickupSlot && <div>🗓 {o.pickupSlot}</div>}
-            {o.deliveryAddress && <div>📍 {o.deliveryAddress}</div>}
+
+            <div className="o2-who">
+              <span className="o2-av" aria-hidden="true">{(name.includes("@") ? name[0] : name.split(" ").map((w) => w[0]).slice(0, 2).join("")).toUpperCase()}</span>
+              <div className="o2-name"><b>{name.includes("@") ? "Guest" : name}</b>{o.phone && <a href={`tel:${o.phone}`}>{fmtPhone(o.phone)}</a>}{o.email && <small>{o.email}</small>}</div>
+              {o.phone && <span className="o2-calls"><a className="o2-ib" href={`tel:${o.phone}`} aria-label="Call">📞</a><a className="o2-ib" href={`sms:${o.phone}`} aria-label="Text">💬</a></span>}
+            </div>
+
+            <div className="o2-items">
+              {o.items.map((i) => (
+                <div key={i.id} className="o2-it"><img src={productImage(i.product)} alt="" /><span><b>{i.quantity}×</b> {i.product.name.replace("Salsa ", "")}</span><b>{money(i.priceCents * i.quantity)}</b></div>
+              ))}
+              <div className="o2-total"><span>Total paid <small>· {jars} {jars === 1 ? "jar" : "jars"}{o.freeSalsaUsed ? " · 🎁 free salsa" : ""}{o.partnerCode ? ` · ${o.partnerCode}` : ""}</small></span><b>{money(o.totalCents)}</b></div>
+            </div>
+
+            {o.status === "new" && !o.confirmed && (
+              <div className="acts">
+                <form action={rejectOrder.bind(null, o.id)}><button className="btn rej">Reject</button></form>
+                <form action={confirmOrder.bind(null, o.id)}><button className="btn ok">✓ Confirm order</button></form>
+              </div>
+            )}
+            {next && (o.status !== "new" || o.confirmed) && <form action={setStatus.bind(null, o.id, next)}><button className="btn o2-next">{btn}</button></form>}
+            {o.status === "ready" && o.phone && (
+              <a className="btn ghost" href={`sms:${o.phone}?&body=${encodeURIComponent(`Hi ${first}! Your Backyard Cocina order #${o.id.slice(-6).toUpperCase()} is ready${o.fulfillment === "pickup" ? ` for pickup (${o.pickupSlot ?? ""}) at 1636 Greenwood Ave, Torrance` : o.fulfillment === "blade" ? " for pickup at Blade & Barber" : ""}. 🌶`)}`}>💬 Text &quot;ready&quot; from my phone</a>
+            )}
             {o.phone && (
-              <details><summary className="btn ghost">Text customer</summary>
+              <details className="o2-msg"><summary>✉️ Send a text to {first === "there" ? "the customer" : first}</summary>
                 <form action={textCustomer.bind(null, o.id)} className="cmp">
-                  <textarea name="msg" rows={3} defaultValue={`Hi ${o.customer?.name.split(" ")[0] ?? "there"}! `} />
+                  <textarea name="msg" rows={3} defaultValue={`Hi ${first}! `} />
                   <button className="btn">Send SMS</button>
                 </form>
               </details>
             )}
-            {o.status === "new" && !o.confirmed && (
-              <div className="acts">
-                <form action={rejectOrder.bind(null, o.id)}><button className="btn rej">Reject</button></form>
-                <form action={confirmOrder.bind(null, o.id)}><button className="btn ok">Confirm order</button></form>
-              </div>
-            )}
-            {o.status === "ready" && o.phone && (
-              <a className="btn ghost" href={`sms:${o.phone}?&body=${encodeURIComponent(`Hi! Your Backyard Cocina order #${o.id.slice(-6).toUpperCase()} is ready${o.fulfillment === "pickup" ? ` for pickup (${o.pickupSlot ?? ""}) at 1636 Greenwood Ave, Torrance` : o.fulfillment === "blade" ? " for pickup at Blade & Barber" : ""}. 🌶`)}`}>💬 Text &quot;ready&quot; from my phone</a>
-            )}
-            {next && (o.status !== "new" || o.confirmed) && <form action={setStatus.bind(null, o.id, next)}><button className="btn">{btn}</button></form>}
-          </div>
+          </article>
         );
       })}
     </>
