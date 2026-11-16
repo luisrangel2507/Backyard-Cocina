@@ -811,3 +811,12 @@ html,body,button,a,input,select,textarea,label,summary{touch-action:manipulation
   .pbody h3{white-space:nowrap;font-size:min(2.1rem,11cqi)}
   .pbody p{flex:none;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden;min-height:5.6em}
 }
+/* Narrow phone cards (iPhone SE etc.): put the quantity and "Add to cart" on two rows so the label never gets cut */
+@media(max-width:979px){
+  @container (max-width:155px){
+    .buy{flex-wrap:wrap;gap:6px}
+    .buy .step{flex:1 1 100%;justify-content:space-between}
+    .buy .step button{width:34px}
+    .buy .addbtn{flex:1 1 100%;font-size:13px;letter-spacing:.04em;padding:11px 8px}
+  }
+}
