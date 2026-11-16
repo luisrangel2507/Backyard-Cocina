@@ -150,11 +150,32 @@ export function translate(lang: Lang, key: Key, vars?: Record<string, string | n
 // Spanish text for the seeded products. Only used when the stored English text is still the original.
 const SEED: Record<string, { description: string; descriptionEs: string; pairs: string[]; pairsEs: string[]; tip: string; tipEs: string }> = {
   verde: {
-    description: "Tomatillo, serrano, cilantro and lime. Bright, fresh and made for tacos.",
-    descriptionEs: "Tomatillo, serrano, cilantro y limón. Brillante, fresca y hecha para tacos.",
-    pairs: ["Tacos", "Eggs", "Chips"], pairsEs: ["Tacos", "Huevos", "Totopos"],
+    description: "Creamy, cool, and made with jalapeño. Smooth and zesty with mild kick. Good as a dip, taco drizzle, or burrito sauce, and a great starting point for new salsa fans.",
+    descriptionEs: "Cremosa, fresca y hecha con jalapeño. Suave y con chispa, con un picor ligero. Buena para dipear, para bañar tacos o como salsa de burrito, y perfecta para quien empieza con las salsas.",
+    pairs: ["Dip", "Tacos", "Burritos"], pairsEs: ["Para dipear", "Tacos", "Burritos"],
     tip: "Spoon it over carnitas tacos with diced onion and a squeeze of lime.",
     tipEs: "Échala sobre tacos de carnitas con cebolla picada y unas gotas de limón.",
+  },
+  creamy: {
+    description: "Pure chile de árbol with a deep red color and a clean, toasty heat. Simple and bold, good on tacos or pizza.",
+    descriptionEs: "Puro chile de árbol, de color rojo intenso y con un picor limpio y tostado. Sencilla y atrevida, buena en tacos o pizza.",
+    pairs: ["Tacos", "Pizza"], pairsEs: ["Tacos", "Pizza"],
+    tip: "Use it as a dip for fries or drizzle it on a grilled chicken bowl.",
+    tipEs: "Úsala para mojar papas fritas o échala sobre un bowl de pollo a la parrilla.",
+  },
+  nomames: {
+    description: "Chile de árbol, roasted tomatillo, habanero, onion, and garlic. Tangy, smoky, and very hot. Start small on carne asada, eggs, or tacos.",
+    descriptionEs: "Chile de árbol, tomatillo asado, habanero, cebolla y ajo. Ácida, ahumada y muy picosa. Empieza con poquito en carne asada, huevos o tacos.",
+    pairs: ["Carne asada", "Eggs", "Tacos"], pairsEs: ["Carne asada", "Huevos", "Tacos"],
+    tip: "",
+    tipEs: "",
+  },
+  mamacita: {
+    description: "Earthy beets meet smoky roasted habanero, with roasted garlic and fresh lime. Sweet, with a slow, warm heat. Great on tacos, veggies, or grilled chicken.",
+    descriptionEs: "Betabel con sabor a tierra y habanero asado y ahumado, con ajo asado y limón fresco. Dulce, con un picor cálido que llega despacio. Ideal en tacos, verduras o pollo asado.",
+    pairs: ["Tacos", "Veggies", "Grilled chicken"], pairsEs: ["Tacos", "Verduras", "Pollo asado"],
+    tip: "",
+    tipEs: "",
   },
   roja: {
     description: "Roasted tomatoes, guajillo and árbol chiles. Bold, smoky and full of flavor.",
@@ -162,13 +183,6 @@ const SEED: Record<string, { description: string; descriptionEs: string; pairs: 
     pairs: ["Carne asada", "Chilaquiles", "Burritos"], pairsEs: ["Carne asada", "Chilaquiles", "Burritos"],
     tip: "Simmer a cup with tortilla chips for 2 minutes for quick chilaquiles rojos.",
     tipEs: "Hierve una taza con totopos por 2 minutos para unos chilaquiles rojos rápidos.",
-  },
-  creamy: {
-    description: "Roasted peppers, garlic and a creamy twist. Smooth with a kick.",
-    descriptionEs: "Chiles asados, ajo y un toque cremoso. Suave con un poco de picor.",
-    pairs: ["Chicken", "Fries", "Bowls"], pairsEs: ["Pollo", "Papas fritas", "Bowls"],
-    tip: "Use it as a dip for fries or drizzle it on a grilled chicken bowl.",
-    tipEs: "Úsala para mojar papas fritas o échala sobre un bowl de pollo a la parrilla.",
   },
   trio: {
     description: "One Verde, one Roja and one Creamy. Save $3.98 and earn 3 stamps.",

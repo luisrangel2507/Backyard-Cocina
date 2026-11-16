@@ -4,11 +4,11 @@ const db = new PrismaClient();
 // Product lineup. Runs on every start: creates missing products, and renames the original three
 // only while they still have their old default names (so edits made in the admin are never overwritten).
 const products = [
-  { id: "verde", name: "Güerita", category: "Güerita", heat: 2, priceCents: 1000, color: "#1f9a4b", jars: 1, sort: 1, pairs: ["Tacos", "Eggs", "Chips"], tip: "Spoon it over carnitas tacos with diced onion and a squeeze of lime.", description: "Tomatillo, serrano, cilantro and lime. Bright, fresh and made for tacos.", old: "Salsa Verde" },
-  { id: "creamy", name: "LA Sunset", category: "Sunset", heat: 2, priceCents: 1000, color: "#f07a1a", jars: 1, sort: 2, pairs: ["Chicken", "Fries", "Bowls"], tip: "Use it as a dip for fries or drizzle it on a grilled chicken bowl.", description: "Roasted peppers, garlic and a creamy twist. Smooth with a kick.", old: "Creamy Salsa" },
+  { id: "verde", name: "Güerita", category: "Güerita", heat: 2, priceCents: 1000, color: "#1f9a4b", jars: 1, sort: 1, pairs: ["Dip", "Tacos", "Burritos"], tip: "Spoon it over carnitas tacos with diced onion and a squeeze of lime.", description: "Creamy, cool, and made with jalapeño. Smooth and zesty with mild kick. Good as a dip, taco drizzle, or burrito sauce, and a great starting point for new salsa fans.", old: "Salsa Verde" },
+  { id: "creamy", name: "LA Sunset", category: "Sunset", heat: 2, priceCents: 1000, color: "#f07a1a", jars: 1, sort: 2, pairs: ["Tacos", "Pizza"], tip: "Use it as a dip for fries or drizzle it on a grilled chicken bowl.", description: "Pure chile de árbol with a deep red color and a clean, toasty heat. Simple and bold, good on tacos or pizza.", old: "Creamy Salsa" },
   { id: "roja", name: "Diablita", category: "Diablita", heat: 3, priceCents: 1000, color: "#d9261a", jars: 1, sort: 3, pairs: ["Carne asada", "Chilaquiles", "Burritos"], tip: "Simmer a cup with tortilla chips for 2 minutes for quick chilaquiles rojos.", description: "Roasted tomatoes, guajillo and árbol chiles. Bold, smoky and full of flavor.", old: "Salsa Roja" },
-  { id: "mamacita", name: "Mamacita", category: "Mamacita", heat: 3, priceCents: 1000, color: "#7b3fb8", jars: 1, sort: 4, pairs: ["Tacos", "Nachos", "Grilled meats"], tip: "", description: "A violet salsa with attitude. Ask Brant what's inside." },
-  { id: "nomames", name: "No Mames", category: "No Mames", heat: 5, priceCents: 1000, color: "#9c1c10", jars: 1, sort: 5, pairs: ["Tacos", "Wings", "Brave people"], tip: "", description: "Chile de árbol, roasted and blended. Our hottest one. You've been warned." },
+  { id: "mamacita", name: "Mamacita", category: "Mamacita", heat: 3, priceCents: 1000, color: "#7b3fb8", jars: 1, sort: 4, pairs: ["Tacos", "Veggies", "Grilled chicken"], tip: "", description: "Earthy beets meet smoky roasted habanero, with roasted garlic and fresh lime. Sweet, with a slow, warm heat. Great on tacos, veggies, or grilled chicken." },
+  { id: "nomames", name: "No Mames", category: "No Mames", heat: 5, priceCents: 1000, color: "#9c1c10", jars: 1, sort: 5, pairs: ["Carne asada", "Eggs", "Tacos"], tip: "", description: "Chile de árbol, roasted tomatillo, habanero, onion, and garlic. Tangy, smoky, and very hot. Start small on carne asada, eggs, or tacos." },
   { id: "trio", name: "Backyard Trio", category: "Packs", heat: 3, priceCents: 2500, color: "#13285f", jars: 3, sort: 99, pairs: ["Taco night", "Parties", "Gifts"], tip: "Set out all three for taco night and let everyone build their own.", description: "One Güerita, one Sunset and one Diablita. Save $5 and earn 3 stamps.", old: "Backyard Trio", oldDesc: "One Verde, one Roja and one Creamy. Save $5 and earn 3 stamps." },
 ];
 
@@ -35,5 +35,14 @@ if (!settings.doneSteps.includes("price-10")) {
   await db.product.updateMany({ where: { jars: 1 }, data: { priceCents: 1000 } });
   await db.settings.update({ where: { id: 1 }, data: { doneSteps: { push: "price-10" } } });
 }
+// One-time: Brant's new descriptions and "pairs with" for Mamacita, No Mames, LA Sunset and Güerita.
+if (!settings.doneSteps.includes("desc-v2")) {
+  for (const id of ["mamacita", "nomames", "creamy", "verde"]) {
+    const p = products.find((x) => x.id === id);
+    await db.product.updateMany({ where: { id }, data: { description: p.description, pairs: p.pairs } });
+  }
+  await db.settings.update({ where: { id: 1 }, data: { doneSteps: { push: "desc-v2" } } });
+}
+
 console.log("Seeded", products.length, "products");
 await db.$disconnect();
