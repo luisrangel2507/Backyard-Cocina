@@ -4,17 +4,20 @@ import { db } from "@/lib/db";
 import { decrypt } from "@/lib/crypto";
 import { sendSms, orderText } from "@/lib/sms";
 import { sendEmail, orderReadyEmail } from "@/lib/email";
+import { bladeInfo } from "@/lib/blade";
+import { pickupPlace, isPickup } from "@/lib/zones";
 
 export async function setStatus(id: string, status: string) {
   const o = await db.order.update({ where: { id }, data: { status }, include: { customer: true } });
   const first = o.customer?.name.split(" ")[0];
-  const text = orderText(o, first);
+  const place = pickupPlace(o.fulfillment, o.fulfillment === "blade" ? (await bladeInfo()).address : "");
+  const text = orderText(o, first, place);
   const phone = decrypt(o.phone);
   if (phone && text) await sendSms(phone, text);
   const notify = status === "ready" || (status === "out" && o.fulfillment === "delivery");
   if (notify && o.email) {
     const full = await db.order.findUnique({ where: { id }, include: { items: { include: { product: true } } } });
-    if (full) await sendEmail(o.email, status === "ready" && o.fulfillment === "pickup" ? `Your salsa is ready! #${id.slice(-6).toUpperCase()} 🌶` : `Your salsa is on the way 🚗`, orderReadyEmail({ ...full, fulfillment: status === "out" ? "delivery" : full.fulfillment }, first));
+    if (full) await sendEmail(o.email, status === "ready" && isPickup(o.fulfillment) ? `Your salsa is ready! #${id.slice(-6).toUpperCase()} 🌶` : `Your salsa is on the way 🚗`, orderReadyEmail({ ...full, fulfillment: status === "out" ? "delivery" : full.fulfillment }, first, place));
   }
   revalidatePath("/admin");
 }
@@ -80,7 +83,11 @@ export async function confirmOrder(id: string) {
 
 // Reject = cancel. Refund is done from the Stripe dashboard (see DEPLOY.md).
 export async function rejectOrder(id: string) {
+  const before = await db.order.findUnique({ where: { id }, include: { items: true } });
+  if (!before || before.status === "cancelled") return;
   const o = await db.order.update({ where: { id }, data: { status: "cancelled" }, include: { customer: true } });
+  // Blade & Barber jars are still on their shelf, so put them back in that count.
+  if (o.fulfillment === "blade") await db.$transaction(before.items.map((i) => db.product.update({ where: { id: i.productId }, data: { bladeStock: { increment: i.quantity } } })));
   const first = o.customer?.name.split(" ")[0] ?? "there";
   if (o.phone) await sendSms(decrypt(o.phone)!, `Hi ${first}, sorry, we can't fulfil order #${o.id.slice(-6).toUpperCase()}. We'll refund you in full.`);
   revalidatePath("/admin");
@@ -107,6 +114,19 @@ export async function savePartner(form: FormData) {
     await db.partner.upsert({ where: { code }, update: data, create: { code, ...data } });
   }
   revalidatePath("/admin");
+}
+
+/** Blade & Barber pickup: address, hours and how many jars of each salsa are on their shelf. */
+export async function saveBlade(form: FormData) {
+  const g = (k: string) => String(form.get(k) ?? "").trim();
+  const data = { bladeAddress: g("address").slice(0, 160), bladeHours: g("hours").slice(0, 120) };
+  await db.settings.upsert({ where: { id: 1 }, update: data, create: { id: 1, ...data } });
+  const updates = [...form.keys()].filter((k) => k.startsWith("stock_")).map((k) => {
+    const n = Math.min(999, Math.max(0, Math.floor(Number(form.get(k)) || 0)));
+    return db.product.update({ where: { id: k.slice(6) }, data: { bladeStock: n } });
+  });
+  await db.$transaction(updates);
+  revalidatePath("/admin"); revalidatePath("/shop");
 }
 
 export async function addExpense(form: FormData) {

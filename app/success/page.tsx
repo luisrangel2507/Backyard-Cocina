@@ -1,5 +1,6 @@
 import { db, stripe, money } from "@/lib/db";
-import { PICKUP_ADDRESS } from "@/lib/zones";
+import { pickupPlace, isPickup } from "@/lib/zones";
+import { bladeInfo } from "@/lib/blade";
 import { getT } from "@/lib/i18n-server";
 import { PageBar } from "@/lib/i18n-client";
 
@@ -15,6 +16,7 @@ export default async function Success(props: { searchParams: Promise<{ session_i
   const steps = o?.fulfillment === "delivery"
     ? [["new", t("stReceived")], ["ready", t("stPacked")], ["out", t("stOnWay")], ["done", t("stDelivered")]]
     : [["new", t("stReceived")], ["ready", t("stReadyPickup")], ["done", t("stPickedUp")]];
+  const place = pickupPlace(o?.fulfillment, o?.fulfillment === "blade" ? (await bladeInfo()).address : "");
   const at = Math.max(0, steps.findIndex(([k]) => k === (o?.status ?? "new")));
   return (
     <>
@@ -22,11 +24,11 @@ export default async function Success(props: { searchParams: Promise<{ session_i
     <div className="success" style={{ display: "grid", gap: 8, maxWidth: 520, margin: "0 auto" }}>
       <meta httpEquiv="refresh" content="60" />
       <ClearCart />
-      <h2>{o?.status === "ready" ? (o.fulfillment === "pickup" ? t("okReady") : t("okPacked")) : o?.status === "cancelled" ? t("okCancelled") : t("okConfirmed")}</h2>
+      <h2>{o?.status === "ready" ? (isPickup(o.fulfillment) ? t("okReady") : t("okPacked")) : o?.status === "cancelled" ? t("okCancelled") : t("okConfirmed")}</h2>
       {o && o.status !== "cancelled" && (
         <ol className="track" style={{ padding: 0, justifySelf: "center", textAlign: "left" }}>{steps.map(([k, label], i) => <li key={k} className={i <= at ? "on" : ""}><i>{i <= at ? "✓" : i + 1}</i>{label}</li>)}</ol>
       )}
-      {o?.pickupSlot && <p>🗓 {o.fulfillment === "pickup" ? t("okPickup") : t("okDelivery")}: <b>{o.pickupSlot}</b>{o.fulfillment === "pickup" && <><br />📍 {PICKUP_ADDRESS}</>}</p>}
+      {o?.pickupSlot && <p>🗓 {isPickup(o.fulfillment) ? t("okPickup") : t("okDelivery")}: <b>{o.pickupSlot}</b>{isPickup(o.fulfillment) && <><br />📍 {place}</>}</p>}
       <p className="muted">{t("okBookmark")}</p>
       <p>{t("okThanks", { name: s.customer_details?.name ? `, ${s.customer_details.name.split(" ")[0]}` : "", total: money(s.amount_total ?? 0), email: s.customer_details?.email ?? "" })}</p>
       {typeof s.invoice === "object" && s.invoice?.invoice_pdf && (

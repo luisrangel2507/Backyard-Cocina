@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db, stripe } from "@/lib/db";
-import { zoneFor } from "@/lib/zones";
+import { zoneFor, BLADE_CODE, BLADE_NAME } from "@/lib/zones";
+import { bladeInfo } from "@/lib/blade";
 import { openSlots } from "@/lib/schedule";
 import { cookies } from "next/headers";
 import { getCustomer } from "@/lib/auth";
@@ -10,7 +11,7 @@ import { freeSalsasAvailable } from "@/lib/loyalty";
 // Prices are always read from the database, never trusted from the client.
 export async function POST(req: Request) {
   const { items, fulfillment = "pickup", address = "", zip = "", pickupSlot = "", useFree = false } = (await req.json()) as {
-    items: { id: string; quantity: number }[]; fulfillment?: "pickup" | "delivery"; address?: string; zip?: string; pickupSlot?: string; useFree?: boolean;
+    items: { id: string; quantity: number }[]; fulfillment?: "pickup" | "blade" | "delivery"; address?: string; zip?: string; pickupSlot?: string; useFree?: boolean;
   };
   const zone = fulfillment === "delivery" ? zoneFor(zip) : undefined;
   if (fulfillment === "delivery" && !zone)
@@ -20,19 +21,27 @@ export async function POST(req: Request) {
   if (!items?.length) return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
 
   const products = await db.product.findMany({ where: { id: { in: items.map((i) => i.id) }, active: true } });
-  const lines = items
-    .map((i) => ({ p: products.find((p) => p.id === i.id), q: Math.min(Math.max(1, Math.floor(i.quantity)), 24) }))
-    .filter((l) => l.p && l.p.stock >= l.q);
+  const atBlade = fulfillment === "blade";
+  const wanted = items.map((i) => ({ p: products.find((p) => p.id === i.id), q: Math.min(Math.max(1, Math.floor(i.quantity)), 24) }));
+  // Blade & Barber pickups come off their shelf, so every item has to be there in full.
+  const short = atBlade ? wanted.find((l) => !l.p || l.p.bladeStock < l.q) : undefined;
+  if (short) return NextResponse.json({ error: !short.p ? "That item is unavailable" : short.p.bladeStock > 0 ? `Only ${short.p.bladeStock} ${short.p.name} at ${BLADE_NAME} right now.` : `No ${short.p.name} at ${BLADE_NAME} right now.` }, { status: 400 });
+  const lines = wanted.filter((l) => l.p && (atBlade || l.p.stock >= l.q));
   if (!lines.length) return NextResponse.json({ error: "Those items are unavailable" }, { status: 400 });
 
   const jarCount = lines.reduce((a, l) => a + l.q * l.p!.jars, 0);
-  const slot = (await openSlots(20)).find((s) => s.label === pickupSlot);
+  // Blade & Barber has no time slots (pick up during their hours) and doesn't count toward the kitchen's daily cap.
+  const slot: { label: string; day: string; left?: number } | undefined = atBlade
+    ? await bladeInfo().then((b) => ({ label: (b.hours ? `${BLADE_NAME} · ${b.hours}` : BLADE_NAME).slice(0, 120), day: "" }))
+    : (await openSlots(20)).find((s) => s.label === pickupSlot);
   if (!slot) return NextResponse.json({ error: "Pick an available day and time" }, { status: 400 });
-  if (slot.left < jarCount) return NextResponse.json({ error: `Only ${Math.max(0, slot.left)} jars left for that day. Pick another day.` }, { status: 400 });
+  if (slot.left !== undefined && slot.left < jarCount) return NextResponse.json({ error: `Only ${Math.max(0, slot.left)} jars left for that day. Pick another day.` }, { status: 400 });
 
   const site = (process.env.NEXT_PUBLIC_SITE_URL || "").replace(/\/+$/, "");
   const refCode = (await cookies()).get("bc_ref")?.value?.toUpperCase();
-  const partner = refCode ? await db.partner.findFirst({ where: { code: refCode, active: true } }) : null;
+  // Blade & Barber pickups earn Blade & Barber the commission (unless another partner's QR brought the customer).
+  const partner = (refCode ? await db.partner.findFirst({ where: { code: refCode, active: true } }) : null)
+    ?? (atBlade ? await db.partner.findFirst({ where: { code: BLADE_CODE, active: true } }) : null);
 
   // Free salsa: members with a reward get the cheapest single-jar salsa in the cart taken off via a one-time coupon.
   let freeCoupon: string | undefined;

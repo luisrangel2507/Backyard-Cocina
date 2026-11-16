@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useCart } from "@/lib/cart";
-import { zoneFor, PICKUP_ADDRESS } from "@/lib/zones";
+import { zoneFor, PICKUP_ADDRESS, BLADE_NAME } from "@/lib/zones";
 import { PageBar, useT } from "@/lib/i18n-client";
 
 const box = { padding: 12, borderRadius: 10, border: 0 } as const;
@@ -12,7 +12,7 @@ export default function CartPage() {
   const { cart, add, clear } = useCart();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [fulfillment, setFulfillment] = useState<"pickup" | "delivery">("pickup");
+  const [fulfillment, setFulfillment] = useState<"pickup" | "blade" | "delivery">("pickup");
   const [address, setAddress] = useState("");
   const [zip, setZip] = useState("");
   const zone = zoneFor(zip);
@@ -22,12 +22,17 @@ export default function CartPage() {
   const [me, setMe] = useState<{ name: string; freeSalsas: number } | null | undefined>(undefined);
   const [useFree, setUseFree] = useState(false);
   useEffect(() => { fetch("/api/me").then((r) => r.json()).then((d) => setMe(d.member)).catch(() => setMe(null)); }, []);
-  const [catalog, setCatalog] = useState<{ id: string; name: string; priceCents: number; jars: number; image?: string | null }[]>([]);
+  const [catalog, setCatalog] = useState<{ id: string; name: string; priceCents: number; jars: number; bladeStock: number; image?: string | null }[]>([]);
+  const [blade, setBlade] = useState<{ address: string; hours: string }>({ address: "", hours: "" });
+  useEffect(() => { fetch("/api/blade").then((r) => r.json()).then(setBlade).catch(() => {}); }, []);
   useEffect(() => { fetch("/api/products").then((r) => r.json()).then(setCatalog).catch(() => {}); }, []);
   const items = Object.entries(cart);
   const info = (id: string) => catalog.find((p) => p.id === id);
   const subtotal = items.reduce((a, [id, q]) => a + (info(id)?.priceCents ?? 0) * q, 0);
   const $ = (c: number) => `$${(c / 100).toFixed(2)}`;
+  const bladeOn = catalog.some((p) => p.bladeStock > 0);
+  // Items in the cart that Blade & Barber doesn't have enough of
+  const bladeShort = items.map(([id, q]) => ({ p: info(id), q })).filter(({ p, q }) => p && p.bladeStock < q);
 
   async function checkout() {
     setLoading(true); setError("");
@@ -72,14 +77,21 @@ export default function CartPage() {
             <div style={{ marginTop: 20, display: "grid", gap: 10 }}>
               <b>{t("howWant")}</b>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                {(["pickup", "delivery"] as const).map((f) => (
+                {(bladeOn ? (["pickup", "delivery", "blade"] as const) : (["pickup", "delivery"] as const)).map((f) => (
                   <button key={f} className="btn" onClick={() => setFulfillment(f)}
-                    style={{ background: fulfillment === f ? "var(--cream)" : "transparent", color: fulfillment === f ? "var(--navy)" : "var(--cream)", border: "1.5px solid var(--cream)" }}>
-                    {t(f === "pickup" ? "pickupFree" : "deliveryZone")}
+                    style={{ background: fulfillment === f ? "var(--cream)" : "transparent", color: fulfillment === f ? "var(--navy)" : "var(--cream)", border: "1.5px solid var(--cream)", ...(f === "blade" ? { gridColumn: "1 / -1" } : {}) }}>
+                    {t(f === "pickup" ? "pickupFree" : f === "blade" ? "bladePickup" : "deliveryZone")}
                   </button>
                 ))}
               </div>
-              {fulfillment === "delivery" ? (
+              {fulfillment === "blade" ? (
+                <>
+                  <p style={{ margin: 0 }}>{t("bladeAt")} <b>{BLADE_NAME}</b>{blade.address && <><br />📍 {blade.address}</>}{blade.hours && <><br />🕑 {t("bladeHours")} {blade.hours}</>}</p>
+                  {bladeShort.length > 0
+                    ? bladeShort.map(({ p }) => <small key={p!.id} style={{ color: "var(--tomato)", fontWeight: 700 }}>{p!.bladeStock > 0 ? t("bladeShort", { n: p!.bladeStock, name: p!.name }) : `${p!.name}: ${t("noneAtBlade")}`}</small>)
+                    : <small>{t("bladeReady")}</small>}
+                </>
+              ) : fulfillment === "delivery" ? (
                 <>
                   <input placeholder={t("zip")} inputMode="numeric" maxLength={5} value={zip} onChange={(e) => setZip(e.target.value)} style={box} />
                   {zip.length === 5 && <small>{zone ? t("deliveryTo", { zone: zone.name, fee: $(zone.feeCents) }) : t("noDelivery")}</small>}
@@ -103,7 +115,7 @@ export default function CartPage() {
               </label>
             )}
             {me === null && <p style={{ marginTop: 16 }}><small><Link href="/login" style={{ color: "var(--gold)", fontWeight: 700 }}>{t("loginToEarn")}</Link>{t("loginToEarn2")}</small></p>}
-            <button className="btn" style={{ marginTop: 20, width: "100%", padding: 14, background: "var(--tomato)" }} onClick={checkout} disabled={loading || (fulfillment === "delivery" && !zone)}>
+            <button className="btn" style={{ marginTop: 20, width: "100%", padding: 14, background: "var(--tomato)" }} onClick={checkout} disabled={loading || (fulfillment === "delivery" && !zone) || (fulfillment === "blade" && bladeShort.length > 0)}>
               {loading ? t("opening") : t("checkout")}
             </button>
           </>

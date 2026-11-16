@@ -1,5 +1,13 @@
 // Delivery zones around the kitchen at 1636 Greenwood Ave, Torrance, CA. Fees in cents.
 export const PICKUP_ADDRESS = "1636 Greenwood Ave, Torrance, CA";
+export const BLADE_NAME = "Blade & Barber";
+export const BLADE_CODE = "BLADE"; // partner code that earns commission on Blade & Barber pickups
+
+/** fulfillment: "pickup" (Torrance kitchen), "blade" (pickup at Blade & Barber) or "delivery". */
+export const isPickup = (f: string | null | undefined) => f !== "delivery";
+/** Where a pickup order is collected. */
+export const pickupPlace = (f: string | null | undefined, bladeAddress = "") =>
+  f === "blade" ? `${BLADE_NAME}${bladeAddress ? `, ${bladeAddress}` : ""}` : PICKUP_ADDRESS;
 
 export const ZONES = [
   { name: "Torrance", feeCents: 300, zips: ["90501", "90502", "90503", "90504", "90505"] },

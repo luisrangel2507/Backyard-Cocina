@@ -24,6 +24,7 @@ export default function Store({ products, ratings = {} }: { products: Product[];
   const [justAdded, setJustAdded] = useState<string | null>(null);
   const [member, setMember] = useState<boolean | null>(null);
   const CATS: [string, string][] = [["All", "catAll"], ...Array.from(new Set(products.map((p) => p.category))).sort((a, b) => (a === "Packs" ? 1 : b === "Packs" ? -1 : 0)).map((c) => [c, c === "Packs" ? "catPacks" : ""] as [string, string])];
+  const bladeOn = products.some((p) => p.bladeStock > 0);
   const single = Math.min(...products.filter((p) => p.jars === 1).map((p) => p.priceCents));
   const subtotal = Object.entries(cart).reduce((a, [id, q]) => a + (products.find((p) => p.id === id)?.priceCents ?? 0) * q, 0);
   const last = Object.keys(cart).slice(-1)[0];
@@ -116,6 +117,7 @@ export default function Store({ products, ratings = {} }: { products: Product[];
                 {p.jars === 1 && <span className="oz">8 oz</span>}
                 <h3>{p.name.replace(/^Salsa\s+|\s+Salsa$/i, "")}</h3>
                 <span className="chili" aria-label={`${p.heat}/5`} title={`${p.heat}/5`}>{[1, 2, 3, 4, 5].map((n) => <i key={n} className={n <= p.heat ? "on" : ""}>🌶</i>)}<small>{heat(p.heat)}</small></span>
+                {bladeOn && <span className={`bstock${p.bladeStock > 0 ? "" : " none"}`}>💈 {p.bladeStock > 0 ? t("atBlade", { n: p.bladeStock }) : t("noneAtBlade")}</span>}
                 <p>{L.description}</p>
                 {p.jars > 1 && <div className="pairs">{L.pairs.map((x) => <span key={x}>{x}</span>)}</div>}
                 {r && <Link href={`/shop/${p.id}`} className="rlink"><Stars r={r} /></Link>}

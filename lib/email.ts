@@ -40,22 +40,23 @@ const itemsTable = (o: OrderLike) => (o.items?.length
   ? `<table width="100%" style="border-collapse:collapse;margin:10px 0">${o.items.map((i) => `<tr><td style="padding:6px 0;border-bottom:1px solid #ffffff22">${i.quantity} × ${esc(i.product?.name ?? "Salsa")}</td><td align="right" style="padding:6px 0;border-bottom:1px solid #ffffff22">${money(i.priceCents * i.quantity)}</td></tr>`).join("")}<tr><td style="padding:8px 0;font-weight:bold">Total</td><td align="right" style="padding:8px 0;font-weight:bold">${money(o.totalCents)}</td></tr></table>`
   : `<p><b>Total:</b> ${money(o.totalCents)}</p>`);
 
-export function orderConfirmationEmail(o: OrderLike, name: string | undefined, sessionId: string) {
-  const when = o.pickupSlot ? `<p>🗓 <b>${o.fulfillment === "pickup" ? "Pickup" : "Delivery"}:</b> ${esc(o.pickupSlot)}${o.fulfillment === "pickup" ? `<br>📍 ${PICKUP_ADDRESS}` : ""}</p>` : "";
+export function orderConfirmationEmail(o: OrderLike, name: string | undefined, sessionId: string, place = PICKUP_ADDRESS) {
+  const pickup = o.fulfillment !== "delivery";
+  const when = o.pickupSlot ? `<p>🗓 <b>${pickup ? "Pickup" : "Delivery"}:</b> ${esc(o.pickupSlot)}${pickup ? `<br>📍 ${esc(place)}` : ""}</p>` : "";
   return layout(`Thanks${name ? `, ${esc(name)}` : ""}! 🌶`,
     `<p>We got your order <b>#${ref(o)}</b> and Brant is getting your batch ready.</p>${itemsTable(o)}${when}<p>We'll email you as soon as it's ready.</p>`,
     { href: `${SITE()}/success?session_id=${sessionId}`, label: "Track my order" });
 }
 
-export function orderReadyEmail(o: OrderLike, name: string | undefined) {
-  const pickup = o.fulfillment === "pickup";
+export function orderReadyEmail(o: OrderLike, name: string | undefined, place = PICKUP_ADDRESS) {
+  const pickup = o.fulfillment !== "delivery";
   return layout(pickup ? "Your salsa is ready! 🌶" : "Your salsa is on the way! 🚗",
-    `<p>Hi${name ? ` ${esc(name)}` : ""}, order <b>#${ref(o)}</b> is ${pickup ? "ready for pickup" : "packed and heading out"}.</p>${o.pickupSlot ? `<p>🗓 ${esc(o.pickupSlot)}${pickup ? `<br>📍 ${PICKUP_ADDRESS}` : ""}</p>` : ""}<p>Thanks for supporting Backyard Cocina!</p>`);
+    `<p>Hi${name ? ` ${esc(name)}` : ""}, order <b>#${ref(o)}</b> is ${pickup ? "ready for pickup" : "packed and heading out"}.</p>${o.pickupSlot ? `<p>🗓 ${esc(o.pickupSlot)}${pickup ? `<br>📍 ${esc(place)}` : ""}</p>` : ""}<p>Thanks for supporting Backyard Cocina!</p>`);
 }
 
 export function newOrderAdminEmail(o: OrderLike, customer: string) {
   return layout(`New order #${ref(o)}`,
-    `<p><b>${esc(customer)}</b> · ${o.jarCount} jar${o.jarCount === 1 ? "" : "s"} · ${o.fulfillment === "pickup" ? "Pickup" : "Delivery"}</p>${itemsTable(o)}${o.pickupSlot ? `<p>🗓 ${esc(o.pickupSlot)}</p>` : ""}`,
+    `<p><b>${esc(customer)}</b> · ${o.jarCount} jar${o.jarCount === 1 ? "" : "s"} · ${o.fulfillment === "blade" ? "Pickup at Blade & Barber" : o.fulfillment === "pickup" ? "Pickup" : "Delivery"}</p>${itemsTable(o)}${o.pickupSlot ? `<p>🗓 ${esc(o.pickupSlot)}</p>` : ""}`,
     { href: `${SITE()}/admin`, label: "Open kitchen admin" });
 }
 

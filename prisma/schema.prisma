@@ -16,6 +16,7 @@ model Product {
   color       String
   active      Boolean @default(true)
   stock       Int     @default(100)
+  bladeStock  Int     @default(0)     // jars on the shelf at Blade & Barber (pickup there)
   jars        Int     @default(1)   // stamps earned per unit (Trio = 3)
   pairs       String[]
   tip         String  @default("")
@@ -37,7 +38,7 @@ model Order {
   confirmed       Boolean     @default(false)
   status          String      @default("new") // new | ready | out | done | cancelled
   totalCents      Int         @default(0)
-  fulfillment     String      @default("pickup") // pickup | delivery
+  fulfillment     String      @default("pickup") // pickup | blade (pickup at Blade & Barber) | delivery
   deliveryAddress String?
   pickupSlot      String?    // "Fri, Oct 16 · 4–6 pm"
   slotDay         String?    // "2026-10-16", for the daily cap
@@ -96,6 +97,8 @@ model Settings {
   slots String[] @default(["10 am–12 pm", "4–6 pm"])
   cap   Int      @default(40)                    // max jars per day
   daySlots Json  @default("{}")                  // per weekday time windows, e.g. {"5":["4–7 pm"]}; falls back to slots
+  bladeAddress String @default("")              // Blade & Barber pickup address (shown to customers)
+  bladeHours   String @default("")              // Blade & Barber hours, e.g. "Tue–Sat 10 am–7 pm"
 }
 
 // One-time email login codes (stored hashed, expire in 10 minutes).

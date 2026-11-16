@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { db, money } from "@/lib/db";
 import { partnerToken } from "@/lib/auth";
+import { BLADE_CODE } from "@/lib/zones";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Partner sales · Backyard Cocina", robots: { index: false } };
@@ -18,6 +19,12 @@ export default async function PartnerView(props: { params: Promise<{ code: strin
   const since = new Date(Date.now() - 30 * 864e5);
   const month = orders.filter((o) => o.createdAt >= since);
   const site = (process.env.NEXT_PUBLIC_SITE_URL || "").replace(/\/+$/, "");
+  // Blade & Barber also sees the jars on its shelf and the online orders waiting to be picked up there.
+  const isBlade = code === BLADE_CODE;
+  const shelf = isBlade ? await db.product.findMany({ where: { active: true }, orderBy: { sort: "asc" } }) : [];
+  const waiting = isBlade
+    ? await db.order.findMany({ where: { fulfillment: "blade", status: { in: ["new", "ready"] } }, orderBy: { createdAt: "asc" }, include: { items: { include: { product: true } }, customer: true } })
+    : [];
   return (
     <div className="adm">
       <span className="eyebrowl">Backyard Cocina · Partner</span>
@@ -29,6 +36,22 @@ export default async function PartnerView(props: { params: Promise<{ code: strin
         <div><span>Last 30 days</span><b>{money(month.reduce((a, o) => a + o.commissionCents, 0))}</b></div>
       </div>
       <p className="muted">You earn {money(partner.commissionCents)} per jar sold through your QR code.</p>
+      {isBlade && (
+        <>
+          <h3>Jars on your shelf</h3>
+          {shelf.map((p) => (
+            <div className="line" key={p.id}><span>{p.name}</span><b>{p.bladeStock}</b></div>
+          ))}
+          <h3>Waiting for pickup here</h3>
+          {!waiting.length && <p className="muted">No online orders waiting.</p>}
+          {waiting.map((o) => (
+            <div className="line" key={o.id}>
+              <span>#{o.id.slice(-6).toUpperCase()} · {o.customer?.name ?? "Customer"} · {o.items.map((i) => `${i.quantity} × ${i.product.name}`).join(", ")}</span>
+              <b>Paid</b>
+            </div>
+          ))}
+        </>
+      )}
       <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap", margin: "12px 0" }}>
         <img src={`/api/qr?code=${code}`} alt="Your QR code" width={140} height={140} style={{ background: "#fff", borderRadius: 8 }} />
         <small>Your link: {site}/r/{code}<br /><a href={`/api/qr?code=${code}`} download={`qr-${code}.png`}>Download QR</a></small>

@@ -828,3 +828,6 @@ html,body,button,a,input,select,textarea,label,summary{touch-action:manipulation
   .splash-art{bottom:calc(100lvh - 100svh + env(safe-area-inset-bottom) + 8px)}
   .splash-art::after{height:5%}
 }
+.bstock{font-size:12px;font-weight:700;color:#13285f}.bstock.none{opacity:.55;font-weight:600}
+@media(min-width:980px){.shop .bstock{color:var(--gold)}}
+.cartpage .btn:disabled{opacity:.45;cursor:not-allowed}

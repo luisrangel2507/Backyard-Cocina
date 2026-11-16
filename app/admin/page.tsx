@@ -6,7 +6,7 @@ import LogoutAdmin from "./logout";
 import ProductForm from "./ProductForm";
 import PosMenu from "./PosMenu";
 import { productImage } from "@/lib/productImage";
-import { setStatus, saveProduct, saveSchedule, confirmOrder, rejectOrder, textCustomer, savePartner, addExpense, deleteExpense, voidSale } from "./actions";
+import { setStatus, saveProduct, saveSchedule, confirmOrder, rejectOrder, textCustomer, savePartner, saveBlade, addExpense, deleteExpense, voidSale } from "./actions";
 
 export const dynamic = "force-dynamic";
 const LABEL: Record<string, string> = { new: "New", ready: "Ready", out: "Out for delivery", done: "Completed" };
@@ -84,7 +84,7 @@ async function Orders({ filter }: { filter: string }) {
       )}
       {orders.map((o) => {
         const next = o.status === "new" ? "ready" : o.status === "ready" ? (o.fulfillment === "delivery" ? "out" : "done") : o.status === "out" ? "done" : null;
-        const btn = next === "ready" ? "Mark ready · text customer" : next === "out" ? "Out for delivery · text" : next === "done" ? (o.fulfillment === "pickup" ? "Picked up" : "Delivered") : "";
+        const btn = next === "ready" ? "Mark ready · text customer" : next === "out" ? "Out for delivery · text" : next === "done" ? (o.fulfillment !== "delivery" ? "Picked up" : "Delivered") : "";
         const jars = o.items.reduce((a, i) => a + i.quantity, 0);
         return (
           <div key={o.id} className={`ord st-${o.status}`}>
@@ -97,7 +97,7 @@ async function Orders({ filter }: { filter: string }) {
               <div key={i.id} className="it"><img src={productImage(i.product)} alt="" /><div><b>{i.quantity} × {i.product.name.replace("Salsa ", "")}</b><div>{money(i.product.priceCents * i.quantity)}</div></div></div>
             ))}</div>
             <div className="of"><span>Total</span><b>{money(o.totalCents)}</b></div>
-            <div className="chs"><span className="pill">{o.fulfillment === "pickup" ? "Pickup" : "Delivery"}</span><span className="pill">{jars} {jars === 1 ? "jar" : "jars"}</span></div>
+            <div className="chs"><span className="pill">{o.fulfillment === "blade" ? "💈 Blade & Barber" : o.fulfillment === "pickup" ? "Pickup" : "Delivery"}</span><span className="pill">{jars} {jars === 1 ? "jar" : "jars"}</span></div>
             {o.pickupSlot && <div>🗓 {o.pickupSlot}</div>}
             {o.deliveryAddress && <div>📍 {o.deliveryAddress}</div>}
             {o.phone && (
@@ -115,7 +115,7 @@ async function Orders({ filter }: { filter: string }) {
               </div>
             )}
             {o.status === "ready" && o.phone && (
-              <a className="btn ghost" href={`sms:${o.phone}?&body=${encodeURIComponent(`Hi! Your Backyard Cocina order #${o.id.slice(-6).toUpperCase()} is ready${o.fulfillment === "pickup" ? ` for pickup (${o.pickupSlot ?? ""}) at 1636 Greenwood Ave, Torrance` : ""}. 🌶`)}`}>💬 Text &quot;ready&quot; from my phone</a>
+              <a className="btn ghost" href={`sms:${o.phone}?&body=${encodeURIComponent(`Hi! Your Backyard Cocina order #${o.id.slice(-6).toUpperCase()} is ready${o.fulfillment === "pickup" ? ` for pickup (${o.pickupSlot ?? ""}) at 1636 Greenwood Ave, Torrance` : o.fulfillment === "blade" ? " for pickup at Blade & Barber" : ""}. 🌶`)}`}>💬 Text &quot;ready&quot; from my phone</a>
             )}
             {next && (o.status !== "new" || o.confirmed) && <form action={setStatus.bind(null, o.id, next)}><button className="btn">{btn}</button></form>}
           </div>
@@ -187,8 +187,29 @@ async function Partners() {
   const partners = await db.partner.findMany({ orderBy: { name: "asc" } });
   const orders = await db.order.findMany({ where: { partnerCode: { not: null }, status: { not: "cancelled" } } });
   const site = (process.env.NEXT_PUBLIC_SITE_URL || "").replace(/\/+$/, "");
+  const [settings, salsas] = await Promise.all([
+    db.settings.findUnique({ where: { id: 1 } }),
+    db.product.findMany({ where: { active: true }, orderBy: { sort: "asc" } }),
+  ]);
+  const bladeTotal = salsas.reduce((a, p) => a + p.bladeStock, 0);
   return (
     <div style={{ display: "grid", gap: 16 }}>
+      <div className="card" style={{ padding: 14, display: "grid", gap: 8 }}>
+        <b>💈 Blade &amp; Barber pickup · {bladeTotal} {bladeTotal === 1 ? "jar" : "jars"} on the shelf</b>
+        <small>Customers see these numbers on the shop and can choose &quot;Pickup at Blade &amp; Barber&quot; in the cart. Online orders take jars off this count automatically; when you drop off more jars, update the numbers here.</small>
+        <form action={saveBlade} className="pform">
+          <label>Address<input name="address" defaultValue={settings?.bladeAddress ?? ""} placeholder="Street, city" maxLength={160} /></label>
+          <label>Hours<input name="hours" defaultValue={settings?.bladeHours ?? ""} placeholder="Tue–Sat 10 am–7 pm" maxLength={120} /></label>
+          <b style={{ fontSize: 13 }}>Jars at Blade &amp; Barber</b>
+          {salsas.map((p) => (
+            <label key={p.id} style={{ display: "grid", gridTemplateColumns: "1fr 90px", alignItems: "center", fontWeight: 400 }}>
+              <span>{p.name}</span>
+              <input name={`stock_${p.id}`} type="number" min="0" max="999" inputMode="numeric" defaultValue={p.bladeStock} />
+            </label>
+          ))}
+          <button className="btn">Save Blade &amp; Barber</button>
+        </form>
+      </div>
       {partners.map((p) => {
         const mine = orders.filter((o) => o.partnerCode === p.code);
         const jars = mine.reduce((a, o) => a + o.jarCount, 0);

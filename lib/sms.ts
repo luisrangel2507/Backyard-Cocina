@@ -10,11 +10,11 @@ export async function sendSms(to: string, body: string) {
   if (!res.ok) console.error("Twilio error", res.status, await res.text());
 }
 
-export function orderText(o: { id: string; fulfillment: string; status: string }, firstName = "there") {
+export function orderText(o: { id: string; fulfillment: string; status: string }, firstName = "there", place = "1636 Greenwood Ave, Torrance") {
   const ref = o.id.slice(-6).toUpperCase();
   if (o.status === "ready")
-    return o.fulfillment === "pickup"
-      ? `Hi ${firstName}! Your Backyard Cocina order #${ref} is ready for pickup at 1636 Greenwood Ave, Torrance. 🌶`
+    return o.fulfillment !== "delivery"
+      ? `Hi ${firstName}! Your Backyard Cocina order #${ref} is ready for pickup at ${place}. 🌶`
       : `Hi ${firstName}! Your Backyard Cocina order #${ref} is packed and will head out soon.`;
   if (o.status === "out") return `Hi ${firstName}! Your Backyard Cocina order #${ref} is on the way. 🚗`;
   if (o.status === "done") return `Thanks ${firstName}! Enjoy your salsa. Leave a review in the app ⭐`;
