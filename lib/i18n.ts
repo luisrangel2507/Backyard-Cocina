@@ -195,7 +195,7 @@ const SEED: Record<string, { description: string; descriptionEs: string; pairs: 
 
 /** Localized description / pairs / tip for a product (falls back to what is stored). */
 export function localizeProduct<T extends { id: string; description: string; pairs: string[]; tip: string }>(lang: Lang, p: T) {
-  const s = SEED[p.id];
+  const s = SEED[p.id]?.description === p.description ? SEED[p.id] : Object.values(SEED).find((x) => x.description === p.description) ?? SEED[p.id];
   if (lang !== "es" || !s) return { description: p.description, pairs: p.pairs, tip: p.tip };
   return {
     description: p.description === s.description ? s.descriptionEs : p.description,

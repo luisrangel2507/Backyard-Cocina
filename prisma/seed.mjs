@@ -43,6 +43,23 @@ if (!settings.doneSteps.includes("desc-v2")) {
   }
   await db.settings.update({ where: { id: 1 }, data: { doneSteps: { push: "desc-v2" } } });
 }
+// One-time: same texts for the salsas found by NAME (on the live site LA Sunset and Güerita were re-created in the admin, so their ids differ).
+if (!settings.doneSteps.includes("desc-v3")) {
+  const match = [
+    ["creamy", ["sunset"]],
+    ["verde", ["güerita", "guerita"]],
+    ["mamacita", ["mamacita"]],
+    ["nomames", ["no mames"]],
+  ];
+  for (const [id, words] of match) {
+    const p = products.find((x) => x.id === id);
+    await db.product.updateMany({
+      where: { active: true, jars: 1, OR: words.map((w) => ({ name: { contains: w, mode: "insensitive" } })) },
+      data: { description: p.description, pairs: p.pairs },
+    });
+  }
+  await db.settings.update({ where: { id: 1 }, data: { doneSteps: { push: "desc-v3" } } });
+}
 
 console.log("Seeded", products.length, "products");
 await db.$disconnect();
