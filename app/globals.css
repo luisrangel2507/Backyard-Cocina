@@ -820,3 +820,11 @@ html,body,button,a,input,select,textarea,label,summary{touch-action:manipulation
     .buy .addbtn{flex:1 1 100%;font-size:13px;letter-spacing:.04em;padding:11px 8px}
   }
 }
+/* splash v4 (phones): lift the art above Safari/Chrome's bottom toolbar so the drawn "Order our salsas" button is never covered;
+   the strip under it is the same dark color the art fades into */
+@media (max-aspect-ratio:3/4){
+  .splash{background:#1d1a10}
+  .splash::before{display:none}
+  .splash-art{bottom:calc(100lvh - 100svh + env(safe-area-inset-bottom) + 8px)}
+  .splash-art::after{height:5%}
+}
