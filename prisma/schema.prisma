@@ -98,6 +98,7 @@ model Settings {
   cap   Int      @default(40)                    // max jars per day
   daySlots Json  @default("{}")                  // per weekday time windows, e.g. {"5":["4–7 pm"]}; falls back to slots
   bladeAddress String @default("")              // Blade & Barber pickup address (shown to customers)
+  doneSteps    String[] @default([])          // one-time data updates already applied by the seed
   bladeHours   String @default("")              // Blade & Barber hours, e.g. "Tue–Sat 10 am–7 pm"
 }
 

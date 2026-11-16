@@ -33,7 +33,7 @@ export async function saveProduct(form: FormData) {
   const data = {
     name: g("name").slice(0, 60),
     category: (g("newCategory") || g("category") || "Salsa").slice(0, 30),
-    priceCents: price > 0 ? price : 899,
+    priceCents: price > 0 ? price : 1000,
     heat: Math.min(5, Math.max(1, Number(g("heat")) || 2)),
     jars: Math.min(12, Math.max(1, Number(g("jars")) || 1)),
     description: g("description").slice(0, 400),

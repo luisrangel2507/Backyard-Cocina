@@ -28,6 +28,12 @@ for (const { old, oldDesc, ...p } of products) {
 await db.product.updateMany({ where: { name: "La Sunset" }, data: { name: "LA Sunset" } });
 await db.product.updateMany({ where: { category: { in: ["Naranjita", "La Sunset"] } }, data: { category: "LA Sunset" } });
 
-await db.settings.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } });
+const settings = await db.settings.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } });
+
+// One-time: every single-jar salsa is $10.00 (packs like the Trio keep their price). Runs once, so later admin edits stay.
+if (!settings.doneSteps.includes("price-10")) {
+  await db.product.updateMany({ where: { jars: 1 }, data: { priceCents: 1000 } });
+  await db.settings.update({ where: { id: 1 }, data: { doneSteps: { push: "price-10" } } });
+}
 console.log("Seeded", products.length, "products");
 await db.$disconnect();
