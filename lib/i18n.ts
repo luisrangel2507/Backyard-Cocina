@@ -68,7 +68,7 @@ const en = {
   st4a: "What started as making salsa in my backyard for friends and family slowly became something more. The feedback was always the same: ", st4b: "there’s something different about these flavors.",
   st5: "Now, I’m bringing that same passion to Backyard Cocina — sharing authentic Mexican-inspired salsas made with fresh produce, traditional ingredients, and my own personal touch.",
   stTag: "Homemade Salsas. Backyard Flavor.",
-  stOrder: "ORDER NOW",
+  stOrder: "ORDER NOW", theseSalsas: "These are our salsas",
   // detail + merch
   allSalsas: "← All salsas", pairsWith: "Pairs with", tipTitle: "Brant's tip", reviews: "Reviews", noReviews: "No reviews yet. Tried it? Log in after your order to leave one.", orderFor: "Order",
   merchP: "Backyard Cocina shirts, hats and more are on the way. Check back soon.", tees: "Tees", hats: "Hats", totes: "Totes",
@@ -134,7 +134,7 @@ const es: Record<Key, string> = {
   st4a: "Lo que empezó como hacer salsa en mi patio para amigos y familia poco a poco se convirtió en algo más. Siempre me decían lo mismo: ", st4b: "estos sabores tienen algo diferente.",
   st5: "Ahora llevo esa misma pasión a Backyard Cocina: salsas auténticas de inspiración mexicana, hechas con productos frescos, ingredientes tradicionales y mi toque personal.",
   stTag: "Salsas caseras. Sabor de patio.",
-  stOrder: "PEDIR AHORA",
+  stOrder: "PEDIR AHORA", theseSalsas: "Estas son nuestras salsas",
   allSalsas: "← Todas las salsas", pairsWith: "Combina con", tipTitle: "Consejo de Brant", reviews: "Reseñas", noReviews: "Aún no hay reseñas. ¿Ya la probaste? Inicia sesión después de tu pedido para dejar una.", orderFor: "Pedir",
   merchP: "Camisas, gorras y más de Backyard Cocina en camino. Vuelve pronto.", tees: "Playeras", hats: "Gorras", totes: "Bolsas",
 };

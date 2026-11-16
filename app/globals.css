@@ -858,3 +858,4 @@ html,body,button,a,input,select,textarea,label,summary{touch-action:manipulation
 }
 /* How it works has 2 steps now: the second keeps the orange of the old "Pick up or delivery" step */
 .how li:nth-child(2) span{background:var(--orange);color:#fff}.how li:nth-child(2){border-color:var(--orange)}
+.oursalsas{font-family:var(--f-bungee),sans-serif;font-weight:400;text-align:center;color:var(--cream);font-size:clamp(1.3rem,6vw,2rem);margin:14px 0 18px;letter-spacing:.02em}

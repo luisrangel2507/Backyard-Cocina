@@ -18,12 +18,10 @@ const lines = (s: string) => s.split("\n").map((l, i) => <span key={i}>{i > 0 &&
 export default function Store({ products, ratings = {} }: { products: Product[]; ratings?: Record<string, Rating> }) {
   const { t, lang } = useT();
   const { cart, add, count } = useCart();
-  const [cat, setCat] = useState("All");
   const [menu, setMenu] = useState(false);
   const [qty, setQty] = useState<Record<string, number>>({});
   const [justAdded, setJustAdded] = useState<string | null>(null);
   const [member, setMember] = useState<boolean | null>(null);
-  const CATS: [string, string][] = [["All", "catAll"], ...Array.from(new Set(products.map((p) => p.category))).sort((a, b) => (a === "Packs" ? 1 : b === "Packs" ? -1 : 0)).map((c) => [c, c === "Packs" ? "catPacks" : ""] as [string, string])];
   const bladeOn = products.some((p) => p.bladeStock > 0);
   const single = Math.min(...products.filter((p) => p.jars === 1).map((p) => p.priceCents));
   const subtotal = Object.entries(cart).reduce((a, [id, q]) => a + (products.find((p) => p.id === id)?.priceCents ?? 0) * q, 0);
@@ -48,9 +46,8 @@ export default function Store({ products, ratings = {} }: { products: Product[];
     const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: 0.05 });
     els.forEach((e) => io.observe(e));
     return () => io.disconnect();
-  }, [cat]);
+  }, []);
 
-  const catLabel = (c: string, key: string) => (key ? t(key as any) : c);
   const heat = (n: number) => (n <= 2 ? t("heat1") : n === 3 ? t("heat3") : n === 4 ? t("heat4") : t("heat5"));
 
   return (
@@ -101,12 +98,10 @@ export default function Store({ products, ratings = {} }: { products: Product[];
       </header>
 
       <h2 className="dh2 sigt sigt-d"><img src="/signature-title.webp" alt="Try our signature salsas" width={896} height={716} /></h2>
-      <div className="chips">
-        {CATS.map(([c, k]) => <button key={c} className="chip" aria-pressed={c === cat} onClick={() => setCat(c)}>{catLabel(c, k)}</button>)}
-      </div>
+      <h2 className="oursalsas">{t("theseSalsas")}</h2>
 
-      <div className="list" key={cat}>
-        {products.filter((p) => cat === "All" || p.category === cat).map((p, idx) => {
+      <div className="list">
+        {products.map((p, idx) => {
           const q = qty[p.id] || 1, r = ratings[p.id], L = localizeProduct(lang, p);
           const save = p.jars > 1 && isFinite(single) ? p.jars * single - p.priceCents : 0;
           return (
