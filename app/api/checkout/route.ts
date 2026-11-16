@@ -65,6 +65,8 @@ export async function POST(req: Request) {
         : []),
     ],
     phone_number_collection: { enabled: true },
+    // Shown right above Stripe's Pay button so the customer sees how and when they get their order.
+    custom_text: { submit: { message: (fulfillment === "delivery" ? `🚗 Delivery to ${address}, ${zip} · ${slot.label}` : atBlade ? `💈 Pickup at ${BLADE_NAME} · during their hours` : `🏡 Pickup in Torrance · ${slot.label}. We'll email you the pickup address.`).slice(0, 1000) } },
     automatic_tax: { enabled: process.env.STRIPE_AUTOMATIC_TAX === "true" },
     customer_creation: "always",
     ...(freeCoupon ? { discounts: [{ coupon: freeCoupon }] } : {}),

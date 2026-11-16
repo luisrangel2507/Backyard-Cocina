@@ -874,3 +874,25 @@ html,body,button,a,input,select,textarea,label,summary{touch-action:manipulation
 .slot-time:disabled{opacity:.4;cursor:not-allowed;text-decoration:line-through}
 .slot-left{color:var(--gold);font-weight:700}
 .slot-none{margin:0;color:#ff8a75;font-weight:700}
+
+/* cart: pickup / delivery choice, made hard to miss */
+.fbox{margin-top:22px;display:grid;gap:12px;padding:16px;border-radius:20px;background:#0b1f42;border:2px solid var(--gold);box-shadow:0 0 0 4px #e9a82b22}
+.fbox.pending{animation:fglow 2.4s ease-in-out infinite}
+@keyframes fglow{0%,100%{box-shadow:0 0 0 4px #e9a82b22}50%{box-shadow:0 0 0 8px #e9a82b44}}
+.fbox.nudge{animation:fshake .45s ease}
+@keyframes fshake{0%,100%{transform:none}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.fhead{display:flex;gap:12px;align-items:center}
+.fhead b{display:block;font-size:1.15rem;color:var(--cream)}
+.fhead small{display:block;color:#c9d1e6;margin-top:2px}
+.fnum{flex:none;width:32px;height:32px;border-radius:50%;background:var(--gold);color:var(--ink);display:grid;place-items:center;font-weight:800}
+.fopts{display:grid;gap:10px}
+.fopt{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:14px;border-radius:16px;border:2px solid #fbf6e340;background:#081a38;color:var(--cream);font:inherit;cursor:pointer;transition:border-color .2s,background .2s}
+.fopt[aria-checked=true]{border-color:var(--gold);background:#fbf6e3;color:var(--navy)}
+.fico{font-size:28px;line-height:1}
+.ftxt{flex:1;min-width:0}.ftxt b{display:block;font-size:1.05rem}.ftxt small{display:block;opacity:.8;margin-top:2px}
+.fdot{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid currentColor;opacity:.7}
+.fopt[aria-checked=true] .fdot{opacity:1;background:var(--tomato);border-color:var(--tomato);box-shadow:inset 0 0 0 4px #fbf6e3}
+.fstep2{display:grid;gap:10px;padding-top:12px;border-top:1px dashed #fbf6e333}
+.fsum{margin-top:18px;padding:12px 14px;border-radius:14px;background:#1fb7a022;border:1px solid #1fb7a066;font-weight:600}
+.fsum.warn{background:#e8402a22;border-color:#e8402a88;color:#ffd2c9}
+.btn.soft{opacity:.75}

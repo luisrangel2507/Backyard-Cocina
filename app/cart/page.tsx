@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/lib/cart";
 import { zoneFor, BLADE_NAME } from "@/lib/zones";
 import { PageBar, useT } from "@/lib/i18n-client";
@@ -13,7 +13,7 @@ export default function CartPage() {
   const { cart, add, clear } = useCart();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [fulfillment, setFulfillment] = useState<"pickup" | "blade" | "delivery">("pickup");
+  const [fulfillment, setFulfillment] = useState<"pickup" | "blade" | "delivery" | null>(null);
   const [address, setAddress] = useState("");
   const [zip, setZip] = useState("");
   const zone = zoneFor(zip);
@@ -34,7 +34,22 @@ export default function CartPage() {
   // Items in the cart that Blade & Barber doesn't have enough of
   const bladeShort = items.map(([id, q]) => ({ p: info(id), q })).filter(({ p, q }) => p && p.bladeStock < q);
 
+  // What is still missing before paying (shown next to the button, and the box below gets highlighted)
+  const missing = !fulfillment ? t("needChoice")
+    : fulfillment === "delivery" && (!zone || address.trim().length < 8) ? t("needAddress")
+    : fulfillment !== "blade" && !pickupSlot ? t("needSlot")
+    : fulfillment === "blade" && bladeShort.length > 0 ? t("needBladeStock")
+    : "";
+  const fbox = useRef<HTMLDivElement>(null);
+  const [nudge, setNudge] = useState(0);
+  const chosen = slots.find((x) => x.label === pickupSlot);
+
   async function checkout() {
+    if (missing) {
+      setNudge((n) => n + 1);
+      fbox.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
     setLoading(true); setError("");
     const res = await fetch("/api/checkout", {
       method: "POST", headers: { "Content-Type": "application/json" },
@@ -74,35 +89,46 @@ export default function CartPage() {
             <div className="csub"><span>{t("subtotal")}</span><b>{$(subtotal)}</b></div>
             <small className="muted" style={{ display: "block", textAlign: "right" }}>Sales tax is added at checkout</small>
             <button className="linkbtn" onClick={clear}>{t("clearCart")}</button>
-            <div style={{ marginTop: 20, display: "grid", gap: 10 }}>
-              <b>{t("howWant")}</b>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                {(["pickup", "delivery", "blade"] as const).map((f) => (
-                  <button key={f} className="btn" onClick={() => setFulfillment(f)}
-                    style={{ background: fulfillment === f ? "var(--cream)" : "transparent", color: fulfillment === f ? "var(--navy)" : "var(--cream)", border: "1.5px solid var(--cream)", ...(f === "blade" ? { gridColumn: "1 / -1" } : {}) }}>
-                    {t(f === "pickup" ? "pickupFree" : f === "blade" ? "bladePickup" : "deliveryZone")}
+            <div ref={fbox} key={nudge} className={`fbox${!fulfillment ? " pending" : ""}${nudge && missing ? " nudge" : ""}`}>
+              <div className="fhead"><span className="fnum">1</span><div><b>{t("howWant")}</b><small>{t("chooseOne")}</small></div></div>
+              <div className="fopts" role="radiogroup" aria-label={t("howWant")}>
+                {([
+                  ["pickup", "🏡", "optPickupT", "optPickupD"],
+                  ["delivery", "🚗", "optDeliveryT", "optDeliveryD"],
+                  ["blade", "💈", "optBladeT", "optBladeD"],
+                ] as const).map(([f, icon, title, sub]) => (
+                  <button key={f} type="button" role="radio" aria-checked={fulfillment === f} className="fopt" onClick={() => setFulfillment(f)}>
+                    <span className="fico" aria-hidden="true">{icon}</span>
+                    <span className="ftxt"><b>{t(title)}</b><small>{t(sub)}</small></span>
+                    <span className="fdot" aria-hidden="true" />
                   </button>
                 ))}
               </div>
-              {fulfillment === "blade" ? (
-                <>
-                  <p style={{ margin: 0 }}>{t("bladeAt")} <b>{BLADE_NAME}</b>{blade.address && <><br />📍 {blade.address}</>}{blade.hours && <><br />🕑 {t("bladeHours")} {blade.hours}</>}</p>
-                  {bladeShort.length > 0
-                    ? bladeShort.map(({ p }) => <small key={p!.id} style={{ color: "var(--tomato)", fontWeight: 700 }}>{p!.bladeStock > 0 ? t("bladeShort", { n: p!.bladeStock, name: p!.name }) : `${p!.name}: ${t("noneAtBlade")}`}</small>)
-                    : <small>{t("bladeReady")}</small>}
-                </>
-              ) : fulfillment === "delivery" ? (
-                <>
-                  <input placeholder={t("zip")} inputMode="numeric" maxLength={5} value={zip} onChange={(e) => setZip(e.target.value)} style={box} />
-                  {zip.length === 5 && <small>{zone ? t("deliveryTo", { zone: zone.name, fee: $(zone.feeCents) }) : t("noDelivery")}</small>}
-                  <input placeholder={t("street")} value={address} onChange={(e) => setAddress(e.target.value)} style={box} />
-                  <SlotPicker slots={slots} value={pickupSlot} onChange={setPickupSlot} />
-                </>
-              ) : (
-                <>
-                  <small>{t("pickupAddrLater")}</small>
-                  <SlotPicker slots={slots} value={pickupSlot} onChange={setPickupSlot} />
-                </>
+
+              {fulfillment && (
+                <div className="fstep2">
+                  {fulfillment === "blade" ? (
+                    <>
+                      <p style={{ margin: 0 }}>{t("bladeAt")} <b>{BLADE_NAME}</b>{blade.address && <><br />📍 {blade.address}</>}{blade.hours && <><br />🕑 {t("bladeHours")} {blade.hours}</>}</p>
+                      {bladeShort.length > 0
+                        ? bladeShort.map(({ p }) => <small key={p!.id} style={{ color: "var(--tomato)", fontWeight: 700 }}>{p!.bladeStock > 0 ? t("bladeShort", { n: p!.bladeStock, name: p!.name }) : `${p!.name}: ${t("noneAtBlade")}`}</small>)
+                        : <small>{t("bladeReady")}</small>}
+                    </>
+                  ) : (
+                    <>
+                      {fulfillment === "delivery" && (
+                        <>
+                          <div className="fhead"><span className="fnum">2</span><div><b>{t("whereTo")}</b></div></div>
+                          <input placeholder={t("zip")} inputMode="numeric" maxLength={5} value={zip} onChange={(e) => setZip(e.target.value)} style={box} />
+                          {zip.length === 5 && <small>{zone ? t("deliveryTo", { zone: zone.name, fee: $(zone.feeCents) }) : t("noDelivery")}</small>}
+                          <input placeholder={t("street")} value={address} onChange={(e) => setAddress(e.target.value)} style={box} />
+                        </>
+                      )}
+                      <div className="fhead"><span className="fnum">{fulfillment === "delivery" ? 3 : 2}</span><div><b>{t("whenTitle")}</b>{fulfillment === "pickup" && <small>{t("pickupAddrLater")}</small>}</div></div>
+                      <SlotPicker slots={slots} value={pickupSlot} onChange={setPickupSlot} />
+                    </>
+                  )}
+                </div>
               )}
             </div>
             {(me?.freeSalsas ?? 0) > 0 && (
@@ -111,7 +137,10 @@ export default function CartPage() {
               </label>
             )}
             {me === null && <p style={{ marginTop: 16 }}><small><Link href="/login" style={{ color: "var(--gold)", fontWeight: 700 }}>{t("loginToEarn")}</Link>{t("loginToEarn2")}</small></p>}
-            <button className="btn" style={{ marginTop: 20, width: "100%", padding: 14, background: "var(--tomato)" }} onClick={checkout} disabled={loading || (fulfillment !== "blade" && !pickupSlot) || (fulfillment === "delivery" && !zone) || (fulfillment === "blade" && bladeShort.length > 0)}>
+            <div className={`fsum${missing ? " warn" : ""}`} role="status">
+              {missing ? <>👆 {missing}</> : <>✅ {t(fulfillment === "pickup" ? "optPickupT" : fulfillment === "delivery" ? "optDeliveryT" : "optBladeT")}{fulfillment !== "blade" && chosen && <> · <b>{chosen.dayName === "Today" ? t("today") : chosen.dayName === "Tomorrow" ? t("tomorrow") : chosen.dayName} · {chosen.time}</b></>}</>}
+            </div>
+            <button className={`btn${missing ? " soft" : ""}`} style={{ marginTop: 10, width: "100%", padding: 14, background: "var(--tomato)" }} onClick={checkout} disabled={loading}>
               {loading ? t("opening") : t("checkout")}
             </button>
           </>
