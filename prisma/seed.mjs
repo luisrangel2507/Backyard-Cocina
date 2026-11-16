@@ -24,6 +24,9 @@ for (const { old, oldDesc, ...p } of products) {
   }
 }
 
+// Filter chip "Naranjita" is now "La Sunset".
+await db.product.updateMany({ where: { category: "Naranjita" }, data: { category: "La Sunset" } });
+
 await db.settings.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } });
 console.log("Seeded", products.length, "products");
 await db.$disconnect();
