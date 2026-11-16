@@ -221,6 +221,7 @@ async function Partners() {
               <div style={{ minWidth: 0, overflowWrap: "anywhere" }}>
                 <b>{p.name}</b> · code {p.code}{!p.active && <b style={{ color: "#f0b03a" }}> · PAUSED</b>}<br />
                 {p.contact && <><small>{p.contact}</small><br /></>}
+                <small>{p.username && p.passwordHash ? <>🔑 Login: <b>{p.username}</b> at /partner-login</> : "🔑 No login yet (set one in Edit partner)"}</small><br />
                 <small>{site}/r/{p.code}</small><br />
                 {mine.length} orders · {jars} jars · commission {money(p.commissionCents)}/jar<br />
                 <b>Owed: {money(owed)}</b><br />
@@ -236,6 +237,10 @@ async function Partners() {
                 <label>Commission per jar ($)<input name="commission" type="number" step="0.01" min="0" defaultValue={(p.commissionCents / 100).toFixed(2)} /></label>
                 <label>Contact (name, phone or email)<input name="contact" defaultValue={p.contact} /></label>
                 <label>Notes<textarea name="notes" rows={2} defaultValue={p.notes} /></label>
+                <b style={{ fontSize: 13, marginTop: 4 }}>Partner login (they log in at {site}/partner-login)</b>
+                <label>User name<input name="username" defaultValue={p.username ?? ""} placeholder="e.g. blade" autoCapitalize="none" autoComplete="off" maxLength={40} /></label>
+                <label>{p.passwordHash ? "New password (leave blank to keep the current one)" : "Password (8+ characters)"}<input name="password" type="text" minLength={8} autoComplete="new-password" placeholder={p.passwordHash ? "••••••••" : "Choose a password"} /></label>
+                <small className="muted" style={{ color: "#555" }}>They only see their own shelf and how many jars have sold. Changing the password logs them out.</small>
                 <label className="chk"><input type="checkbox" name="paused" defaultChecked={!p.active} /> Pause (QR stops giving commission)</label>
                 <small className="muted" style={{ color: "#555" }}>The code ({p.code}) can&apos;t change, so printed QRs keep working.</small>
                 <button className="btn">Save changes</button>

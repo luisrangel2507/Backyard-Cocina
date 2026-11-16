@@ -122,6 +122,8 @@ model Partner {
   contact         String  @default("") // person, phone or email
   notes           String  @default("")
   active          Boolean @default(true)
+  username        String? // partner login at /partner-login (lowercase; uniqueness checked when saving)
+  passwordHash    String? // scrypt hash, set by Brant in admin
 }
 
 // Money out (ingredients, jars, labels, commissions paid...). Money in comes from paid orders.

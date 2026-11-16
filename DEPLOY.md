@@ -17,7 +17,9 @@
 ## Partners (Blade & Barber)
 1. `/admin?tab=partners` → add partner: name "Blade & Barber", code `BLADE`, commission per jar (default $1.00).
 2. Its QR (print it) points to `NEXT_PUBLIC_SITE_URL/r/BLADE`; also downloadable at `/api/qr?code=BLADE`.
-3. Scanning sets a 30-day cookie; orders from that browser are tagged with the partner and the commission (paid jars × rate) is stored on the order. The partners tab shows jars sold and commission owed. Pay the partner manually.
+3. Blade & Barber is also a pickup spot: in the same tab set its address, hours and jars on the shelf. Customers see the jars on the shop and can choose "Pickup at Blade & Barber"; paid orders take jars off that count.
+4. Partner login: Edit partner → set a user name and password. The partner logs in at `/partner-login` and sees only their shelf and how many jars have sold (no money, no other partners).
+5. Scanning sets a 30-day cookie; orders from that browser are tagged with the partner and the commission (paid jars × rate) is stored on the order. The partners tab shows jars sold and commission owed. Pay the partner manually.
 
 ## Security
 - Card and bank data never touch this app: payments and payouts live in Stripe (PCI Level 1).

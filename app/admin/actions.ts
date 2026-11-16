@@ -6,6 +6,7 @@ import { sendSms, orderText } from "@/lib/sms";
 import { sendEmail, orderReadyEmail } from "@/lib/email";
 import { bladeInfo } from "@/lib/blade";
 import { pickupPlace, isPickup } from "@/lib/zones";
+import { hashPassword } from "@/lib/password";
 
 export async function setStatus(id: string, status: string) {
   const o = await db.order.update({ where: { id }, data: { status }, include: { customer: true } });
@@ -107,7 +108,20 @@ export async function savePartner(form: FormData) {
   const commissionCents = Math.round(Number(g("commission")) * 100);
   if (!name || !(commissionCents >= 0)) return;
   const data = { name, commissionCents, contact: g("contact").slice(0, 120), notes: g("notes").slice(0, 500), active: !form.get("paused") };
-  if (id) await db.partner.update({ where: { id }, data });
+  if (id) {
+    // Partner login: user name (letters, numbers, . _ -) and a new password (8+ characters; blank keeps the old one).
+    const username = g("username").toLowerCase().replace(/[^a-z0-9._-]/g, "").slice(0, 40);
+    const password = String(form.get("password") ?? "");
+    const login: { username?: string | null; passwordHash?: string } = {};
+    if (form.has("username")) {
+      if (username) {
+        const taken = await db.partner.findFirst({ where: { username, NOT: { id } } });
+        if (!taken) login.username = username;
+      } else login.username = null;
+    }
+    if (password.length >= 8) login.passwordHash = await hashPassword(password);
+    await db.partner.update({ where: { id }, data: { ...data, ...login } });
+  }
   else {
     const code = g("code").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 20);
     if (!code) return;

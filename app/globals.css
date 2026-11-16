@@ -831,3 +831,18 @@ html,body,button,a,input,select,textarea,label,summary{touch-action:manipulation
 .bstock{font-size:12px;font-weight:700;color:#13285f}.bstock.none{opacity:.55;font-weight:600}
 @media(min-width:980px){.shop .bstock{color:var(--gold)}}
 .cartpage .btn:disabled{opacity:.45;cursor:not-allowed}
+/* partner login + partner page */
+.plog-logo{width:120px;margin:56px 0 6px}
+.plog-title{font-family:var(--f-bungee),sans-serif;font-weight:400;margin:4px 0 0;color:var(--cream)}
+.plog-sub{color:#c9d1e6;margin:6px 16px 0;text-align:center}
+.pview .pv-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:16px}
+.pview .pv-head h2{margin:2px 0 0}
+.pv-table{display:grid;border:1px solid #fbf6e31f;border-radius:16px;overflow:hidden;background:#0b1a3e}
+.pv-row{display:grid;grid-template-columns:1fr 80px 64px;gap:8px;align-items:center;padding:12px 14px;border-top:1px solid #fbf6e314}
+.pv-row:first-child{border-top:0}
+.pv-row b{text-align:right;font-size:1.15rem}
+.pv-th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#b9c2dc;background:#ffffff08}
+.pv-th span:not(:first-child){text-align:right}
+.pv-row.out b:nth-of-type(1){color:#ff8a75}
+.pv-table:not(:has(.pv-th span:nth-child(3))) .pv-row{grid-template-columns:1fr 64px}
+.pview .kpis{margin-top:16px}
