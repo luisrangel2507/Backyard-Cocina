@@ -192,7 +192,8 @@ export async function voidSale(id: string) {
   await db.$transaction([
     db.order.update({ where: { id }, data: { status: "cancelled" } }),
     ...(o.customerId ? [db.customer.update({ where: { id: o.customerId }, data: { jars: { decrement: o.jarCount } } })] : []),
-    ...o.items.map((i) => db.product.update({ where: { id: i.productId }, data: { stock: { increment: i.quantity } } })),
+    // Counter sales at Blade & Barber came off their shelf, so they go back there.
+    ...o.items.map((i) => db.product.update({ where: { id: i.productId }, data: o.paymentMethod === "partner_counter" ? { bladeStock: { increment: i.quantity } } : { stock: { increment: i.quantity } } })),
   ]);
   revalidatePath("/admin");
 }

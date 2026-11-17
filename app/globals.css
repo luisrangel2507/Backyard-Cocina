@@ -933,3 +933,8 @@ html,body,button,a,input,select,textarea,label,summary{touch-action:manipulation
 .o2-msg summary{cursor:pointer;list-style:none;text-align:center;font-weight:700;color:var(--navy);padding:6px}
 .o2-msg summary::-webkit-details-marker{display:none}
 .ord2 .cmp{display:grid;gap:8px;margin-top:8px}.ord2 .cmp textarea{border-radius:12px;padding:10px;font:inherit;border:1px solid #0003}
+/* partner page: counter sale buttons */
+.pv-table:has(.pv-sell) .pv-row{grid-template-columns:1fr 58px 44px 84px}
+.pv-sell{width:100%;padding:9px 6px;border-radius:12px;border:0;background:var(--green);color:#fff;font:inherit;font-weight:800;font-size:13px;cursor:pointer}
+.pv-sell:disabled{background:#ffffff1f;color:#b9c2dc;cursor:not-allowed}
+.pv-undo{background:transparent;border:1.5px solid #fbf6e366;color:var(--cream);border-radius:999px;padding:5px 12px;font:inherit;font-size:13px;cursor:pointer}

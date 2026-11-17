@@ -306,7 +306,7 @@ async function Money({ period }: { period: string }) {
   const today = now.toISOString().slice(0, 10);
   type Row = { id: string; date: Date; label: string; cents: number; expense?: boolean };
   const rows: Row[] = [
-    ...orders.map((o) => ({ id: o.id, date: o.createdAt, label: `${o.source === "in_person" ? `In person (${o.paymentMethod ?? "cash"})` : `Order #${o.id.slice(-6).toUpperCase()}`} · ${o.jarCount} jars${o.partnerCode ? ` · ${o.partnerCode}` : ""}`, cents: o.totalCents })),
+    ...orders.map((o) => ({ id: o.id, date: o.createdAt, label: `${o.source === "in_person" ? (o.paymentMethod === "partner_counter" ? "Blade & Barber counter" : `In person (${o.paymentMethod ?? "cash"})`) : `Order #${o.id.slice(-6).toUpperCase()}`} · ${o.jarCount} jars${o.partnerCode ? ` · ${o.partnerCode}` : ""}`, cents: o.totalCents })),
     ...expenses.map((e) => ({ id: e.id, date: e.date, label: `${e.description} · ${e.category}`, cents: -e.amountCents, expense: true })),
   ].sort((a, b) => +b.date - +a.date);
   return (

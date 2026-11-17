@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { getPartner } from "@/lib/partnerAuth";
 import { BLADE_CODE } from "@/lib/zones";
+import { counterSale, undoCounterSale } from "./actions";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "My shelf · Backyard Cocina", robots: { index: false } };
@@ -25,6 +26,8 @@ export default async function PartnerHome() {
   const totalSold = rows.reduce((a, r) => a + r.sold, 0);
   const waiting = hasShelf ? orders.filter((o) => o.fulfillment === "blade" && (o.status === "new" || o.status === "ready")) : [];
   const name = (id: string) => products.find((p) => p.id === id)?.name ?? id;
+  const dayAgo = Date.now() - 24 * 3600 * 1000;
+  const counter = orders.filter((o) => o.paymentMethod === "partner_counter" && o.createdAt.getTime() > dayAgo).reverse();
 
   return (
     <div className="adm pview">
@@ -40,15 +43,33 @@ export default async function PartnerHome() {
 
       <h3>{hasShelf ? "Your inventory" : "Sold"}</h3>
       <div className="pv-table">
-        <div className="pv-row pv-th"><span>Salsa</span>{hasShelf && <span>On shelf</span>}<span>Sold</span></div>
+        <div className="pv-row pv-th"><span>Salsa</span>{hasShelf && <span>On shelf</span>}<span>Sold</span>{hasShelf && <span />}</div>
         {rows.map((r) => (
           <div className={`pv-row${hasShelf && r.shelf === 0 ? " out" : ""}`} key={r.id}>
             <span>{r.name}</span>{hasShelf && <b>{r.shelf}</b>}<b>{r.sold}</b>
+            {hasShelf && (
+              <form action={counterSale.bind(null, r.id)}>
+                <input type="hidden" name="qty" value="1" />
+                <button className="pv-sell" disabled={r.shelf < 1}>{r.shelf < 1 ? "Out" : "Sold 1"}</button>
+              </form>
+            )}
           </div>
         ))}
         {!rows.length && <p className="muted">No sales yet.</p>}
       </div>
 
+      {hasShelf && <p className="muted" style={{ marginTop: 8 }}>Sold a jar at the counter? Tap <b>Sold 1</b> so your shelf count stays right.</p>}
+      {hasShelf && counter.length > 0 && (
+        <>
+          <h3>Counter sales · last 24 hours</h3>
+          {counter.map((o) => (
+            <div className="line" key={o.id}>
+              <span>{o.createdAt.toLocaleTimeString("en-US", { timeZone: "America/Los_Angeles", hour: "numeric", minute: "2-digit" })} · {o.items.map((i) => `${i.quantity} × ${name(i.productId)}`).join(", ")}</span>
+              <form action={undoCounterSale.bind(null, o.id)}><button className="pv-undo">Undo</button></form>
+            </div>
+          ))}
+        </>
+      )}
       {hasShelf && (
         <>
           <h3>Waiting for pickup here</h3>
