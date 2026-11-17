@@ -11,6 +11,7 @@ export default async function Story() {
       <img className="ms-side" src="/story-side.jpg" alt="Brant Fedor" />
       <div className="ms-lang"><LangToggle /></div>
       <div className="ms-text">
+        <Link className="ms-back" href="/shop">← {t("pbShop")}</Link>
         <p className="ms-eyebrow">{t("stEyebrow")}</p>
         <h1>{t("stTitle")}</h1>
         <p>{t("st1")}</p>

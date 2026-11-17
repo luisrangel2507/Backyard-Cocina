@@ -7,6 +7,7 @@ import { useCart } from "@/lib/cart";
 import { LangToggle, useT } from "@/lib/i18n-client";
 import { localizeProduct } from "@/lib/i18n";
 import { productImage } from "@/lib/productImage";
+import SideMenu from "./SideMenu";
 
 const money = (c: number) => `$${(c / 100).toFixed(2)}`;
 export type Rating = { avg: number; count: number };
@@ -21,6 +22,12 @@ export default function Store({ products, ratings = {} }: { products: Product[];
   const [menu, setMenu] = useState(false);
   const [qty, setQty] = useState<Record<string, number>>({});
   const [justAdded, setJustAdded] = useState<string | null>(null);
+  const [stuck, setStuck] = useState(false);
+  useEffect(() => {
+    const on = () => setStuck(window.scrollY > 140);
+    on(); window.addEventListener("scroll", on, { passive: true });
+    return () => window.removeEventListener("scroll", on);
+  }, []);
   const [member, setMember] = useState<boolean | null>(null);
   const bladeOn = products.some((p) => p.bladeStock > 0);
   const single = Math.min(...products.filter((p) => p.jars === 1).map((p) => p.priceCents));
@@ -52,6 +59,18 @@ export default function Store({ products, ratings = {} }: { products: Product[];
 
   return (
     <div className="shop" ref={root} style={ok ? undefined : { visibility: "hidden" }}>
+      <SideMenu open={menu} onClose={() => setMenu(false)} member={member} count={count} />
+      {/* compact bar that stays on top once you scroll past the header (phones) */}
+      <div className={`stick${stuck ? " on" : ""}`} aria-hidden={!stuck}>
+        <button className="icon" aria-label="Menu" tabIndex={stuck ? 0 : -1} onClick={() => setMenu(true)}>
+          <svg viewBox="0 0 24 24" width="22" height="22"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+        </button>
+        <button className="stick-logo" tabIndex={stuck ? 0 : -1} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}><img src="/logo.png" alt="" />BACKYARD COCINA</button>
+        <Link className="icon" href="/cart" aria-label={t("openCart")} tabIndex={stuck ? 0 : -1}>
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 4h2l2.4 11h10.2L20 7H6.2" /><circle cx="9" cy="19.5" r="1.4" /><circle cx="17" cy="19.5" r="1.4" /></svg>
+          {count > 0 && <span className="badge" key={count}>{count}</span>}
+        </Link>
+      </div>
       <header className="hero">
         <div className="hrow">
           <button className="icon" aria-label="Menu" aria-expanded={menu} onClick={() => setMenu(!menu)}>
@@ -70,15 +89,6 @@ export default function Store({ products, ratings = {} }: { products: Product[];
             </Link>
           </span>
         </div>
-        {menu && (
-          <nav className="menu">
-            <Link href="/shop" onClick={() => setMenu(false)}>{t("menuOrder")}</Link>
-            <Link href="/story">{t("menuStory")}</Link>
-            <Link href={member ? "/profile" : "/login"}>{t("menuClub")}</Link>
-            <Link href="/cart">{t("menuCart")}</Link>
-            <Link href="/admin">{t("menuKitchen")}</Link>
-          </nav>
-        )}
         <div className="dhero">
           <div className="dtext">
             <h1><span className="l1">{t("heroL1")}</span><br /><em className="l2">{t("heroL2")}</em><br /><span className="l3">{t("heroL3")}</span></h1>

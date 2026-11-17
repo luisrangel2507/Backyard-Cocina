@@ -21,7 +21,6 @@ export default async function Salsa(props: { params: Promise<{ id: string }> }) 
     <>
     <PageBar />
     <article className="detail d2">
-      <Link href="/shop" className="muted d2-back">{t("allSalsas")}</Link>
       <img src={productImage(p)} alt={p.name} className="dimg" />
       <div className="d2-info">
         <span className="d2-eyebrow">{p.jars > 1 ? t("pack") : t("salsa")}{p.jars === 1 && " · 8 oz"}</span>
