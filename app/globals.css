@@ -938,3 +938,33 @@ html,body,button,a,input,select,textarea,label,summary{touch-action:manipulation
 .pv-sell{width:100%;padding:9px 6px;border-radius:12px;border:0;background:var(--green);color:#fff;font:inherit;font-weight:800;font-size:13px;cursor:pointer}
 .pv-sell:disabled{background:#ffffff1f;color:#b9c2dc;cursor:not-allowed}
 .pv-undo{background:transparent;border:1.5px solid #fbf6e366;color:var(--cream);border-radius:999px;padding:5px 12px;font:inherit;font-size:13px;cursor:pointer}
+
+/* ---- design pass ---- */
+/* salsa page: photo + info side by side on wide screens, add to cart right there */
+.detail.d2{max-width:1000px;margin:0 auto;gap:14px}
+.d2-info{display:grid;gap:10px;align-content:start}
+.d2-eyebrow{font-family:var(--f-archivo),sans-serif;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.detail.d2 h2{margin:0;font-size:clamp(1.8rem,7vw,2.6rem);line-height:1.05}
+.detail.d2 .chili{font-size:18px}.detail.d2 .chili small{color:var(--gold);font-size:13px}
+.detail.d2 p{margin:0;font-size:1.05rem;line-height:1.55;color:#e4eaf8}
+.d2-price{font-size:2rem;font-weight:800}
+.dbuy{display:grid;gap:10px}
+.dbuy .buy{gap:10px}
+.dbuy .step{background:#fbf6e31f;padding:4px}.dbuy .step button{width:40px;height:40px;font-size:22px;background:transparent}.dbuy .step b{min-width:26px;font-size:1.1rem}
+.dbuy .addbtn{flex:1;background:var(--orange);color:#fff;padding:15px 12px;font-size:15px;letter-spacing:.05em}
+.dbuy .addbtn:disabled{background:#777}
+.dcart{display:block;text-align:center;padding:12px;border-radius:999px;border:1.5px solid #fbf6e366;color:var(--cream);text-decoration:none;font-weight:700}
+.d2-blade{color:var(--gold);font-weight:700}
+.detail.d2 .lbl{color:#b9c2dc;margin-top:6px}
+@media(min-width:860px){
+  .detail.d2{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);column-gap:40px;align-items:start}
+  .d2-back{grid-column:1/-1}
+  .detail.d2 .dimg{aspect-ratio:1/1;border-radius:24px;position:sticky;top:20px}
+}
+/* desktop shop: 3 even columns (6 products fill two full rows) and the hero badges on one line each */
+@media(min-width:980px){
+  .shop .list{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+  .shop .pimg{aspect-ratio:16/10}
+  .dbadges li{white-space:nowrap}
+  .dbadges li span br{display:none}
+}

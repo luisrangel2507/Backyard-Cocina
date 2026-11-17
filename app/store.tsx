@@ -90,7 +90,7 @@ export default function Store({ products, ratings = {} }: { products: Product[];
               <li><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M6 11h12M7 11a5 5 0 0 0 10 0M9 8c0-1 1-1 1-2M13 8c0-1 1-1 1-2" /></svg><span>{lines(t("badgeBbq"))}</span></li>
             </ul>
           </div>
-          <img className="dpic" src="/trio.jpg" alt="Verde, Roja and Creamy salsas" />
+          <img className="dpic" src="/trio.jpg" alt="Backyard Cocina salsas" />
         </div>
         <div className="brand">
           <div><h2 className="sigt"><img src="/signature-title.webp" alt="Try our signature salsas" width={896} height={716} /></h2></div>

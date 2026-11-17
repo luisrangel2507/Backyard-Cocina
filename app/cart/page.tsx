@@ -87,7 +87,7 @@ export default function CartPage() {
         {items.length > 0 && (
           <>
             <div className="csub"><span>{t("subtotal")}</span><b>{$(subtotal)}</b></div>
-            <small className="muted" style={{ display: "block", textAlign: "right" }}>Sales tax is added at checkout</small>
+            <small className="muted" style={{ display: "block", textAlign: "right" }}>{t("taxNote")}</small>
             <button className="linkbtn" onClick={clear}>{t("clearCart")}</button>
             <div ref={fbox} key={nudge} className={`fbox${!fulfillment ? " pending" : ""}${nudge && missing ? " nudge" : ""}`}>
               <div className="fhead"><span className="fnum">1</span><div><b>{t("howWant")}</b><small>{t("chooseOne")}</small></div></div>
